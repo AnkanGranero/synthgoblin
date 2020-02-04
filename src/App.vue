@@ -40,7 +40,7 @@ export default {
 
   methods: {
     scale(number) {
-      let arr = ["lydian", "mixolydian", "phrygian", "minor"];
+      let arr = ["C", "D", "E", "Fsharp"];
       return arr[number];
     },
     handleMouseMove() {
@@ -63,7 +63,6 @@ export default {
       let calcScale = this.scale(xMode);
       let note = this.scales[calcScale][index] + octave;
 
-      console.log("stepXy", stepsXY);
       console.log("Octave", octave, note);
 
       //olika skalor på x axeln
