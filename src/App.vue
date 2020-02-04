@@ -1,32 +1,83 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
+    <div class="overlay" @mousedown="clickHandler" @mouseup="clickHandler"></div>
   </div>
 </template>
 
+<script>
+import * as Tone from "tone";
+export default {
+  name: "App",
+  data() {
+    return {
+      arrOfNotes: [
+        "C3",
+        "D3",
+        "E3",
+        "F#3",
+        "G3",
+        "A3",
+        "B3",
+        "C4",
+        "D4",
+        "E4",
+        "F#4",
+        "G4",
+        "A4",
+        "B4",
+        "C5",
+        "D5",
+        "E5",
+        "F#5",
+        "G5",
+        "A5",
+        "B5"
+      ]
+    };
+  },
+  computed() {},
+  methods: {
+    clickHandler() {
+      let total = document.body.scrollHeight;
+      let westernScale = total / 14;
+      let myPos = event.screenY;
+      let steps = Math.round(myPos / westernScale) - 1;
+      //olika skalor på x axeln
+
+      const synth = new Tone.Synth().toMaster();
+      if (event.type === "mousedown") {
+        console.log("mouseDown");
+
+        synth.triggerAttack(this.arrOfNotes[steps], "8n");
+        this.play();
+      } else if (event.type === "mouseup") {
+        console.log("mouseUp");
+
+        synth.triggerRelease();
+      }
+
+      /*       document.querySelector("overlay").addEventListener("mouseup", () => {
+        console.log("hej");
+
+        synth.triggerRelease();
+      }); */
+
+      return this.document;
+    },
+
+    async play() {
+      await Tone.start();
+      console.log("audio is ready");
+    }
+  }
+};
+</script>
 <style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.overlay {
+  height: 100vh;
+  width: 100vw;
+  background: red;
 }
 </style>
