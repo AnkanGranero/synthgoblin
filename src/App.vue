@@ -30,10 +30,10 @@ export default {
     return {
       position: { x: "", y: "" },
       scales: {
-        lydian: ["C", "D", "E", "F#", "G", "A", "B"],
-        mixolydian: ["F", "G", "A", "Bb", "C", "D", "E"],
-        phrygian: ["Bb", "C", "Db", "Eb", "F", "G", "Ab"],
-        minor: ["Eb", "F", "G", "Ab", "Bb", "C", "D"]
+        C: ["C", "D", "E", "F#", "G", "A", "B"],
+        D: ["D", "E", "F#", "G#", "A", "B", "C"],
+        E: ["E", "F#", "G#", "A#", "B", "C#", "D#"],
+        Fsharp: ["F#", "G#", "A#", "B#", "C#", "D#", "E#"]
       }
     };
   },
@@ -56,7 +56,7 @@ export default {
       let xMode = Math.round(this.position.x / xModes);
       let myPos = this.position.y;
       let ySteps = Math.round(myPos / westernScale);
-      let stepsXY = ySteps + xMode * 3;
+      let stepsXY = ySteps + xMode;
       let index = ySteps % 7;
       let octave = Math.floor(stepsXY / 7) + 2;
 
