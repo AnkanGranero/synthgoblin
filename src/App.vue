@@ -1,73 +1,92 @@
 <template>
   <div id="app">
-    <div class="overlay" @mousedown="clickHandler" @mouseup="clickHandler"></div>
+    <div
+      class="overlay"
+      @mousedown="clickHandler"
+      @mouseup="clickHandler"
+      @mousemove="handleMouseMove"
+    ></div>
   </div>
 </template>
 
 <script>
 import * as Tone from "tone";
+let synth = new Tone.Synth({
+  oscillator: {
+    type: "square",
+    modulationFrequency: 0.2
+  },
+  envelope: {
+    attack: 0.02,
+    decay: 0.1,
+    sustain: 0.2,
+    release: 0.2
+  }
+}).toMaster();
+/* let synth = new Tone.PolySynth(4, Tone.synth).toMaster(); */
 export default {
   name: "App",
   data() {
     return {
-      arrOfNotes: [
-        "C3",
-        "D3",
-        "E3",
-        "F#3",
-        "G3",
-        "A3",
-        "B3",
-        "C4",
-        "D4",
-        "E4",
-        "F#4",
-        "G4",
-        "A4",
-        "B4",
-        "C5",
-        "D5",
-        "E5",
-        "F#5",
-        "G5",
-        "A5",
-        "B5"
-      ]
+      position: { x: "", y: "" },
+      scales: {
+        lydian: ["C", "D", "E", "F#", "G", "A", "B"],
+        mixolydian: ["F", "G", "A", "Bb", "C", "D", "E"],
+        phrygian: ["Bb", "C", "Db", "Eb", "F", "G", "Ab"],
+        minor: ["Eb", "F", "G", "Ab", "Bb", "C", "D"]
+      }
     };
   },
-  computed() {},
+
   methods: {
+    scale(number) {
+      let arr = ["lydian", "mixolydian", "phrygian", "minor"];
+      return arr[number];
+    },
+    handleMouseMove() {
+      this.position.y = event.clientY;
+      this.position.x = event.clientX;
+      this.clickHandler(event);
+    },
     clickHandler() {
-      let total = document.body.scrollHeight;
-      let westernScale = total / 14;
-      let myPos = event.screenY;
-      let steps = Math.round(myPos / westernScale) - 1;
+      let totalY = document.body.scrollHeight;
+      let totalX = document.body.scrollWidth;
+      let westernScale = totalY / 14;
+      let xModes = totalX / 3;
+      let xMode = Math.round(this.position.x / xModes);
+      let myPos = this.position.y;
+      let ySteps = Math.round(myPos / westernScale);
+      let stepsXY = ySteps + xMode * 3;
+      let index = ySteps % 7;
+      let octave = Math.floor(stepsXY / 7) + 2;
+
+      let calcScale = this.scale(xMode);
+      let note = this.scales[calcScale][index] + octave;
+
+      console.log("stepXy", stepsXY);
+      console.log("Octave", octave, note);
+
       //olika skalor på x axeln
 
-      const synth = new Tone.Synth().toMaster();
-      if (event.type === "mousedown") {
-        console.log("mouseDown");
-
-        synth.triggerAttack(this.arrOfNotes[steps], "8n");
-        this.play();
-      } else if (event.type === "mouseup") {
-        console.log("mouseUp");
-
-        synth.triggerRelease();
+      if (event.type === "mousemove") {
+        synth.setNote(note);
       }
 
-      /*       document.querySelector("overlay").addEventListener("mouseup", () => {
-        console.log("hej");
-
+      if (event.type === "mousedown") {
+        synth.triggerAttack(note);
+      } else if (event.type === "mouseup") {
         synth.triggerRelease();
-      }); */
+      }
 
       return this.document;
     },
 
     async play() {
-      await Tone.start();
+      await synth.start();
       console.log("audio is ready");
+    },
+    updatePos(event) {
+      this.position = event.screenY;
     }
   }
 };
