@@ -33,14 +33,18 @@ export default {
         C: ["C", "D", "E", "F#", "G", "A", "B"],
         D: ["D", "E", "F#", "G#", "A", "B", "C"],
         E: ["E", "F#", "G#", "A#", "B", "C#", "D#"],
-        Fsharp: ["F#", "G#", "A#", "B#", "C#", "D#", "E#"]
+        Fsharp: ["F#", "G#", "A#", "B#", "C#", "D#", "E#"],
+        G: ["G", "A", "B", "C#", "D", "E", "F#"],
+        A: ["A", "B", "C#", "D#", "E", "F#", "G#"],
+        B: ["B", "C#", "D#", "E#", "F#", "G#", "A#"],
+        Coctave: ["C", "D", "E", "F#", "G", "A", "B"]
       }
     };
   },
 
   methods: {
     scale(number) {
-      let arr = ["C", "D", "E", "Fsharp"];
+      let arr = ["C", "D", "E", "Fsharp", "G", "A", "B", "Coctave"];
       return arr[number];
     },
     handleMouseMove() {
@@ -52,7 +56,7 @@ export default {
       let totalY = document.body.scrollHeight;
       let totalX = document.body.scrollWidth;
       let westernScale = totalY / 14;
-      let xModes = totalX / 3;
+      let xModes = totalX / 7;
       let xMode = Math.round(this.position.x / xModes);
       let myPos = this.position.y;
       let ySteps = Math.round(myPos / westernScale);
