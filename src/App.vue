@@ -5,12 +5,15 @@
       @mousedown="clickHandler"
       @mouseup="clickHandler"
       @mousemove="handleMouseMove"
-    ></div>
+    >
+      <GridLayout />
+    </div>
   </div>
 </template>
 
 <script>
 import * as Tone from "tone";
+import GridLayout from "./components/GridLayout";
 let synth = new Tone.Synth({
   oscillator: {
     type: "square",
@@ -26,6 +29,9 @@ let synth = new Tone.Synth({
 /* let synth = new Tone.PolySynth(4, Tone.synth).toMaster(); */
 export default {
   name: "App",
+  components: {
+    GridLayout
+  },
   data() {
     return {
       position: { x: "", y: "" },
