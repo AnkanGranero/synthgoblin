@@ -6,7 +6,7 @@
       @mouseup="clickHandler"
       @mousemove="handleMouseMove"
     >
-      <GridLayout />
+      <GridLayout :clicked="calcPos" />
     </div>
   </div>
 </template>
@@ -46,6 +46,17 @@ export default {
         Coctave: ["C", "D", "E", "F#", "G", "A", "B"]
       }
     };
+  },
+  computed: {
+    calcPos() {
+      let totalY = document.body.scrollHeight;
+      let dividedY = totalY / 14;
+      let myYPos = this.position.y;
+      let ySteps = Math.round(myYPos / dividedY);
+      console.log("steps", isNaN(ySteps) ? 1 : ySteps);
+
+      return { y: isNaN(ySteps) ? 1 : ySteps };
+    }
   },
 
   methods: {
