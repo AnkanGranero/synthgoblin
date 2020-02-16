@@ -6,7 +6,7 @@
       @mouseup="clickHandler"
       @mousemove="handleMouseMove"
     >
-      <GridLayout :clicked="calcPos" />
+      <GridLayout :mousePos="calcPos" />
     </div>
   </div>
 </template>
@@ -34,7 +34,7 @@ export default {
   },
   data() {
     return {
-      position: { x: "", y: "" },
+      position: { x: 100, y: 100 },
       scales: {
         C: ["C", "D", "E", "F#", "G", "A", "B"],
         D: ["D", "E", "F#", "G#", "A", "B", "C"],
@@ -49,16 +49,29 @@ export default {
   },
   computed: {
     calcPos() {
-      let totalY = document.body.scrollHeight;
+      var body = document.body,
+        html = document.documentElement;
+
+      var totalY = Math.max(
+        body.scrollHeight,
+        body.offsetHeight,
+        html.clientHeight,
+        html.scrollHeight,
+        html.offsetHeight
+      );
+
       let dividedY = totalY / 14;
       let myYPos = this.position.y;
       let ySteps = Math.round(myYPos / dividedY);
-      console.log("steps", isNaN(ySteps) ? 1 : ySteps);
 
-      return { y: isNaN(ySteps) ? 1 : ySteps };
+      let totalX = body.scrollWidth;
+      let dividedX = totalX / 14;
+      let myXPos = this.position.x;
+      let xSteps = Math.round(myXPos / dividedX);
+
+      return { y: ySteps, x: xSteps };
     }
   },
-
   methods: {
     scale(number) {
       let arr = ["C", "D", "E", "Fsharp", "G", "A", "B", "Coctave"];

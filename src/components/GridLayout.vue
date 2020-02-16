@@ -4,7 +4,7 @@
       <span
         v-for="x in 14"
         :key="x"
-        :style=" { background: 'rgb(' + colorCalc(y) + ',' + colorCalc(x) + ',255)' }"
+        :style=" { background: 'rgb(' + colorCalcY(y) + ',' + colorCalcX(x) + ',255)' }"
       ></span>
     </div>
   </div>
@@ -17,7 +17,7 @@ export default {
     return {};
   },
   props: {
-    clicked: {
+    mousePos: {
       type: Object,
       default: () => {}
     }
@@ -26,14 +26,18 @@ export default {
     createGridClass(n) {
       return `item item-${n}`;
     },
-    colorCalc(n) {
-      let subtract = n - (this.clicked.y - 1);
+    colorCalcY(n) {
+      let subtract = n - (this.mousePos.y - 1);
       let blend = subtract < 0 ? subtract * -1 : subtract;
-      console.log("subtract", subtract, n, blend);
+      return blend * 18;
+    },
+    colorCalcX(n) {
+      let subtract = n - (this.mousePos.x - 1);
+      let blend = subtract < 0 ? subtract * -1 : subtract;
       return blend * 18;
     }
     /*     handleClick(n) {
-      this.clicked = n;
+      this.mousePos = n;
     } */
   }
 };
