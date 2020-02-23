@@ -1,12 +1,7 @@
 <template>
   <div id="app">
-    <div
-      class="overlay"
-      @mousedown="clickHandler"
-      @mouseup="clickHandler"
-      @mousemove="handleMouseMove"
-    >
-      <GridLayout :mousePos="calcPos" />
+    <div class="overlay">
+      <GridLayout @mouseEvent="clickHandler" />
     </div>
   </div>
 </template>
@@ -26,97 +21,69 @@ let synth = new Tone.Synth({
     release: 0.2
   }
 }).toMaster();
-/* let synth = new Tone.PolySynth(4, Tone.synth).toMaster(); */
+
 export default {
   name: "App",
   components: {
     GridLayout
   },
+  mounted() {
+    this.createAllPitchArrs();
+  },
   data() {
     return {
-      position: { x: 100, y: 100 },
-      scales: {
-        C: ["C", "D", "E", "F#", "G", "A", "B"],
-        D: ["D", "E", "F#", "G#", "A", "B", "C"],
-        E: ["E", "F#", "G#", "A#", "B", "C#", "D#"],
-        Fsharp: ["F#", "G#", "A#", "B#", "C#", "D#", "E#"],
-        G: ["G", "A", "B", "C#", "D", "E", "F#"],
-        A: ["A", "B", "C#", "D#", "E", "F#", "G#"],
-        B: ["B", "C#", "D#", "E#", "F#", "G#", "A#"],
-        Coctave: ["C", "D", "E", "F#", "G", "A", "B"]
-      }
+      lydianScale: [1, 2, 2, 2, 1, 2, 2],
+      allScales: []
     };
   },
-  computed: {
-    calcPos() {
-      var body = document.body,
-        html = document.documentElement;
-
-      var totalY = Math.max(
-        body.scrollHeight,
-        body.offsetHeight,
-        html.clientHeight,
-        html.scrollHeight,
-        html.offsetHeight
-      );
-
-      let dividedY = totalY / 14;
-      let myYPos = this.position.y;
-      let ySteps = Math.round(myYPos / dividedY);
-
-      let totalX = body.scrollWidth;
-      let dividedX = totalX / 14;
-      let myXPos = this.position.x;
-      let xSteps = Math.round(myXPos / dividedX);
-
-      return { y: ySteps, x: xSteps };
-    }
-  },
+  computed: {},
   methods: {
-    scale(number) {
-      let arr = ["C", "D", "E", "Fsharp", "G", "A", "B", "Coctave"];
-      return arr[number];
-    },
     handleMouseMove() {
       this.position.y = event.clientY;
       this.position.x = event.clientX;
       this.clickHandler(event);
     },
-    clickHandler() {
-      let totalY = document.body.scrollHeight;
-      let totalX = document.body.scrollWidth;
-      let westernScale = totalY / 14;
-      let xModes = totalX / 7;
-      let xMode = Math.round(this.position.x / xModes);
-      let myPos = this.position.y;
-      let ySteps = Math.round(myPos / westernScale);
-      let stepsXY = ySteps + xMode;
-      let index = ySteps % 7;
-      let octave = Math.floor(stepsXY / 7) + 2;
-
-      let calcScale = this.scale(xMode);
-      let note = this.scales[calcScale][index] + octave;
-
-      console.log("Octave", octave, note);
-
-      //olika skalor på x axeln
-
-      if (event.type === "mousemove") {
-        synth.setNote(note);
+    hertzCalculator(n) {
+      return Math.pow(2, n / 12) * 440;
+    },
+    createPitchArr(startKey) {
+      let arr = [];
+      let pianoKey = startKey;
+      for (let i = 0; i <= 15; i++) {
+        arr.push(this.hertzCalculator(pianoKey));
+        pianoKey += this.lydianScale[i % 7];
       }
+      return arr;
+    },
+    createAllPitchArrs() {
+      let allArrs = [];
+      let startKey = 0;
 
-      if (event.type === "mousedown") {
-        synth.triggerAttack(note);
-      } else if (event.type === "mouseup") {
+      for (let i = 0; i <= 15; i++) {
+        let arr = this.createPitchArr(startKey);
+        allArrs.push(arr);
+        startKey += this.lydianScale[i % 7];
+      }
+      this.allScales = allArrs;
+    },
+
+    clickHandler(payload) {
+      let pianoKey = this.allScales[payload.x][payload.y];
+
+      if (payload.event === "mouseover") {
+        synth.setNote(pianoKey);
+      }
+      if (payload.event === "mousedown") {
+        synth.triggerAttack(pianoKey);
+      } else if (payload.event === "mouseup") {
         synth.triggerRelease();
       }
 
-      return this.document;
+      return;
     },
 
     async play() {
       await synth.start();
-      console.log("audio is ready");
     },
     updatePos(event) {
       this.position = event.screenY;
@@ -130,6 +97,12 @@ export default {
 .overlay {
   height: 100vh;
   width: 100vw;
-  background: red;
+  background: black;
+  z-index: -3;
 }
 </style>
+
+
+
+
+

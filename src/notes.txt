@@ -1,0 +1,28 @@
+    calcPos() {
+      var body = document.body,
+        html = document.documentElement;
+
+      var totalY = Math.max(
+        body.scrollHeight,
+        body.offsetHeight,
+        html.clientHeight,
+        html.scrollHeight,
+        html.offsetHeight
+      );
+
+      let dividedY = totalY / 14;
+      let myYPos = this.position.y;
+      let ySteps = Math.round(myYPos / dividedY);
+
+      let totalX = body.scrollWidth;
+      let dividedX = totalX / 14;
+      let myXPos = this.position.x;
+      let xSteps = Math.round(myXPos / dividedX);
+
+      return { y: ySteps, x: xSteps };
+    } 
+
+   let synth = new Tone.PolySynth(4, Tone.synth).toMaster(); 
+
+
+   kanske göra uppdelningen av antalet underdelade rutor /divar till en variabel som man kan ändra, ju längre man kommer desto större blir uppdelningen
