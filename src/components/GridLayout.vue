@@ -10,6 +10,7 @@
         @mouseover="mouseEventHandler(x, y)"
         @contextmenu.prevent="highlightToggle(x, y)"
         class="button-wrapper"
+        :ref="'r'+ x +y"
       >
         <button class="up"></button>
         <div class="center">
@@ -20,7 +21,7 @@
               v-if="findInArr(x,y) || findInArr(x,y)=== 0"
               alt="arrow"
               :style="whatDirection(x,y)"
-              @click="shootNotes(x,y)"
+              @click="handleClick(x,y)"
             />
           </button>
           <button class="right"></button>
@@ -38,11 +39,15 @@ export default {
   data() {
     return {
       mousePos: { x: 0, y: 0 },
-      highLightedDivs: []
+      highLightedDivs: [],
+      arrowRefs: []
     };
   },
   props: {},
   methods: {
+    refMaker(x, y) {
+      return `${x} ${y}`;
+    },
     colorStyling(x, y) {
       let isHighLighted = this.isHighligthed(x, y);
       if (!isHighLighted) {
@@ -60,6 +65,9 @@ export default {
       );
 
       return findInArr ? this.highLightedDivs.indexOf(findInArr) : null;
+    },
+    refFinder(x, y) {
+      return this.$refs["r" + x + y];
     },
     whatDirection(x, y) {
       let index = this.findInArr(x, y);
@@ -94,15 +102,47 @@ export default {
           break;
       }
     },
-    shootNotes(x, y) {
-      let index = this.findIndex(x, y);
-      let start = this.highLightedDivs[index];
+    handleClick(x, y) {
+      let ref = this.$refs["r" + x + y];
+
+      console.log("event", event);
+
+      this.arrowRefs.push(ref);
+
+      this.isArrowRef(ref);
+
+      this.$refs["r" + x + y][0].classList.add("arrow");
+
+      let coordinates = { x, y };
+
+      this.blinkingDivs(coordinates);
+      this.$emit("shoot", { coordinates });
     },
+    blinkingDivs(coordinates) {
+      let { x, y } = coordinates;
+
+      for (let i = y; i <= 15; i++) {
+        let ref = this.$refs["r" + x + i];
+        console.log("ref", this.$refs["r" + i + y]);
+
+        ref[0].style.background = "green";
+      }
+    },
+
     isHighligthed(x, y) {
       let answer = this.highLightedDivs.find(
         item => item.x === x && item.y === y
       );
       return answer ? true : false;
+    },
+    isArrowRef(ref) {
+      console.log("ref", ref);
+      console.log(
+        "isref?",
+        this.arrowRefs.find(arrowRef => arrowRef === ref)
+      );
+
+      return this.arrowRefs.find(arrowRef => arrowRef === ref);
     },
     mouseEventHandler(x, y) {
       this.$emit("mouseEvent", { x, y, event: event.type });
@@ -171,6 +211,9 @@ $square: 6.666666666666667%;
       height: 2rem;
     }
   }
+}
+.arrow {
+  background: black;
 }
 .highlight {
 }

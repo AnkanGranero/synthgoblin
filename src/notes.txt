@@ -1,3 +1,8 @@
+    fixa så pilen blir senaste tryckta direction, första gången man trycker kanske den får ett index eller nåt eller hur ska jag göra så den inte triggas första trycket?
+    
+    om den möter en pin åt motsatt riktning så stannar den, eller förresten så borde första läget vara ett neutralt stopläge, det skulle 
+    hindra att den skjuter direkt. 
+    
     calcPos() {
       var body = document.body,
         html = document.documentElement;

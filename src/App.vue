@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="overlay">
-      <GridLayout @mouseEvent="clickHandler" />
+      <GridLayout @mouseEvent="clickHandler" @shoot="handleShoot" />
     </div>
   </div>
 </template>
@@ -33,11 +33,49 @@ export default {
   data() {
     return {
       lydianScale: [1, 2, 2, 2, 1, 2, 2],
-      allScales: []
+      allScales: [],
+      index: 0
     };
   },
   computed: {},
   methods: {
+    repeat() {
+      let { index, allScales } = this;
+      console.log(this);
+
+      let steps = index % 8;
+      let note = allScales[steps][steps];
+      console.log(note);
+
+      synth.triggerAttackRelease(note, "8n");
+      this.index += 1;
+    },
+    handleShoot(payload) {
+      console.log("payload", payload);
+
+      /* 
+      Tone.Transport.scheduleRepeat(this.repeat, "8n");
+       Tone.Transport.start(); */
+
+      let loop = new Tone.Sequence(
+        function(time) {
+          console.log("körs");
+
+          synth.start(time, 0, "32n", 0, 0.5);
+        },
+        [0, 1, 2, 3],
+        "8n"
+      ).start(6);
+
+      loop.start();
+
+      /* let seq = new Tone.Sequence(this.loop, ["E3", "B3"], "4n"); */
+    },
+
+    whatRef(coordinates) {
+      console.log("coordinates", coordinates);
+    },
+
     handleMouseMove() {
       this.position.y = event.clientY;
       this.position.x = event.clientX;
