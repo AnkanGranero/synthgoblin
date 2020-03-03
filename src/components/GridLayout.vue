@@ -34,19 +34,64 @@
 
 
 <script>
+import * as Tone from "tone";
+
+let synth = new Tone.Synth({
+  oscillator: {
+    type: "square",
+    modulationFrequency: 0.2
+  },
+  envelope: {
+    attack: 0.02,
+    decay: 0.1,
+    sustain: 0.2,
+    release: 0.2
+  }
+}).toMaster();
+
 export default {
   name: "GridLayout",
   data() {
     return {
       mousePos: { x: 0, y: 0 },
       highLightedDivs: [],
-      arrowRefs: []
+      arrowRefs: [],
+      index: 0,
+      selectedRef: {},
+      lydianScale: [1, 2, 2, 2, 1, 2, 2],
+      allScales: [],
+      direction: ""
     };
   },
-  props: {},
+  mounted() {
+    this.createAllPitchArrs();
+  },
   methods: {
+    createAllPitchArrs() {
+      let allArrs = [];
+      let startKey = 0;
+
+      for (let i = 0; i <= 15; i++) {
+        let arr = this.createPitchArr(startKey);
+        allArrs.push(arr);
+        startKey += this.lydianScale[i % 7];
+      }
+      this.allScales = allArrs;
+    },
+    createPitchArr(startKey) {
+      let arr = [];
+      let pianoKey = startKey;
+      for (let i = 0; i <= 15; i++) {
+        arr.push(this.hertzCalculator(pianoKey));
+        pianoKey += this.lydianScale[i % 7];
+      }
+      return arr;
+    },
+    hertzCalculator(n) {
+      return Math.pow(2, n / 12) * 440;
+    },
     refMaker(x, y) {
-      return `${x} ${y}`;
+      return `r${x}${y}`;
     },
     colorStyling(x, y) {
       let isHighLighted = this.isHighligthed(x, y);
@@ -66,6 +111,34 @@ export default {
 
       return findInArr ? this.highLightedDivs.indexOf(findInArr) : null;
     },
+    findArrowRef(ref) {
+      return this.arrowRefs.find(arrowRef => arrowRef.name === ref);
+    },
+    loop() {
+      Tone.Transport.scheduleRepeat(this.repeat, "8n");
+      Tone.Transport.start();
+    },
+    repeat(time) {
+      let { selectedRef, index } = this;
+      let { x, y } = selectedRef;
+      let refName = this.refMaker(x, y + index);
+      let ref = this.$refs[refName];
+
+      if (this.isArrowRef(refName)) {
+        let arrowRef = this.findArrowRef(ref);
+        let direction = arrowRef.direction;
+        console.log("arrowRef", arrowRef, direction);
+      }
+      //behövs refFinder?
+      let note = this.allScales[x][y + index];
+      let input = this.refFinder(x + index, y);
+      console.log(input);
+
+      synth.triggerAttackRelease(note, "8n", time);
+      console.log("hje", note);
+
+      this.index++;
+    },
     refFinder(x, y) {
       return this.$refs["r" + x + y];
     },
@@ -76,7 +149,15 @@ export default {
       return [{ transform: `rotate(${arr.position})` }];
     },
     highlightToggle(x, y) {
-      let target = event.toElement.classList.value;
+      let refName = this.refMaker(x, y);
+      let newDirection = event.toElement.classList.value;
+      if (this.isArrowRef(refName)) {
+        let foundRef = this.arrowRefs.find(arrow => arrow.name === refName);
+        foundRef.direction = newDirection;
+      } else {
+        this.arrowRefs.push({ x, y, name: refName, direction: newDirection });
+      }
+
       const { highLightedDivs } = this;
       let index = this.findInArr(x, y);
       if (!index && index != 0) {
@@ -84,7 +165,7 @@ export default {
         return;
       }
 
-      switch (target) {
+      switch (newDirection) {
         case "center":
           highLightedDivs.splice(index, 1);
           break;
@@ -103,20 +184,21 @@ export default {
       }
     },
     handleClick(x, y) {
-      let ref = this.$refs["r" + x + y];
+      let refName = this.refMaker(x, y);
 
-      console.log("event", event);
+      let ref = this.$refs[refName];
 
-      this.arrowRefs.push(ref);
+      this.selectedRef = { x, y };
 
-      this.isArrowRef(ref);
+      this.isArrowRef(refName);
 
-      this.$refs["r" + x + y][0].classList.add("arrow");
+      ref[0].classList.add("arrow");
 
       let coordinates = { x, y };
 
       this.blinkingDivs(coordinates);
       this.$emit("shoot", { coordinates });
+      this.loop();
     },
     blinkingDivs(coordinates) {
       let { x, y } = coordinates;
@@ -135,14 +217,11 @@ export default {
       );
       return answer ? true : false;
     },
-    isArrowRef(ref) {
-      console.log("ref", ref);
-      console.log(
-        "isref?",
-        this.arrowRefs.find(arrowRef => arrowRef === ref)
-      );
+    isArrowRef(name) {
+      console.log("ref", name);
 
-      return this.arrowRefs.find(arrowRef => arrowRef === ref);
+      let arrowRef = this.arrowRefs.find(arrowRef => arrowRef.name === name);
+      return arrowRef ? true : false;
     },
     mouseEventHandler(x, y) {
       this.$emit("mouseEvent", { x, y, event: event.type });

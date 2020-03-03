@@ -57,7 +57,7 @@ export default {
       Tone.Transport.scheduleRepeat(this.repeat, "8n");
        Tone.Transport.start(); */
 
-      let loop = new Tone.Sequence(
+      /*       let loop = new Tone.Sequence(
         function(time) {
           console.log("körs");
 
@@ -67,9 +67,7 @@ export default {
         "8n"
       ).start(6);
 
-      loop.start();
-
-      /* let seq = new Tone.Sequence(this.loop, ["E3", "B3"], "4n"); */
+      loop.start(); */
     },
 
     whatRef(coordinates) {
