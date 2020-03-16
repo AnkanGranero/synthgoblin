@@ -18,7 +18,7 @@
           <button class="center">
             <img
               src="../assets/arrow.png"
-              v-if="findInArr(x,y) || findInArr(x,y)=== 0"
+              v-if="findArrowRef(x,y) || findArrowRef(x,y)=== 0"
               alt="arrow"
               :style="whatDirection(x,y)"
               @click="handleClick(x,y)"
@@ -57,7 +57,7 @@ export default {
       highLightedDivs: [],
       arrowRefs: [],
       index: 0,
-      selectedRef: {},
+      playingArrow: {},
       lydianScale: [1, 2, 2, 2, 1, 2, 2],
       allScales: [],
       direction: ""
@@ -90,7 +90,7 @@ export default {
     hertzCalculator(n) {
       return Math.pow(2, n / 12) * 440;
     },
-    refMaker(x, y) {
+    getRefFromCoordinates(x, y) {
       return `r${x}${y}`;
     },
     colorStyling(x, y) {
@@ -111,116 +111,119 @@ export default {
 
       return findInArr ? this.highLightedDivs.indexOf(findInArr) : null;
     },
-    findArrowRef(ref) {
-      return this.arrowRefs.find(arrowRef => arrowRef.name === ref);
+    findArrowRef(x, y) {
+      let refName = this.getRefFromCoordinates(x, y);
+      return this.arrowRefs.find(arrowRef => arrowRef.name === refName);
     },
     loop() {
       Tone.Transport.scheduleRepeat(this.repeat, "8n");
       Tone.Transport.start();
     },
-    repeat(time) {
-      let { selectedRef, index } = this;
-      let { x, y } = selectedRef;
-      let refName = this.refMaker(x, y + index);
-      let ref = this.$refs[refName];
-
-      if (this.isArrowRef(refName)) {
-        let arrowRef = this.findArrowRef(ref);
-        let direction = arrowRef.direction;
-        console.log("arrowRef", arrowRef, direction);
+    nextCoordinateBasedOnDirection(x, y, direction, index) {
+      switch (direction) {
+        case "down":
+          y += index;
+          break;
+        case "right":
+          x += index;
+          break;
+        case "left":
+          x -= index;
+          break;
+        case "up":
+          y -= index;
+          break;
       }
-      //behövs refFinder?
-      let note = this.allScales[x][y + index];
-      let input = this.refFinder(x + index, y);
-      console.log(input);
+
+      return { x, y };
+    },
+
+    repeat(time) {
+      let { playingArrow, index } = this;
+
+      let { x, y } = playingArrow;
+      let direction = playingArrow.direction;
+      let nextCoordinates = this.nextCoordinateBasedOnDirection(
+        x,
+        y,
+        direction,
+        index
+      );
+
+      x = nextCoordinates.x;
+      y = nextCoordinates.y;
+
+      let refName = this.getRefFromCoordinates(x, y);
+      let ref = this.$refs[refName];
+      ref[0].classList.add("highlight");
+
+      if (this.isArrowRef(x, y)) {
+        this.playingArrow = this.findArrowRef(x, y);
+
+        this.index = 0;
+      }
+
+      let note = this.allScales[x][y];
 
       synth.triggerAttackRelease(note, "8n", time);
-      console.log("hje", note);
-
       this.index++;
     },
     refFinder(x, y) {
       return this.$refs["r" + x + y];
     },
     whatDirection(x, y) {
-      let index = this.findInArr(x, y);
-      let arr = this.highLightedDivs[index];
-
-      return [{ transform: `rotate(${arr.position})` }];
-    },
-    highlightToggle(x, y) {
-      let refName = this.refMaker(x, y);
-      let newDirection = event.toElement.classList.value;
-      if (this.isArrowRef(refName)) {
-        let foundRef = this.arrowRefs.find(arrow => arrow.name === refName);
-        foundRef.direction = newDirection;
-      } else {
-        this.arrowRefs.push({ x, y, name: refName, direction: newDirection });
-      }
-
-      const { highLightedDivs } = this;
-      let index = this.findInArr(x, y);
-      if (!index && index != 0) {
-        highLightedDivs.push({ x, y, direction: "center" });
-        return;
-      }
-
-      switch (newDirection) {
-        case "center":
-          highLightedDivs.splice(index, 1);
-          break;
+      /*  let index = this.findInArr(x, y);
+      let arr = this.highLightedDivs[index]; */
+      let { direction } = this.findArrowRef(x, y);
+      let degrees;
+      switch (direction) {
         case "left":
-          highLightedDivs[index].position = "180deg";
+          degrees = "180deg";
           break;
         case "right":
-          highLightedDivs[index].position = "0deg";
+          degrees = "0deg";
           break;
         case "up":
-          highLightedDivs[index].position = "-90deg";
+          degrees = "-90deg";
           break;
         case "down":
-          highLightedDivs[index].position = "90deg";
+          degrees = "90deg";
           break;
       }
+      return [{ transform: `rotate(${degrees})` }];
     },
-    handleClick(x, y) {
-      let refName = this.refMaker(x, y);
-
+    highlightToggle(x, y) {
+      let refName = this.getRefFromCoordinates(x, y);
+      let direction = event.toElement.classList.value;
+      if (direction == "button-wrapper") {
+        console.log("button-wrapper");
+        direction = "down";
+      }
       let ref = this.$refs[refName];
-
-      this.selectedRef = { x, y };
-
-      this.isArrowRef(refName);
 
       ref[0].classList.add("arrow");
 
-      let coordinates = { x, y };
-
-      this.blinkingDivs(coordinates);
-      this.$emit("shoot", { coordinates });
-      this.loop();
-    },
-    blinkingDivs(coordinates) {
-      let { x, y } = coordinates;
-
-      for (let i = y; i <= 15; i++) {
-        let ref = this.$refs["r" + x + i];
-        console.log("ref", this.$refs["r" + i + y]);
-
-        ref[0].style.background = "green";
+      if (this.isArrowRef(x, y)) {
+        let foundRef = this.arrowRefs.find(arrow => arrow.name === refName);
+        foundRef.direction = direction;
+      } else {
+        this.arrowRefs.push({ x, y, name: refName, direction: direction });
       }
     },
 
+    handleClick(x, y) {
+      this.playingArrow = this.findArrowRef(x, y);
+      this.loop();
+    },
     isHighligthed(x, y) {
       let answer = this.highLightedDivs.find(
         item => item.x === x && item.y === y
       );
       return answer ? true : false;
     },
-    isArrowRef(name) {
-      console.log("ref", name);
-
-      let arrowRef = this.arrowRefs.find(arrowRef => arrowRef.name === name);
+    isArrowRef(x, y) {
+      let refname = this.getRefFromCoordinates(x, y);
+      let arrowRef = this.arrowRefs.find(arrowRef => arrowRef.name === refname);
       return arrowRef ? true : false;
     },
     mouseEventHandler(x, y) {
@@ -264,13 +267,16 @@ $square: 6.666666666666667%;
   flex-direction: column;
   width: 100%;
   justify-content: space-between;
-
+  align-items: center;
+  box-sizing: border-box;
+  z-index: 0;
   button {
     outline: none;
     background: none;
     height: 100%;
     width: 100%;
     border: none;
+    z-index: 2;
     img {
       height: 20px;
     }
@@ -292,8 +298,9 @@ $square: 6.666666666666667%;
   }
 }
 .arrow {
-  background: black;
+  border: 5px solid white;
 }
 .highlight {
+  border: 5px solid green;
 }
 </style>
