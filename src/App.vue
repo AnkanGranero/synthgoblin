@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <div class="overlay">
-      <GridLayout @mouseEvent="clickHandler" @shoot="handleShoot" />
-    </div>
+    <GridLayout @mouseEvent="clickHandler" @shoot="handleShoot" />
   </div>
 </template>
 
@@ -132,9 +130,30 @@ export default {
 
 .overlay {
   height: 100vh;
-  width: 100vw;
-  background: black;
   z-index: -3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5%;
+  position: relative;
+}
+#app {
+  height: 100vh;
+  z-index: -3;
+
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  padding: 5%;
+}
+
+body {
+  margin: 0;
+  min-width: fit-content;
+  min-height: fit-content;
+  background: black;
+  margin: 0;
 }
 </style>
 

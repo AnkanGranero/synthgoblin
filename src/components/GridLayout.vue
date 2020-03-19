@@ -57,7 +57,7 @@ export default {
       highLightedDivs: [],
       arrowRefs: [],
       index: 0,
-      playingArrow: {},
+      playingDiv: {},
       lydianScale: [1, 2, 2, 2, 1, 2, 2],
       allScales: [],
       direction: ""
@@ -119,61 +119,54 @@ export default {
       Tone.Transport.scheduleRepeat(this.repeat, "8n");
       Tone.Transport.start();
     },
-    nextCoordinateBasedOnDirection(x, y, direction, index) {
+    nextCoordinateBasedOnDirection(x, y, direction) {
       switch (direction) {
         case "down":
-          y += index;
+          y += 1;
           break;
         case "right":
-          x += index;
+          x += 1;
           break;
         case "left":
-          x -= index;
+          x -= 1;
           break;
         case "up":
-          y -= index;
+          y -= 1;
           break;
       }
 
-      return { x, y };
+      this.playingDiv = { x, y, direction };
     },
 
     repeat(time) {
-      let { playingArrow, index } = this;
+      let { playingDiv } = this;
 
-      let { x, y } = playingArrow;
-      let direction = playingArrow.direction;
-      let nextCoordinates = this.nextCoordinateBasedOnDirection(
-        x,
-        y,
-        direction,
-        index
-      );
-
-      x = nextCoordinates.x;
-      y = nextCoordinates.y;
+      let { x, y } = playingDiv;
+      let direction = playingDiv.direction;
 
       let refName = this.getRefFromCoordinates(x, y);
       let ref = this.$refs[refName];
-      ref[0].classList.add("highlight");
+      ref[0].classList.remove("highlight");
 
       if (this.isArrowRef(x, y)) {
-        this.playingArrow = this.findArrowRef(x, y);
-
-        this.index = 0;
+        direction = this.findArrowRef(x, y).direction;
       }
 
       let note = this.allScales[x][y];
 
       synth.triggerAttackRelease(note, "8n", time);
-      this.index++;
+
+      this.nextCoordinateBasedOnDirection(x, y, direction);
+      x = this.playingDiv.x;
+      y = this.playingDiv.y;
+      let nextPlayingDivRef = this.getRefFromCoordinates(x, y);
+      let nextPlayingDiv = this.$refs[nextPlayingDivRef];
+      nextPlayingDiv[0].classList.add("highlight");
     },
     refFinder(x, y) {
       return this.$refs["r" + x + y];
     },
     whatDirection(x, y) {
-      /*  let index = this.findInArr(x, y);
-      let arr = this.highLightedDivs[index]; */
       let { direction } = this.findArrowRef(x, y);
       let degrees;
       switch (direction) {
@@ -212,7 +205,7 @@ export default {
     },
 
     handleClick(x, y) {
-      this.playingArrow = this.findArrowRef(x, y);
+      this.playingDiv = this.findArrowRef(x, y);
       this.loop();
     },
     isHighligthed(x, y) {
@@ -250,8 +243,8 @@ export default {
 $square: 6.666666666666667%;
 
 .pageWrapper {
-  height: 100vh;
-  width: 100vw;
+  height: 80vh;
+  /*   width: 50%; */
   display: grid;
   grid-template-rows: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
 }
@@ -265,7 +258,7 @@ $square: 6.666666666666667%;
   display: flex;
   position: relative;
   flex-direction: column;
-  width: 100%;
+  width: auto;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
@@ -273,8 +266,6 @@ $square: 6.666666666666667%;
   button {
     outline: none;
     background: none;
-    height: 100%;
-    width: 100%;
     border: none;
     z-index: 2;
     img {
@@ -283,14 +274,13 @@ $square: 6.666666666666667%;
   }
   .up,
   .down {
-    width: 80%;
+    width: 100%;
     align-self: center;
   }
 
   .center {
     display: flex;
     justify-content: space-between;
-    height: 100%;
 
     img:hover {
       height: 2rem;
