@@ -1,32 +1,17 @@
+//jag har en array med den spelande koordinaterna, som när den ersätts 
+först tar bort styling till den första sen lägger till till den nya
 <template>
   <div class="pageWrapper">
     <div v-for="y in 15" :key="y" :class="createGridClass(y)">
       <div
         v-for="x in 15"
         :key="x"
-        :style="colorStyling(x,y)"
-        @mousedown="mouseEventHandler(x, y)"
-        @mouseup="mouseEventHandler(x, y)"
         @mouseover="mouseEventHandler(x, y)"
-        @contextmenu.prevent="highlightToggle(x, y)"
+        :style="colorStyling(x,y)"
         class="button-wrapper"
-        :ref="'r'+ x +y"
+        :ref="'r'+x+y"
       >
-        <button class="up"></button>
-        <div class="center">
-          <button class="left"></button>
-          <button class="center">
-            <img
-              src="../assets/arrow.png"
-              v-if="findArrowRef(x,y) || findArrowRef(x,y)=== 0"
-              alt="arrow"
-              :style="whatDirection(x,y)"
-              @click="handleClick(x,y)"
-            />
-          </button>
-          <button class="right"></button>
-        </div>
-        <button class="down"></button>
+        <square @clicked="handleClick" :refForSquare="refForSquare(x,y)"></square>
       </div>
     </div>
   </div>
@@ -34,6 +19,7 @@
 
 
 <script>
+import square from "./Square";
 import * as Tone from "tone";
 
 let synth = new Tone.Synth({
@@ -51,13 +37,16 @@ let synth = new Tone.Synth({
 
 export default {
   name: "GridLayout",
+  components: {
+    square
+  },
   data() {
     return {
-      mousePos: { x: 0, y: 0 },
-      highLightedDivs: [],
+      mousePos: { x: 3, y: 19 },
+      arrowRef: [],
       arrowRefs: [],
       index: 0,
-      playingDiv: {},
+      playingDiv: { x: 10, y: 10 },
       lydianScale: [1, 2, 2, 2, 1, 2, 2],
       allScales: [],
       direction: ""
@@ -67,6 +56,14 @@ export default {
     this.createAllPitchArrs();
   },
   methods: {
+    refForSquare(x, y) {
+      const refName = `r${x}${y}`;
+      return {
+        x,
+        y,
+        refName
+      };
+    },
     createAllPitchArrs() {
       let allArrs = [];
       let startKey = 0;
@@ -93,23 +90,23 @@ export default {
     getRefFromCoordinates(x, y) {
       return `r${x}${y}`;
     },
+
     colorStyling(x, y) {
-      let isHighLighted = this.isHighligthed(x, y);
-      if (!isHighLighted) {
-        return {
-          background:
-            "rgb(" + this.colorCalcY(y) + "," + this.colorCalcX(x) + ",250)"
-        };
-      } else {
-        return { background: "black" };
-      }
+      return {
+        background: this.colorCalcDifference(x, y),
+        border: `1px solid ${this.colorCalcDifference(y, x)}`,
+        "box-shadow": `-10px -10px 8px ${this.colorCalcDifference(y, x)} `
+      };
+
+      /* {
+        background:
+          "rgb(" + this.colorCalcY(y) + "," + this.colorCalcX(x) + ",250)"
+      }; */
     },
     findInArr(x, y) {
-      let findInArr = this.highLightedDivs.find(
-        item => item.x === x && item.y === y
-      );
+      let findInArr = this.arrowRef.find(item => item.x === x && item.y === y);
 
-      return findInArr ? this.highLightedDivs.indexOf(findInArr) : null;
+      return findInArr ? this.arrowRefs.indexOf(findInArr) : null;
     },
     findArrowRef(x, y) {
       let refName = this.getRefFromCoordinates(x, y);
@@ -135,16 +132,14 @@ export default {
           break;
       }
 
-      this.playingDiv = { x, y, direction };
+      return { x, y, direction };
     },
 
     repeat(time) {
       let { playingDiv } = this;
 
-      let { x, y } = playingDiv;
-      let direction = playingDiv.direction;
+      let { x, y, refName, direction } = playingDiv;
 
-      let refName = this.getRefFromCoordinates(x, y);
       let ref = this.$refs[refName];
       ref[0].classList.remove("highlight");
 
@@ -156,62 +151,43 @@ export default {
 
       synth.triggerAttackRelease(note, "8n", time);
 
-      this.nextCoordinateBasedOnDirection(x, y, direction);
-      x = this.playingDiv.x;
-      y = this.playingDiv.y;
-      let nextPlayingDivRef = this.getRefFromCoordinates(x, y);
+      let nextCoordinates = this.nextCoordinateBasedOnDirection(
+        x,
+        y,
+        direction
+      );
+
+      let nextPlayingDivRef = this.getRefFromCoordinates(
+        nextCoordinates.x,
+        nextCoordinates.y
+      );
+      this.playingDiv = { ...nextCoordinates, refName: nextPlayingDivRef };
       let nextPlayingDiv = this.$refs[nextPlayingDivRef];
+
       nextPlayingDiv[0].classList.add("highlight");
     },
     refFinder(x, y) {
       return this.$refs["r" + x + y];
     },
-    whatDirection(x, y) {
-      let { direction } = this.findArrowRef(x, y);
-      let degrees;
-      switch (direction) {
-        case "left":
-          degrees = "180deg";
-          break;
-        case "right":
-          degrees = "0deg";
-          break;
-        case "up":
-          degrees = "-90deg";
-          break;
-        case "down":
-          degrees = "90deg";
-          break;
-      }
-      return [{ transform: `rotate(${degrees})` }];
-    },
-    highlightToggle(x, y) {
-      let refName = this.getRefFromCoordinates(x, y);
-      let direction = event.toElement.classList.value;
-      if (direction == "button-wrapper") {
-        console.log("button-wrapper");
-        direction = "down";
-      }
-      let ref = this.$refs[refName];
 
-      ref[0].classList.add("arrow");
+    addArrowRef(payload) {
+      console.log("payload", payload);
 
-      if (this.isArrowRef(x, y)) {
-        let foundRef = this.arrowRefs.find(arrow => arrow.name === refName);
-        foundRef.direction = direction;
-      } else {
-        this.arrowRefs.push({ x, y, name: refName, direction: direction });
-      }
+      let { x, y, direction, refName } = payload;
+
+      this.arrowRefs.push({ x, y, name: refName, direction: direction });
     },
 
-    handleClick(x, y) {
-      this.playingDiv = this.findArrowRef(x, y);
-      this.loop();
+    handleClick(payload) {
+      this.addArrowRef(payload);
+      if (payload.status == "play") {
+        this.playingDiv = payload;
+
+        this.loop();
+      }
     },
-    isHighligthed(x, y) {
-      let answer = this.highLightedDivs.find(
-        item => item.x === x && item.y === y
-      );
+    isArrow(x, y) {
+      let answer = this.arrowRefs.find(item => item.x === x && item.y === y);
       return answer ? true : false;
     },
     isArrowRef(x, y) {
@@ -220,7 +196,7 @@ export default {
       return arrowRef ? true : false;
     },
     mouseEventHandler(x, y) {
-      this.$emit("mouseEvent", { x, y, event: event.type });
+      this.colorCalcXY(x, y);
       this.mousePos = { x, y };
     },
     createGridClass(n) {
@@ -235,6 +211,38 @@ export default {
       let subtract = n - (this.mousePos.x - 1);
       let blend = subtract < 0 ? subtract * -1 : subtract;
       return blend * 18;
+    },
+    colorCalcXY(x, y) {
+      let numbers = [x, y];
+      console.log("numbers först", x, y);
+
+      numbers.sort((a, b) => a - b);
+      let highest = numbers[0];
+      let lowest = numbers[1];
+      let add = highest + this.mousePos[highest];
+      let subtract = lowest - (this.mousePos[lowest] - 1);
+
+      numbers[highest] = add;
+      numbers[lowest] = subtract;
+
+      console.log("numbers igen", x, y);
+    },
+    colorCalcDifference(x, y) {
+      let xArr = [x, this.playingDiv.x];
+      let yArr = [y, this.playingDiv.y];
+      xArr.sort((a, b) => b - a);
+      yArr.sort((a, b) => b - a);
+      let subtractorX = xArr[0] - xArr[1];
+      console.log("xarr", xArr[0], xArr[1]);
+
+      let growedSubtractorX = subtractorX * 18;
+      let subtractorY = yArr[0] - yArr[1];
+      let growedSubtractorY = subtractorY * 18;
+      console.log("subtractor", growedSubtractorY, growedSubtractorX);
+
+      let red = 200 - growedSubtractorX;
+      let green = 200 - growedSubtractorY;
+      return "rgb(" + green + "," + red + ",250)";
     }
   }
 };
@@ -248,48 +256,14 @@ $square: 6.666666666666667%;
   display: grid;
   grid-template-rows: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
 }
+.button-wrapper {
+}
 
 .row {
   display: grid;
   grid-template-columns: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
 }
 
-.button-wrapper {
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  width: auto;
-  justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-  z-index: 0;
-  button {
-    outline: none;
-    background: none;
-    border: none;
-    z-index: 2;
-    img {
-      height: 20px;
-    }
-  }
-  .up,
-  .down {
-    width: 100%;
-    align-self: center;
-  }
-
-  .center {
-    display: flex;
-    justify-content: space-between;
-
-    img:hover {
-      height: 2rem;
-    }
-  }
-}
-.arrow {
-  border: 5px solid white;
-}
 .highlight {
   border: 5px solid green;
 }
