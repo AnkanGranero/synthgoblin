@@ -58,7 +58,6 @@ export default {
       arrowRef: [],
       arrowRefs: [],
       playingDiv: { x: 10, y: 10 },
-      allScales: [],
       direction: "",
       modalOpen: {}
     };
@@ -72,14 +71,12 @@ export default {
       type: String,
       default: "playingDiv"
     },
-    scale: {
+    allScales: {
       type: Array,
-      default: () => [1, 2, 2, 2, 1, 2, 2]
+      default: () => []
     }
   },
-  mounted() {
-    this.createAllPitchArrs();
-  },
+
   methods: {
     refForSquare(x, y) {
       const refName = `r${x}${y}`;
@@ -89,29 +86,7 @@ export default {
         refName
       };
     },
-    createAllPitchArrs() {
-      let allArrs = [];
-      let startKey = 0;
 
-      for (let i = 0; i <= 15; i++) {
-        let arr = this.createPitchArr(startKey);
-        allArrs.push(arr);
-        startKey += this.scale[i % 7];
-      }
-      this.allScales = allArrs;
-    },
-    createPitchArr(startKey) {
-      let arr = [];
-      let pianoKey = startKey;
-      for (let i = 0; i <= 15; i++) {
-        arr.push(this.hertzCalculator(pianoKey));
-        pianoKey += this.scale[i % 7];
-      }
-      return arr;
-    },
-    hertzCalculator(n) {
-      return Math.pow(2, n / 12) * 220;
-    },
     getRefFromCoordinates(x, y) {
       return `r${x}${y}`;
     },

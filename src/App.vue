@@ -6,7 +6,7 @@
       <input type="text" class="header__text" v-model="intervals" />
       <button class="header__button" @mousemove="createScale">create pitches</button>
     </div>
-    <GridLayout :styling="styling" :scale="scale" />
+    <GridLayout :styling="styling" :allScales="allScales" />
   </div>
 </template>
 
@@ -22,8 +22,12 @@ export default {
     return {
       styling: "classic",
       scale: [1, 2, 2, 2, 1, 2, 2],
-      intervals: ""
+      intervals: "",
+      allScales: []
     };
+  },
+  mounted() {
+    this.createAllPitchArrs();
   },
   methods: {
     changeStyle(styling) {
@@ -31,6 +35,30 @@ export default {
     },
     createScale() {
       this.scale = this.intervals.split("");
+      this.createAllPitchArrs();
+    },
+    createAllPitchArrs() {
+      let allArrs = [];
+      let startKey = 0;
+
+      for (let i = 0; i <= 15; i++) {
+        let arr = this.createPitchArr(startKey);
+        allArrs.push(arr);
+        startKey += this.scale[i % 7];
+      }
+      this.allScales = allArrs;
+    },
+    createPitchArr(startKey) {
+      let arr = [];
+      let pianoKey = startKey;
+      for (let i = 0; i <= 15; i++) {
+        arr.push(this.hertzCalculator(pianoKey));
+        pianoKey += this.scale[i % 7];
+      }
+      return arr;
+    },
+    hertzCalculator(n) {
+      return Math.pow(2, n / 12) * 220;
     }
   }
 };
