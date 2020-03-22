@@ -1,24 +1,15 @@
 <template>
-  <div class="square">
-    <button class="up" @click="handleClick"></button>
-    <div class="middle">
-      <button class="left" @click="handleClick"></button>
-      <div class="center" @click="handleClick" :class="whatDirection"></div>
-      <button class="right" @click="handleClick"></button>
+  <div class="square" @mousedown="handleClick">
+    <modal v-if="modalOpen" @directionSet="setDirection" @closeModal="closeModal" />
+
+    <div v-if="direction" class="square__arrow-wrapper" @click="play">
+      <div :class="whatDirection"></div>
     </div>
-    <button class="down" @click="handleClick"></button>
-    <!--     <img
-      src="../assets/arrow.png"
-      v-if="isClicked"
-      class="image"
-      :style="whatDirection"
-      alt="arrow"
-      @click="play"
-    />-->
   </div>
 </template>
 
 <script>
+import Modal from "./Modal";
 export default {
   name: "Square",
 
@@ -26,42 +17,65 @@ export default {
     refForSquare: {
       default: () => {},
       type: Object
+    },
+    modalOpen: {
+      default: false,
+      type: Boolean
     }
+  },
+  components: {
+    Modal
   },
   data() {
     return {
       isClicked: false,
-      arrowDirection: ""
+      direction: ""
     };
   },
   methods: {
     handleClick() {
-      let direction = event.toElement.classList.value;
-
-      this.isClicked = true;
-
-      const { x, y, refName } = this.refForSquare;
-      console.log("thisarrow", this.arrowDirection, direction);
-
-      if (direction == this.arrowDirection) {
-        this.play();
+      if (!this.direction) {
+        this.openModal();
+        return;
       }
-      this.arrowDirection = direction;
+      this.closeModal();
+      this.emitArrowRef("hold");
+    },
+    openModal() {
+      if (this.modalOpen) {
+        this.closeModal();
+        return;
+      }
+      const { x, y } = this.refForSquare;
 
-      this.$emit("clicked", { x, y, refName, direction, status: "hold" });
+      this.$emit("openingModal", { x, y });
+    },
+
+    emitArrowRef(arg) {
+      let { x, y, refName } = this.refForSquare;
+      let { direction } = this;
+      this.$emit("click", { x, y, refName, direction, status: arg });
+    },
+    setDirection(payload) {
+      console.log("direction set ", payload);
+
+      this.direction = payload;
+    },
+    closeModal() {
+      this.$emit("closeModal");
     },
     play() {
-      const direction = this.arrowDirection;
-      const { x, y, refName } = this.refForSquare;
-      this.$emit("clicked", { x, y, refName, direction, status: "play" });
+      if (!this.$store.state.isPlaying) {
+        this.emitArrowRef("play");
+      }
     }
   },
   computed: {
     whatDirection() {
-      if (!this.isClicked) {
+      /*    if (!this.isClicked) {
         return;
-      }
-      let direction = this.arrowDirection;
+      } */
+      let { direction } = this;
 
       let cssClass;
       switch (direction) {
@@ -112,22 +126,14 @@ export default {
 .square {
   height: 100%;
   width: 100%;
-  display: flex;
-  position: relative;
+  /*   display: flex; */
+  justify-content: center;
+  /* position: relative; */
   flex-direction: column;
   width: auto;
-  justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
   z-index: 0;
-
-  button {
-    outline: none;
-    background: none;
-    border: none;
-    z-index: 2;
-    width: 100%;
-  }
 
   .up,
   .down {
@@ -150,41 +156,40 @@ export default {
     }
 
     //jag kan ju göra någon funktion som skapar denna styling efter riktning, men får bli senare
-    .arrow-up {
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
+  }
 
-      border-bottom: 10px solid black;
-    }
+  &__arrow-wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  //denna kod är nu duplicerad
+  .arrow-left {
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid rgb(51, 51, 51);
 
-    .arrow-down {
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
+    border-top: 10px solid transparent;
+  }
+  .arrow-down {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
 
-      border-top: 10px solid black;
-    }
+    border-top: 10px solid rgb(51, 51, 51);
+  }
 
-    .arrow-left {
-      width: 0;
-      height: 0;
-      border-bottom: 10px solid transparent;
-      border-right: 10px solid black;
+  .arrow-right {
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid rgb(51, 51, 51);
 
-      border-top: 10px solid transparent;
-    }
+    border-top: 10px solid transparent;
+  }
+  .arrow-up {
+    border-left: 10px solid transparent;
+    border-bottom: 10px solid rgb(51, 51, 51);
 
-    .arrow-right {
-      width: 0;
-      height: 0;
-      border-bottom: 10px solid transparent;
-      border-left: 10px solid black;
-
-      border-top: 10px solid transparent;
-    }
+    border-right: 10px solid transparent;
   }
 }
 .image {

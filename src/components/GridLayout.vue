@@ -1,5 +1,11 @@
 //jag har en array med den spelande koordinaterna, som när den ersätts 
 först tar bort styling till den första sen lägger till till den nya
+
+
+//lägg till knappar för att välja prop value mousePos som highlightTarget
+// ha en propterty playing så att om man trycker på en pil när det spelas så kommer modal upp,
+kanske att det slutar spela om man trycker någponstans på skärmen
+
 <template>
   <div class="pageWrapper">
     <div v-for="y in 15" :key="y" :class="createGridClass(y)">
@@ -11,7 +17,13 @@ först tar bort styling till den första sen lägger till till den nya
         class="button-wrapper"
         :ref="'r'+x+y"
       >
-        <square @clicked="handleClick" :refForSquare="refForSquare(x,y)"></square>
+        <square
+          @click="handleClick"
+          @openingModal="openingModal"
+          :refForSquare="refForSquare(x,y)"
+          :modalOpen="isModalOpen(x,y)"
+          @closeModal="closeModal"
+        ></square>
       </div>
     </div>
   </div>
@@ -42,15 +54,25 @@ export default {
   },
   data() {
     return {
-      mousePos: { x: 3, y: 19 },
+      mousePos: { x: 0, y: 0 },
       arrowRef: [],
       arrowRefs: [],
-      index: 0,
       playingDiv: { x: 10, y: 10 },
       lydianScale: [1, 2, 2, 2, 1, 2, 2],
       allScales: [],
-      direction: ""
+      direction: "",
+      modalOpen: {}
     };
+  },
+  props: {
+    styling: {
+      type: String,
+      default: "classic"
+    },
+    highlightTarget: {
+      type: String,
+      default: "playingDiv"
+    }
   },
   mounted() {
     this.createAllPitchArrs();
@@ -92,22 +114,33 @@ export default {
     },
 
     colorStyling(x, y) {
-      return {
-        background: this.colorCalcDifference(x, y),
-        border: `1px solid ${this.colorCalcDifference(y, x)}`,
-        "box-shadow": `-10px -10px 8px ${this.colorCalcDifference(y, x)} `
-      };
-
-      /* {
-        background:
-          "rgb(" + this.colorCalcY(y) + "," + this.colorCalcX(x) + ",250)"
-      }; */
+      switch (this.styling) {
+        case "80s":
+          return {
+            background: this.colorCalcDifference(x, y),
+            /*    border: `1px solid ${this.colorCalcDifference(y, x)}`, */
+            /*  border: "1px solid red", */
+            "box-shadow": `-5px -5px 10px ${this.colorCalcDifference(y, x)} `
+          };
+        case "classic":
+          return {
+            background:
+              "rgb(" +
+              this.colorCalcDif(y, "y") +
+              "," +
+              this.colorCalcDif(x, "x") +
+              ",250)"
+          };
+        /*    return {
+            background:
+              "rgb(" + this.colorCalcY(y) + "," + this.colorCalcX(x) + ",250)"
+          }; */
+      }
     },
-    findInArr(x, y) {
-      let findInArr = this.arrowRef.find(item => item.x === x && item.y === y);
-
-      return findInArr ? this.arrowRefs.indexOf(findInArr) : null;
+    isModalOpen(x, y) {
+      return x == this.modalOpen.x && y == this.modalOpen.y;
     },
+
     findArrowRef(x, y) {
       let refName = this.getRefFromCoordinates(x, y);
       return this.arrowRefs.find(arrowRef => arrowRef.name === refName);
@@ -171,18 +204,19 @@ export default {
     },
 
     addArrowRef(payload) {
-      console.log("payload", payload);
-
       let { x, y, direction, refName } = payload;
 
       this.arrowRefs.push({ x, y, name: refName, direction: direction });
+    },
+    openingModal(payload) {
+      this.modalOpen = payload;
     },
 
     handleClick(payload) {
       this.addArrowRef(payload);
       if (payload.status == "play") {
         this.playingDiv = payload;
-
+        this.$store.dispatch("changeIsPlayingState", true);
         this.loop();
       }
     },
@@ -203,46 +237,69 @@ export default {
       return `row row-${n}`;
     },
     colorCalcY(n) {
-      let subtract = n - (this.mousePos.y - 1);
+      let subtract = n - (this.highlightPos.y - 1);
       let blend = subtract < 0 ? subtract * -1 : subtract;
       return blend * 18;
     },
+    colorCalcDif(n, coordinate) {
+      let pos = this.highlightPos[coordinate];
+
+      let numbers = [n, pos];
+      numbers.sort((a, b) => b - a);
+      let high = numbers[0];
+      let low = numbers[1];
+      let difference = (high - low) * 18;
+
+      return 250 - difference;
+    },
     colorCalcX(n) {
-      let subtract = n - (this.mousePos.x - 1);
+      let subtract = n - (this.highlightPos.x - 1);
       let blend = subtract < 0 ? subtract * -1 : subtract;
       return blend * 18;
     },
     colorCalcXY(x, y) {
       let numbers = [x, y];
-      console.log("numbers först", x, y);
 
       numbers.sort((a, b) => a - b);
       let highest = numbers[0];
       let lowest = numbers[1];
-      let add = highest + this.mousePos[highest];
-      let subtract = lowest - (this.mousePos[lowest] - 1);
+      let add = highest + this.highlightPos[highest];
+      let subtract = lowest - (this.highlightPos[lowest] - 1);
 
       numbers[highest] = add;
       numbers[lowest] = subtract;
-
-      console.log("numbers igen", x, y);
     },
     colorCalcDifference(x, y) {
-      let xArr = [x, this.playingDiv.x];
-      let yArr = [y, this.playingDiv.y];
+      let xArr = [x, this.highlightPos.x];
+      let yArr = [y, this.highlightPos.y];
       xArr.sort((a, b) => b - a);
       yArr.sort((a, b) => b - a);
       let subtractorX = xArr[0] - xArr[1];
-      console.log("xarr", xArr[0], xArr[1]);
 
       let growedSubtractorX = subtractorX * 18;
       let subtractorY = yArr[0] - yArr[1];
       let growedSubtractorY = subtractorY * 18;
-      console.log("subtractor", growedSubtractorY, growedSubtractorX);
 
       let red = 200 - growedSubtractorX;
       let green = 200 - growedSubtractorY;
       return "rgb(" + green + "," + red + ",250)";
+    },
+    closeModal() {
+      this.modalOpen = { x: 30, y: 20 }; //ändra detta
+    }
+  },
+  computed: {
+    highlightPos() {
+      let pos;
+      switch (this.highlightTarget) {
+        case "playingDiv":
+          pos = this.playingDiv;
+          break;
+        case "mousePos":
+          pos = this.mousePos;
+          break;
+      }
+      return pos;
     }
   }
 };
@@ -265,6 +322,7 @@ $square: 6.666666666666667%;
 }
 
 .highlight {
-  border: 5px solid green;
+  border: 1px solid rgb(110, 110, 160);
+  z-index: 20;
 }
 </style>

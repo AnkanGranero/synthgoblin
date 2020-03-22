@@ -4,8 +4,18 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
-  actions: {},
+  state: {
+    isPlaying: false
+  },
+  mutations: {
+    mutateIsPlayingState(state, payload) {
+      state.isPlaying = payload
+    }
+  },
+  actions: {
+    changeIsPlayingState({ commit }, payload) {
+      commit("mutateIsPlayingState", payload)
+    }
+  },
   modules: {}
 });
