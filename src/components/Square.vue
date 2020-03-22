@@ -1,6 +1,6 @@
 <template>
   <div class="square" @mousedown="handleClick">
-    <modal v-if="modalOpen" @directionSet="setDirection" @closeModal="closeModal" />
+    <modal v-if="modalOpen" @directionSet="setDirection" @removeArrowDiv="removeArrowDiv" />
 
     <div v-if="direction" class="square__arrow-wrapper" @click="play">
       <div :class="whatDirection"></div>
@@ -39,7 +39,6 @@ export default {
         return;
       }
       this.closeModal();
-      this.emitArrowRef("hold");
     },
     openModal() {
       if (this.modalOpen) {
@@ -56,10 +55,12 @@ export default {
       let { direction } = this;
       this.$emit("click", { x, y, refName, direction, status: arg });
     },
+
     setDirection(payload) {
       console.log("direction set ", payload);
 
       this.direction = payload;
+      this.emitArrowRef("hold"); //hold kan vara ett dåligt namn eftersom den inte kommer stanna spelandet
     },
     closeModal() {
       this.$emit("closeModal");
@@ -67,7 +68,15 @@ export default {
     play() {
       if (!this.$store.state.isPlaying) {
         this.emitArrowRef("play");
+      } else {
+        this.openModal();
       }
+    },
+    removeArrowDiv() {
+      console.log("nu hoppas jag den kan tas bort ");
+
+      this.direction = "";
+      this.emitArrowRef("remove");
     }
   },
   computed: {

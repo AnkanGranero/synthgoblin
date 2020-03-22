@@ -58,7 +58,6 @@ export default {
       arrowRef: [],
       arrowRefs: [],
       playingDiv: { x: 10, y: 10 },
-      lydianScale: [1, 2, 2, 2, 1, 2, 2],
       allScales: [],
       direction: "",
       modalOpen: {}
@@ -72,6 +71,10 @@ export default {
     highlightTarget: {
       type: String,
       default: "playingDiv"
+    },
+    scale: {
+      type: Array,
+      default: () => [1, 2, 2, 2, 1, 2, 2]
     }
   },
   mounted() {
@@ -93,7 +96,7 @@ export default {
       for (let i = 0; i <= 15; i++) {
         let arr = this.createPitchArr(startKey);
         allArrs.push(arr);
-        startKey += this.lydianScale[i % 7];
+        startKey += this.scale[i % 7];
       }
       this.allScales = allArrs;
     },
@@ -102,12 +105,12 @@ export default {
       let pianoKey = startKey;
       for (let i = 0; i <= 15; i++) {
         arr.push(this.hertzCalculator(pianoKey));
-        pianoKey += this.lydianScale[i % 7];
+        pianoKey += this.scale[i % 7];
       }
       return arr;
     },
     hertzCalculator(n) {
-      return Math.pow(2, n / 12) * 440;
+      return Math.pow(2, n / 12) * 220;
     },
     getRefFromCoordinates(x, y) {
       return `r${x}${y}`;
@@ -204,15 +207,39 @@ export default {
     },
 
     addArrowRef(payload) {
+      console.log("adding arrow");
+
       let { x, y, direction, refName } = payload;
 
+      let indexOfDuplicate = this.checkIfArrowRefExists(refName);
+      if (indexOfDuplicate !== -1) {
+        this.arrowRefs[indexOfDuplicate].direction = direction;
+        return;
+      }
       this.arrowRefs.push({ x, y, name: refName, direction: direction });
     },
+    removeArrowRef(payload) {
+      let index = this.checkIfArrowRefExists(payload.refName);
+      console.log("lets remove", index);
+
+      if (index !== -1) {
+        this.arrowRefs.splice(index, 1);
+        console.log("removed ", this.arrowRefs);
+      }
+    },
+    checkIfArrowRefExists(refName) {
+      return this.arrowRefs.findIndex(ref => ref.name == refName);
+    },
+
     openingModal(payload) {
       this.modalOpen = payload;
     },
 
     handleClick(payload) {
+      if (payload.status == "remove") {
+        this.removeArrowRef(payload);
+        return;
+      }
       this.addArrowRef(payload);
       if (payload.status == "play") {
         this.playingDiv = payload;
@@ -285,7 +312,7 @@ export default {
       return "rgb(" + green + "," + red + ",250)";
     },
     closeModal() {
-      this.modalOpen = { x: 30, y: 20 }; //ändra detta
+      this.modalOpen = {}; //ändra detta
     }
   },
   computed: {

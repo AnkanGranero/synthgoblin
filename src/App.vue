@@ -3,8 +3,10 @@
     <div class="header">
       <button class="header__button" @click="changeStyle('classic')">classic</button>
       <button class="header__button" @click="changeStyle('80s')">80s</button>
+      <input type="text" class="header__text" v-model="intervals" />
+      <button class="header__button" @mousemove="createScale">create pitches</button>
     </div>
-    <GridLayout :styling="styling" />
+    <GridLayout :styling="styling" :scale="scale" />
   </div>
 </template>
 
@@ -18,12 +20,17 @@ export default {
   },
   data() {
     return {
-      styling: "classic"
+      styling: "classic",
+      scale: [1, 2, 2, 2, 1, 2, 2],
+      intervals: ""
     };
   },
   methods: {
     changeStyle(styling) {
       this.styling = styling;
+    },
+    createScale() {
+      this.scale = this.intervals.split("");
     }
   }
 };
@@ -65,6 +72,9 @@ body {
     background: white;
     height: 50%;
     width: auto;
+    margin-right: 10px;
+  }
+  &__text {
     margin-right: 10px;
   }
 }

@@ -11,7 +11,7 @@
         <div class="box__left"></div>
       </div>
       <div class="box__wrapper">
-        <div class="box__middle"></div>
+        <div class="box__middle" @mousedown="removeArrowDiv"></div>
       </div>
       <div class="box__wrapper" @mousedown="setDirection('right')">
         <div class="box__right"></div>
@@ -37,6 +37,9 @@ export default {
     },
     closeModal() {
       this.$emit("closeModal");
+    },
+    removeArrowDiv() {
+      this.$emit("removeArrowDiv");
     }
   }
 };
