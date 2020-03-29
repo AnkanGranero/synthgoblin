@@ -57,7 +57,6 @@ export default {
       mousePos: { x: 0, y: 0 },
       arrowRef: [],
       arrowRefs: [],
-      playingDiv: { x: 10, y: 10 },
       direction: "",
       modalOpen: {}
     };
@@ -172,7 +171,10 @@ export default {
         nextCoordinates.x,
         nextCoordinates.y
       );
-      this.playingDiv = { ...nextCoordinates, refName: nextPlayingDivRef };
+      this.$store.dispatch("setPlayingDiv", {
+        ...nextCoordinates,
+        refName: nextPlayingDivRef
+      });
       let nextPlayingDiv = this.$refs[nextPlayingDivRef];
 
       nextPlayingDiv[0].classList.add("highlight");
@@ -217,7 +219,7 @@ export default {
       }
       this.addArrowRef(payload);
       if (payload.status == "play") {
-        this.playingDiv = payload;
+        this.$store.dispatch("setPlayingDiv", payload);
         this.$store.dispatch("changeIsPlayingState", true);
         this.loop();
       }
@@ -291,6 +293,9 @@ export default {
     }
   },
   computed: {
+    playingDiv() {
+      return this.$store.state.playingDiv;
+    },
     highlightPos() {
       let pos;
       switch (this.highlightTarget) {

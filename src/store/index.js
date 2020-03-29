@@ -5,16 +5,23 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    isPlaying: false
+    isPlaying: false,
+    playingDiv: { x:10 , y: 10, refName: "r10,10"}
   },
   mutations: {
-    mutateIsPlayingState(state, payload) {
+    changeIsPlayingState(state, payload) {
       state.isPlaying = payload
+    },
+    changePlayingDiv(state, payload) {
+      state.playingDiv = payload
     }
   },
   actions: {
     changeIsPlayingState({ commit }, payload) {
-      commit("mutateIsPlayingState", payload)
+      commit("changeIsPlayingState", payload)
+    },
+    setPlayingDiv({commit}, payload) {
+      commit("changePlayingDiv", payload)
     }
   },
   modules: {}
