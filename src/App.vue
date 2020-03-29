@@ -2,15 +2,23 @@
   <div id="app">
     <div class="header">
       <div></div>
-      <Triangle :headerText="'theme'" />
+      <div @click="openModal('theme')">
+        <Triangle :headerText="'theme'" />
+      </div>
+      <Modal v-if="themeModalOpen">
+        <button class="header__button" @click="changeTheme('classic')">classic</button>
+        <button class="header__button" @click="changeTheme('80s')">80s</button>
+      </Modal>
       <div></div>
-      <Triangle :headerText="'scales'" />
-
-      <button class="header__button" @click="changeStyle('classic')">classic</button>
-      <button class="header__button" @click="changeStyle('80s')">80s</button>
-      <input type="text" class="header__text" v-model="intervals" />
-      <button class="header__button" @mousemove="createScale">create pitches</button>
+      <div @click="openModal('scale')">
+        <Triangle :headerText="'scales'" />
+      </div>
+      <Modal v-if="scaleModalOpen">
+        <input type="text" class="header__text" v-model="intervals" />
+        <button class="header__button" @click="createScale">create pitches</button>
+      </Modal>
     </div>
+
     <GridLayout :styling="styling" :allScales="allScales" />
   </div>
 </template>
@@ -18,31 +26,53 @@
 <script>
 import GridLayout from "./components/GridLayout";
 import Triangle from "./components/Triangle";
+import Modal from "./components/Modal";
 
 export default {
   name: "App",
   components: {
     GridLayout,
-    Triangle
+    Triangle,
+    Modal
   },
   data() {
     return {
       styling: "classic",
       scale: [1, 2, 2, 2, 1, 2, 2],
       intervals: "",
-      allScales: []
+      allScales: [],
+      themeModalOpen: false,
+      scaleModalOpen: false
     };
   },
   mounted() {
     this.createAllPitchArrs();
   },
   methods: {
-    changeStyle(styling) {
+    openModal(type) {
+      switch (type) {
+        case "theme": {
+          this.themeModalOpen = true;
+          break;
+        }
+        case "scale": {
+          this.scaleModalOpen = true;
+          break;
+        }
+      }
+
+      this.modalOpen = true;
+    },
+    changeTheme(styling) {
       this.styling = styling;
+      this.themeModalOpen = false;
     },
     createScale() {
-      this.scale = this.intervals.split("");
-      this.createAllPitchArrs();
+      if (this.interval) {
+        this.scale = this.intervals.split("");
+        this.createAllPitchArrs();
+      }
+      this.scaleModalOpen = false;
     },
     createAllPitchArrs() {
       let allArrs = [];
