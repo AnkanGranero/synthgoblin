@@ -1,36 +1,29 @@
 <template>
   <div class="modal">
-    <div class="box box--y" @mousedown="setDirection('up')">
-      <div class="box__wrapper">
-        <div class="box__up"></div>
-      </div>
+    <div class="modal__wrapper modal__row--1 modal__column--2" @mousedown="setDirection('up')">
+      <Triangle :borderSize="'12px'" />
     </div>
 
-    <div class="box box--x">
-      <div class="box__wrapper" @mousedown="setDirection('left')">
-        <div class="box__left"></div>
-      </div>
-      <div class="box__wrapper">
-        <div class="box__middle" @mousedown="removeArrowDiv"></div>
-      </div>
-      <div class="box__wrapper" @mousedown="setDirection('right')">
-        <div class="box__right"></div>
-      </div>
+    <div class="modal__wrapper modal__row--2 modal__column--1" @mousedown="setDirection('left')">
+      <Triangle :direction="'left'" :borderSize="'12px'" />
+    </div>
+    <div class="modal__wrapper modal__row--2 modal__column--2"></div>
+    <div class="modal__wrapper modal__row--2 modal__column--3" @mousedown="setDirection('right')">
+      <Triangle :direction="'right'" :borderSize="'12px'" />
     </div>
 
-    <div class="box box--y" @mousedown="setDirection('down')">
-      <div class="box__wrapper">
-        <div class="box__down"></div>
-      </div>
+    <div class="modal__wrapper modal__row--3 modal__column--2" @mousedown="setDirection('down')">
+      <Triangle :direction="'down'" :borderSize="'12px'" />
     </div>
   </div>
 </template>
-
-
-
 <script>
+import Triangle from "../components/Triangle";
 export default {
   name: "Modal",
+  components: {
+    Triangle
+  },
   methods: {
     setDirection(dir) {
       this.$emit("directionSet", dir);
@@ -46,69 +39,56 @@ export default {
 </script>
 
 <style lang="scss">
+$arrow-color: black;
+$arrow-border-size: 10px;
 .modal {
   height: 300%;
   width: 300%;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
+
   position: relative;
   top: -100%;
   left: -100%;
-}
-.box {
-  display: flex;
-  flex-grow: 1;
-  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:
+    "top left bottom"
+    "up middle down"
+    "up right bottom";
 
-  &--x {
-    display: flex;
-    justify-content: space-evenly;
+  &__row--1 {
+    grid-row-start: 1;
+    grid-row-end: 2;
+  }
+  &__row--2 {
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
+  &__row--3 {
+    grid-row-start: 3;
   }
 
-  &--y {
-    display: flex;
-    justify-content: center;
-    align-self: center;
-    width: 30%;
+  &__column--1 {
+    grid-column-start: 1;
+    grid-column-end: 2;
+  }
+  &__column--2 {
+    grid-column-start: 2;
+    grid-column-end: 3;
+  }
+
+  &__column--3 {
+    grid-column-start: 3;
   }
 
   &__wrapper {
-    justify-content: center;
-    flex-grow: 1;
-    align-items: center;
+    position: absolute;
     display: flex;
-  }
-
-  &__left {
-    border-bottom: 10px solid transparent;
-    border-right: 10px solid rgb(51, 51, 51);
-
-    border-top: 10px solid transparent;
-  }
-  &__down {
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-
-    border-top: 10px solid rgb(51, 51, 51);
-  }
-
-  &__right {
-    border-bottom: 10px solid transparent;
-    border-left: 10px solid rgb(51, 51, 51);
-
-    border-top: 10px solid transparent;
-  }
-  &__up {
-    border-left: 10px solid transparent;
-    border-bottom: 10px solid rgb(51, 51, 51);
-
-    border-right: 10px solid transparent;
-  }
-  &__middle {
-    border-radius: 50%;
-    border: 3px dotted rgb(87, 86, 86);
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background: black;
   }
 }
 </style>

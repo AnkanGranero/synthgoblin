@@ -2,9 +2,9 @@
   <div id="app">
     <div class="header">
       <div></div>
-      <Triangle>theme</Triangle>
+      <Triangle :headerText="'theme'" />
       <div></div>
-      <Triangle>scales</Triangle>
+      <Triangle :headerText="'scales'" />
 
       <button class="header__button" @click="changeStyle('classic')">classic</button>
       <button class="header__button" @click="changeStyle('80s')">80s</button>

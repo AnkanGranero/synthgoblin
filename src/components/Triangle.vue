@@ -1,9 +1,7 @@
 <template>
   <div class="triangle">
     <div :style="whatDirection"></div>
-    <h2 class="triangle__text">
-      <slot></slot>
-    </h2>
+    <h2 v-if="headerText" class="triangle__text">{{ headerText }}</h2>
   </div>
 </template>
 
@@ -21,7 +19,11 @@ export default {
     },
     color: {
       type: String,
-      default: "green"
+      default: "white"
+    },
+    headerText: {
+      type: String,
+      default: ""
     }
   },
   computed: {
@@ -32,24 +34,27 @@ export default {
       let { direction } = this;
       let x = ["left", "right"];
       let y = ["top", "bottom"];
-      let base = [];
+      let base = "";
       let sides = [];
 
       switch (direction) {
-        case "left" || "right": {
-          let index = x.indexOf(direction);
-
-          base = x.splice(index, 1);
+        case "right": {
+          base = "left";
           sides = y;
           break;
         }
-        case "up" || "down": {
-          let bottomOrTop = direction == "up" ? "top" : "bottom";
-
-          let index = y.indexOf(bottomOrTop);
-
-          y.splice(index, 1);
-          base = y;
+        case "left": {
+          base = "right";
+          sides = y;
+          break;
+        }
+        case "up": {
+          base = "bottom";
+          sides = x;
+          break;
+        }
+        case "down": {
+          base = "top";
           sides = x;
           break;
         }
@@ -57,11 +62,11 @@ export default {
 
       let borderSideA = "border-" + sides[0];
       let borderSideB = "border-" + sides[1];
-      let borderBase = "border-" + base[0];
+      let borderBase = "border-" + base;
 
       return {
         width: 0,
-        [borderBase]: ` ${this.borderSize} solid green`,
+        [borderBase]: ` ${this.borderSize} solid ${this.color}`,
         [borderSideA]: `${this.borderSize} solid transparent`,
         [borderSideB]: `${this.borderSize} solid transparent`
       };
@@ -78,13 +83,23 @@ export default {
   color: white;
   text-align: center;
   align-items: center;
+  height: 100%;
+}
+/* .triangle {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  text-align: center;
+  align-items: center;
+  height: 100%;
 
   &__text {
     margin-top: 10px;
     font-size: 1rem;
-  }
+  } */
 
-  /* &__up {
+/* &__up {
     width: 0;
     border-left: $arrow-border-size solid transparent;
     border-bottom: $arrow-border-size solid rgb(131, 252, 159);
@@ -109,5 +124,4 @@ export default {
     border-left: $arrow-border-size solid $arrow-color;
     border-top: $arrow-border-size solid transparent;
   } */
-}
 </style>
