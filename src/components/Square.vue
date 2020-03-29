@@ -1,6 +1,10 @@
 <template>
   <div class="square" @mousedown="handleClick">
-    <modal v-if="modalOpen" @directionSet="setDirection" @removeArrowDiv="removeArrowDiv" />
+    <Direction-picker
+      v-if="modalOpen"
+      @directionSet="setDirection"
+      @removeArrowDiv="removeArrowDiv"
+    />
 
     <div v-if="direction" class="square__arrow-wrapper" @click="play">
       <div :class="whatDirection"></div>
@@ -9,7 +13,7 @@
 </template>
 
 <script>
-import Modal from "./Modal";
+import DirectionPicker from "./DirectionPicker";
 export default {
   name: "Square",
 
@@ -24,7 +28,7 @@ export default {
     }
   },
   components: {
-    Modal
+    DirectionPicker
   },
   data() {
     return {
