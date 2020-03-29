@@ -1,6 +1,11 @@
 <template>
   <div id="app">
     <div class="header">
+      <div></div>
+      <Triangle>theme</Triangle>
+      <div></div>
+      <Triangle>scales</Triangle>
+
       <button class="header__button" @click="changeStyle('classic')">classic</button>
       <button class="header__button" @click="changeStyle('80s')">80s</button>
       <input type="text" class="header__text" v-model="intervals" />
@@ -12,11 +17,13 @@
 
 <script>
 import GridLayout from "./components/GridLayout";
+import Triangle from "./components/Triangle";
 
 export default {
   name: "App",
   components: {
-    GridLayout
+    GridLayout,
+    Triangle
   },
   data() {
     return {
@@ -44,16 +51,19 @@ export default {
       for (let i = 0; i <= 15; i++) {
         let arr = this.createPitchArr(startKey);
         allArrs.push(arr);
-        startKey += this.scale[i % 7];
+        let interval = parseInt(this.scale[i % this.scale.length], 10);
+        startKey += interval;
       }
       this.allScales = allArrs;
     },
     createPitchArr(startKey) {
       let arr = [];
       let pianoKey = startKey;
+
       for (let i = 0; i <= 15; i++) {
         arr.push(this.hertzCalculator(pianoKey));
-        pianoKey += this.scale[i % 7];
+        let interval = parseInt(this.scale[i % this.scale.length], 10);
+        pianoKey += interval;
       }
       return arr;
     },
@@ -64,8 +74,13 @@ export default {
 };
 </script>
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
+@font-face {
+  font-family: "nintendo";
+  src: url("./assets/fonts/press_start.ttf");
+}
 
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
+$square: 6.666666666666667%;
 .overlay {
   height: 100vh;
   z-index: -3;
@@ -78,6 +93,7 @@ export default {
 #app {
   height: 100vh;
   z-index: -3;
+  font-family: nintendo;
 
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -96,6 +112,14 @@ body {
 .header {
   margin-bottom: 2%;
   height: 46px;
+
+  display: grid;
+  grid-template-columns: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
+  &__wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
   &__button {
     background: white;
     height: 50%;
