@@ -1,7 +1,7 @@
 <template>
   <div class="square" @mousedown="handleClick">
     <Direction-picker
-      v-if="modalOpen"
+      v-if="directionPickerOpen"
       @directionSet="setDirection"
       @removeArrowDiv="removeArrowDiv"
     />
@@ -22,7 +22,7 @@ export default {
       default: () => {},
       type: Object
     },
-    modalOpen: {
+    directionPickerOpen: {
       default: false,
       type: Boolean
     }
@@ -39,19 +39,19 @@ export default {
   methods: {
     handleClick() {
       if (!this.direction) {
-        this.openModal();
+        this.openDirectionPicker();
         return;
       }
-      this.closeModal();
+      this.closeDirectionPicker();
     },
-    openModal() {
-      if (this.modalOpen) {
-        this.closeModal();
+    openDirectionPicker() {
+      if (this.directionPickerOpen) {
+        this.closeDirectionPicker();
         return;
       }
       const { x, y } = this.refForSquare;
 
-      this.$emit("openingModal", { x, y });
+      this.$emit("openDirectionPicker", { x, y });
     },
 
     emitArrowRef(arg) {
@@ -61,19 +61,17 @@ export default {
     },
 
     setDirection(payload) {
-      console.log("direction set ", payload);
-
       this.direction = payload;
       this.emitArrowRef("hold"); //hold kan vara ett dåligt namn eftersom den inte kommer stanna spelandet
     },
-    closeModal() {
-      this.$emit("closeModal");
+    closeDirectionPicker() {
+      this.$emit("closeDirectionPicker");
     },
     play() {
       if (!this.$store.state.isPlaying) {
         this.emitArrowRef("play");
       } else {
-        this.openModal();
+        this.openDirectionPicker();
       }
     },
     removeArrowDiv() {

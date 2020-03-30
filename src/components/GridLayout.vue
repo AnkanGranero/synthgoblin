@@ -19,10 +19,10 @@ kanske att det slutar spela om man trycker någponstans på skärmen
       >
         <square
           @click="handleClick"
-          @openingModal="openingModal"
+          @openDirectionPicker="openDirectionPicker"
           :refForSquare="refForSquare(x,y)"
-          :modalOpen="isModalOpen(x,y)"
-          @closeModal="closeModal"
+          :directionPickerOpen="isdirectionPickerOpen(x,y)"
+          @closeDirectionPicker="closeDirectionPicker"
         ></square>
       </div>
     </div>
@@ -58,7 +58,7 @@ export default {
       arrowRef: [],
       arrowRefs: [],
       direction: "",
-      modalOpen: {}
+      directionPickerOpen: {}
     };
   },
   props: {
@@ -114,8 +114,8 @@ export default {
           }; */
       }
     },
-    isModalOpen(x, y) {
-      return x == this.modalOpen.x && y == this.modalOpen.y;
+    isdirectionPickerOpen(x, y) {
+      return x == this.directionPickerOpen.x && y == this.directionPickerOpen.y;
     },
 
     findArrowRef(x, y) {
@@ -208,8 +208,10 @@ export default {
       return this.arrowRefs.findIndex(ref => ref.name == refName);
     },
 
-    openingModal(payload) {
-      this.modalOpen = payload;
+    openDirectionPicker(payload) {
+      console.log("open directionP in GL");
+
+      this.directionPickerOpen = payload;
     },
 
     handleClick(payload) {
@@ -288,8 +290,8 @@ export default {
       let green = 200 - growedSubtractorY;
       return "rgb(" + green + "," + red + ",250)";
     },
-    closeModal() {
-      this.modalOpen = {}; //ändra detta
+    closeDirectionPicker() {
+      this.directionPickerOpen = {}; //ändra detta
     }
   },
   computed: {

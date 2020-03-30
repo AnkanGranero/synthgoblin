@@ -1,18 +1,30 @@
 <template>
-  <div class="modal">
-    <div class="modal__wrapper modal__row--1 modal__column--2" @mousedown="setDirection('up')">
+  <div class="direction-picker">
+    <div
+      class="direction-picker__wrapper direction-picker__row--1 direction-picker__column--2"
+      @mousedown="setDirection('up')"
+    >
       <Triangle :borderSize="'12px'" />
     </div>
 
-    <div class="modal__wrapper modal__row--2 modal__column--1" @mousedown="setDirection('left')">
+    <div
+      class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--1"
+      @mousedown="setDirection('left')"
+    >
       <Triangle :direction="'left'" :borderSize="'12px'" />
     </div>
-    <div class="modal__wrapper modal__row--2 modal__column--2"></div>
-    <div class="modal__wrapper modal__row--2 modal__column--3" @mousedown="setDirection('right')">
+    <div class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--2"></div>
+    <div
+      class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--3"
+      @mousedown="setDirection('right')"
+    >
       <Triangle :direction="'right'" :borderSize="'12px'" />
     </div>
 
-    <div class="modal__wrapper modal__row--3 modal__column--2" @mousedown="setDirection('down')">
+    <div
+      class="direction-picker__wrapper direction-picker__row--3 direction-picker__column--2"
+      @mousedown="setDirection('down')"
+    >
       <Triangle :direction="'down'" :borderSize="'12px'" />
     </div>
   </div>
@@ -20,7 +32,7 @@
 <script>
 import Triangle from "../components/Triangle";
 export default {
-  name: "Modal",
+  name: "directionPicker",
   components: {
     Triangle
   },
@@ -28,9 +40,7 @@ export default {
     setDirection(dir) {
       this.$emit("directionSet", dir);
     },
-    closeModal() {
-      this.$emit("closeModal");
-    },
+
     removeArrowDiv() {
       this.$emit("removeArrowDiv");
     }
@@ -38,10 +48,10 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 $arrow-color: black;
 $arrow-border-size: 10px;
-.modal {
+.direction-picker {
   height: 300%;
   width: 300%;
 

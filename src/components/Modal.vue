@@ -11,11 +11,17 @@ export default {
 
 <style lang="scss" scoped>
 .modal {
-  background: white;
-  height: 30vh;
-  width: 30vw;
+  background: black;
+  border: 5px solid white;
+  height: 33%;
+  width: 33%;
   position: absolute;
-  left: 50vw;
-  top: 50vh;
+  left: 33%;
+  top: 30%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

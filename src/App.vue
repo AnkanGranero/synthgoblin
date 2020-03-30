@@ -1,16 +1,15 @@
 <template>
   <div id="app">
     <div class="header">
-      <div></div>
-      <div @click="openModal('theme')">
+      <div class="header__theme" @click="openModal('theme')">
         <Triangle :headerText="'theme'" />
       </div>
       <Modal v-if="themeModalOpen">
         <button class="header__button" @click="changeTheme('classic')">classic</button>
         <button class="header__button" @click="changeTheme('80s')">80s</button>
       </Modal>
-      <div></div>
-      <div @click="openModal('scale')">
+
+      <div class="header__scale" @click="openModal('scale')">
         <Triangle :headerText="'scales'" />
       </div>
       <Modal v-if="scaleModalOpen">
@@ -20,6 +19,7 @@
     </div>
 
     <GridLayout :styling="styling" :allScales="allScales" />
+    <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
   </div>
 </template>
 
@@ -27,13 +27,15 @@
 import GridLayout from "./components/GridLayout";
 import Triangle from "./components/Triangle";
 import Modal from "./components/Modal";
+import Overlay from "./components/Overlay";
 
 export default {
   name: "App",
   components: {
     GridLayout,
     Triangle,
-    Modal
+    Modal,
+    Overlay
   },
   data() {
     return {
@@ -68,7 +70,9 @@ export default {
       this.themeModalOpen = false;
     },
     createScale() {
-      if (this.interval) {
+      if (this.intervals) {
+        console.log("hej hopp ");
+
         this.scale = this.intervals.split("");
         this.createAllPitchArrs();
       }
@@ -99,6 +103,16 @@ export default {
     },
     hertzCalculator(n) {
       return Math.pow(2, n / 12) * 220;
+    },
+    closeOverlay() {
+      console.log("closingOverlay");
+      this.scaleModalOpen = false;
+      this.themeModalOpen = false;
+    }
+  },
+  computed: {
+    overlayVisible() {
+      return this.themeModalOpen || this.scaleModalOpen;
     }
   }
 };
@@ -120,10 +134,10 @@ $square: 6.666666666666667%;
   padding: 5%;
   position: relative;
 }
+
 #app {
   height: 100vh;
   z-index: -3;
-  font-family: nintendo;
 
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -139,8 +153,12 @@ body {
   background: black;
   margin: 0;
 }
+* {
+  font-family: nintendo;
+}
+
 .header {
-  margin-bottom: 2%;
+  margin-bottom: 5%;
   height: 46px;
 
   display: grid;
@@ -151,13 +169,24 @@ body {
   }
 
   &__button {
-    background: white;
-    height: 50%;
+    background: transparent;
+    height: auto;
     width: auto;
-    margin-right: 10px;
+    font-size: 3rem;
+    margin-top: 10%;
+    color: white;
+    border: none;
   }
   &__text {
-    margin-right: 10px;
+    height: 10%;
+    background: #f1f1f1;
+  }
+
+  &__theme {
+    grid-column-start: 2;
+  }
+  &__scale {
+    grid-column-start: 5;
   }
 }
 </style>
