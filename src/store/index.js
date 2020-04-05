@@ -6,7 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     isPlaying: false,
-    playingDiv: { x:10 , y: 10, refName: "r10,10"}
+    playingDiv: { x:10 , y: 10, refName: "r10,10"},
+    backgroundColors: ""
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -14,6 +15,9 @@ export default new Vuex.Store({
     },
     changePlayingDiv(state, payload) {
       state.playingDiv = payload
+    },
+    changeBackgroundColors(state, payload) {
+      state.backgroundColors = payload
     }
   },
   actions: {
@@ -22,6 +26,9 @@ export default new Vuex.Store({
     },
     setPlayingDiv({commit}, payload) {
       commit("changePlayingDiv", payload)
+    },
+    setBackgroundColors({commit}, payload) {
+      commit("changeBackgroundColors", payload)
     }
   },
   modules: {}
