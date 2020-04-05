@@ -1,23 +1,18 @@
 <template>
   <div id="app">
     <div class="header">
-      <div class="header__theme" @click="openModal('theme')">
-        <Triangle :headerText="'theme'" />
+      <!--    <h1>HAGRID</h1> -->
+      <div class="header__options" @click="openModal">
+        <img
+          src="./assets/trekant.gif"
+          alt="triangleLogo"
+          class="header__triangle"
+          :style="backgroundColors"
+        />
       </div>
-      <Modal v-if="themeModalOpen">
-        <button class="header__button" @click="changeTheme('classic')">classic</button>
-        <button class="header__button" @click="changeTheme('80s')">80s</button>
-      </Modal>
-
-      <div class="header__scale" @click="openModal('scale')">
-        <Triangle :headerText="'scales'" />
-      </div>
-      <Modal v-if="scaleModalOpen">
-        <input type="text" class="header__text" v-model="intervals" />
-        <button class="header__button" @click="createScale">create pitches</button>
-      </Modal>
+      <!--      <Triangle :headerText="'options'" />' -->
     </div>
-
+    <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
     <GridLayout :styling="styling" :allScales="allScales" />
     <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
   </div>
@@ -25,15 +20,16 @@
 
 <script>
 import GridLayout from "./components/GridLayout";
-import Triangle from "./components/Triangle";
+/* import Triangle from "./components/Triangle"; */
 import Modal from "./components/Modal";
 import Overlay from "./components/Overlay";
-
+/* import colorStyling from "./helpers/colorFunctions.js";
+ */
 export default {
   name: "App",
   components: {
     GridLayout,
-    Triangle,
+    /*     Triangle, */
     Modal,
     Overlay
   },
@@ -43,31 +39,19 @@ export default {
       scale: [1, 2, 2, 2, 1, 2, 2],
       intervals: "",
       allScales: [],
-      themeModalOpen: false,
-      scaleModalOpen: false
+      modalOpen: false
     };
   },
   mounted() {
     this.createAllPitchArrs();
   },
   methods: {
-    openModal(type) {
-      switch (type) {
-        case "theme": {
-          this.themeModalOpen = true;
-          break;
-        }
-        case "scale": {
-          this.scaleModalOpen = true;
-          break;
-        }
-      }
-
+    openModal() {
       this.modalOpen = true;
     },
     changeTheme(styling) {
       this.styling = styling;
-      this.themeModalOpen = false;
+      this.modalOpen = false;
     },
     createScale() {
       if (this.intervals) {
@@ -76,7 +60,7 @@ export default {
         this.scale = this.intervals.split("");
         this.createAllPitchArrs();
       }
-      this.scaleModalOpen = false;
+      this.modalOpen = false;
     },
     createAllPitchArrs() {
       let allArrs = [];
@@ -105,14 +89,27 @@ export default {
       return Math.pow(2, n / 12) * 220;
     },
     closeOverlay() {
-      console.log("closingOverlay");
-      this.scaleModalOpen = false;
-      this.themeModalOpen = false;
+      this.modalOpen = false;
+    },
+    modalEventHandler(payload) {
+      switch (payload) {
+        case "closeModal":
+          this.modalOpen = false;
+      }
     }
   },
   computed: {
     overlayVisible() {
-      return this.themeModalOpen || this.scaleModalOpen;
+      return this.modalOpen;
+    },
+    backgroundColors() {
+      if (this.$store.state.isPlaying) {
+        return this.$store.state.backgroundColors;
+      } else {
+        return {
+          background: "white"
+        };
+      }
     }
   }
 };
@@ -122,10 +119,9 @@ export default {
   font-family: "nintendo";
   src: url("./assets/fonts/press_start.ttf");
 }
-
-@import url("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap");
 $square: 6.666666666666667%;
-.overlay {
+/* .overlay {
   height: 100vh;
   z-index: -3;
   display: flex;
@@ -133,7 +129,7 @@ $square: 6.666666666666667%;
   justify-content: center;
   padding: 5%;
   position: relative;
-}
+} */
 
 #app {
   height: 100vh;
@@ -144,6 +140,8 @@ $square: 6.666666666666667%;
   align-items: center;
   -ms-flex-pack: center;
   padding: 5%;
+  display: flex;
+  flex-direction: column;
 }
 
 body {
@@ -152,13 +150,15 @@ body {
   min-height: fit-content;
   background: black;
   margin: 0;
+  color: white;
 }
 * {
   font-family: nintendo;
+  font-family: "Roboto", sans-serif;
 }
 
 .header {
-  margin-bottom: 5%;
+  margin-bottom: 15%;
   height: 46px;
 
   display: grid;
@@ -182,11 +182,13 @@ body {
     background: #f1f1f1;
   }
 
-  &__theme {
-    grid-column-start: 2;
+  &__options {
+    grid-column-start: 7;
+    grid-column-end: 10;
   }
-  &__scale {
-    grid-column-start: 5;
+  &__triangle {
+    height: 100%;
+    width: 100%;
   }
 }
 </style>
