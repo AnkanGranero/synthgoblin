@@ -34,18 +34,19 @@ kanske att det slutar spela om man trycker någponstans på skärmen
 import square from "./Square";
 import * as Tone from "tone";
 
-let synth = new Tone.Synth({
+const synth = new Tone.Synth({
   oscillator: {
     type: "square",
     modulationFrequency: 0.2
   },
+
   envelope: {
     attack: 0.02,
     decay: 0.1,
     sustain: 0.2,
     release: 0.2
   }
-}).toMaster();
+});
 
 export default {
   name: "GridLayout",
@@ -75,6 +76,20 @@ export default {
       default: () => []
     }
   },
+  mounted() {
+    async function prepare() {
+      /* ; */
+      const reverb = new Tone.Reverb({
+        decay: 5,
+        wet: 0.3,
+        preDelay: 0.2
+      }).toMaster();
+      await reverb.generate();
+      /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
+      synth.connect(reverb);
+    }
+    prepare();
+  },
 
   methods: {
     refForSquare(x, y) {
@@ -99,8 +114,8 @@ export default {
             /*  border: "1px solid red", */
             "box-shadow": `-5px -5px 10px ${this.colorCalcDifference(y, x)} `
           };
-        case "classic":
-          return {
+        case "classic": {
+          let backgroundColors = {
             background:
               "rgb(" +
               this.colorCalcDif(y, "y") +
@@ -108,10 +123,13 @@ export default {
               this.colorCalcDif(x, "x") +
               ",250)"
           };
-        /*    return {
+          this.$store.dispatch("setBackgroundColors", backgroundColors);
+          return backgroundColors;
+          /*    return {
             background:
               "rgb(" + this.colorCalcY(y) + "," + this.colorCalcX(x) + ",250)"
           }; */
+        }
       }
     },
     isdirectionPickerOpen(x, y) {
@@ -317,10 +335,13 @@ export default {
 $square: 6.666666666666667%;
 
 .pageWrapper {
-  height: 80vh;
-  /*   width: 50%; */
+  height: 120vh;
+  width: 80vh;
   display: grid;
   grid-template-rows: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
+  @media only screen and (min-width: 768px) {
+    height: 80vh;
+  }
 }
 .button-wrapper {
 }
