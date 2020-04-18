@@ -98,7 +98,7 @@ $arrow-border-size: 10px;
     align-items: center;
     height: 100%;
     width: 100%;
-    background: black;
+    /* background: black; */
   }
 }
 </style>

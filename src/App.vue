@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <div class="header">
-      <!--    <h1>HAGRID</h1> -->
-      <div class="header__options" @click="openModal">
-        <img
-          src="./assets/trekant.gif"
-          alt="triangleLogo"
-          class="header__triangle"
-          :style="backgroundColors"
-        />
-      </div>
+      <h1 @click="openModal">HAGRID</h1>
+      <!-- <div class="header__options" @click="openModal"> -->
+      <!--      <img
+        src="./assets/trekant.gif"
+        alt="triangleLogo"
+        class="header__triangle"
+        :style="backgroundColors"
+      />-->
+      <!--  </div> -->
       <!--      <Triangle :headerText="'options'" />' -->
     </div>
     <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
@@ -36,7 +36,8 @@ export default {
   data() {
     return {
       styling: "classic",
-      scale: [1, 2, 2, 2, 1, 2, 2],
+      /*   scale: [1, 2, 2, 2, 1, 2, 2], */
+      scale: [4, 3, 4, 1],
       intervals: "",
       allScales: [],
       modalOpen: false
@@ -86,7 +87,7 @@ export default {
       return arr;
     },
     hertzCalculator(n) {
-      return Math.pow(2, n / 12) * 220;
+      return Math.pow(2, n / 12) * 55;
     },
     closeOverlay() {
       this.modalOpen = false;
@@ -154,11 +155,11 @@ body {
 }
 * {
   font-family: nintendo;
-  font-family: "Roboto", sans-serif;
+  /*   font-family: "Roboto", sans-serif; */
 }
 
 .header {
-  margin-bottom: 15%;
+  margin-bottom: 10%;
   height: 46px;
 
   display: grid;
