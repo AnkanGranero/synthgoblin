@@ -142,6 +142,7 @@ export default {
     },
     loop() {
       Tone.Transport.scheduleRepeat(this.repeat, "8n");
+      Tone.Transport.bpm.value = 300;
       Tone.Transport.start();
     },
     nextCoordinateBasedOnDirection(x, y, direction) {
@@ -169,33 +170,37 @@ export default {
       let { x, y, refName, direction } = playingDiv;
 
       let ref = this.$refs[refName];
-      ref[0].classList.remove("highlight");
 
-      if (this.isArrowRef(x, y)) {
-        direction = this.findArrowRef(x, y).direction;
+      if (ref) {
+        ref[0].classList.remove("highlight");
+
+        if (this.isArrowRef(x, y)) {
+          direction = this.findArrowRef(x, y).direction;
+        }
+
+        let note = this.allScales[x][y];
+
+        synth.triggerAttackRelease(note, "8n", time);
+
+        let nextCoordinates = this.nextCoordinateBasedOnDirection(
+          x,
+          y,
+          direction
+        );
+
+        let nextPlayingDivRef = this.getRefFromCoordinates(
+          nextCoordinates.x,
+          nextCoordinates.y
+        );
+        this.$store.dispatch("setPlayingDiv", {
+          ...nextCoordinates,
+          refName: nextPlayingDivRef
+        });
+        let nextPlayingDiv = this.$refs[nextPlayingDivRef];
+        if (nextPlayingDiv) {
+          nextPlayingDiv[0].classList.add("highlight");
+        }
       }
-
-      let note = this.allScales[x][y];
-
-      synth.triggerAttackRelease(note, "8n", time);
-
-      let nextCoordinates = this.nextCoordinateBasedOnDirection(
-        x,
-        y,
-        direction
-      );
-
-      let nextPlayingDivRef = this.getRefFromCoordinates(
-        nextCoordinates.x,
-        nextCoordinates.y
-      );
-      this.$store.dispatch("setPlayingDiv", {
-        ...nextCoordinates,
-        refName: nextPlayingDivRef
-      });
-      let nextPlayingDiv = this.$refs[nextPlayingDivRef];
-
-      nextPlayingDiv[0].classList.add("highlight");
     },
     refFinder(x, y) {
       return this.$refs["r" + x + y];
