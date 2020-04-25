@@ -2,15 +2,7 @@
   <div id="app">
     <div class="header">
       <h1 @click="openModal">HAGRID</h1>
-      <!-- <div class="header__options" @click="openModal"> -->
-      <!--      <img
-        src="./assets/trekant.gif"
-        alt="triangleLogo"
-        class="header__triangle"
-        :style="backgroundColors"
-      />-->
-      <!--  </div> -->
-      <!--      <Triangle :headerText="'options'" />' -->
+      <button class="header__btn" @click="play">PLAY</button>
     </div>
     <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
     <GridLayout :styling="styling" :allScales="allScales" />
@@ -49,6 +41,9 @@ export default {
   methods: {
     openModal() {
       this.modalOpen = true;
+    },
+    play() {
+      console.log("play");
     },
     changeTheme(styling) {
       this.styling = styling;
@@ -162,8 +157,12 @@ body {
   margin-bottom: 10%;
   height: 46px;
 
-  display: grid;
+  /* display: grid;
   grid-template-columns: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
+ */
+  &__btn {
+    background: white;
+  }
   &__wrapper {
     display: flex;
     justify-content: center;

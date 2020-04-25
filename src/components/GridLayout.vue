@@ -200,6 +200,9 @@ export default {
         if (nextPlayingDiv) {
           nextPlayingDiv[0].classList.add("highlight");
         }
+      } else {
+        Tone.Transport.stop();
+        this.$store.commit("changeIsPlayingState", false);
       }
     },
     refFinder(x, y) {
