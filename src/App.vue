@@ -1,12 +1,22 @@
 <template>
   <div id="app">
-    <div class="header">
-      <h1 @click="openModal">HAGRID</h1>
+    <h1 class="header" @click="openModal">Hagrid</h1>
+    <!--     <div class="header">
       <button class="header__btn" @click="play">PLAY</button>
-    </div>
+    </div>-->
     <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
-    <GridLayout :styling="styling" :allScales="allScales" />
-    <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
+    <div class="tv">
+      <div class="tv__left">
+        <img src="./assets/kugghjul.svg" class="tv__button" alt />
+      </div>
+      <div class="tv__middle">
+        <GridLayout :styling="styling" :allScales="allScales" />
+      </div>
+      <div class="tv__right">
+        <img src="./assets/play.svg" class="tv__button" alt="play button" @click="play" />
+      </div>
+      <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
+    </div>
   </div>
 </template>
 
@@ -43,7 +53,7 @@ export default {
       this.modalOpen = true;
     },
     play() {
-      console.log("play");
+      console.log("playing");
     },
     changeTheme(styling) {
       this.styling = styling;
@@ -51,8 +61,6 @@ export default {
     },
     createScale() {
       if (this.intervals) {
-        console.log("hej hopp ");
-
         this.scale = this.intervals.split("");
         this.createAllPitchArrs();
       }
@@ -115,8 +123,10 @@ export default {
   font-family: "nintendo";
   src: url("./assets/fonts/press_start.ttf");
 }
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
+//så småningom byta font till smoothare utstickande bitar
 $square: 6.666666666666667%;
+$background: #54bb5a;
 /* .overlay {
   height: 100vh;
   z-index: -3;
@@ -128,34 +138,79 @@ $square: 6.666666666666667%;
 } */
 
 #app {
-  height: 100vh;
   z-index: -3;
 
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
   -ms-flex-pack: center;
-  padding: 5%;
+  padding: 0 5%;
   display: flex;
   flex-direction: column;
+}
+
+.tv {
+  background: black;
+  width: 80%;
+
+  align-content: center;
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 10% 0;
+  @media only screen and (min-width: 768px) {
+    height: 40vw;
+  }
+
+  &__button {
+    align-self: flex-start;
+    width: 150px;
+  }
+
+  &__left {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+  }
+  &__circle {
+    background: white;
+    height: 10vw;
+    width: 10vw;
+    border-radius: 100%;
+  }
+  &__middle {
+    flex-grow: 4;
+    display: flex;
+    justify-content: center;
+  }
+  &__right {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+  }
 }
 
 body {
   margin: 0;
   min-width: fit-content;
   min-height: fit-content;
-  background: black;
+  background: $background;
   margin: 0;
   color: white;
 }
 * {
-  font-family: nintendo;
+  font-family: "Open Sans", sans-serif;
+
   /*   font-family: "Roboto", sans-serif; */
 }
 
 .header {
-  margin-bottom: 10%;
-  height: 46px;
+  color: #d9d283;
+  /* font-size: 200px; */
+  font-size: 11rem;
+  letter-spacing: -0.4rem;
+  margin: 0 0 15% 0;
 
   /* display: grid;
   grid-template-columns: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
