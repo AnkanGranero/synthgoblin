@@ -33,20 +33,6 @@ kanske att det slutar spela om man trycker någponstans på skärmen
 import square from "./Square";
 import { mapState } from "vuex";
 
-/* const synth = new Tone.Synth({
-  oscillator: {
-    type: "square",
-    modulationFrequency: 0.2
-  },
-
-  envelope: {
-    attack: 0.02,
-    decay: 0.1,
-    sustain: 0.2,
-    release: 0.2
-  }
-}); */
-
 export default {
   name: "GridLayout",
   components: {
@@ -55,9 +41,7 @@ export default {
   data() {
     return {
       mousePos: { x: 0, y: 0 },
-      /*       arrowRef: [],
-      arrowRefs: [], */
-      /*      direction: "", */
+
       directionPickerOpen: {}
     };
   },
@@ -74,11 +58,6 @@ export default {
       type: Array,
       default: () => []
     }
-
-    /*     highlightedDiv: {
-      type: String,
-      default: ""
-    } */
   },
 
   methods: {
@@ -120,10 +99,6 @@ export default {
           };
           this.$store.dispatch("setBackgroundColors", backgroundColors);
           return backgroundColors;
-          /*    return {
-            background:
-              "rgb(" + this.colorCalcY(y) + "," + this.colorCalcX(x) + ",250)"
-          }; */
         }
       }
     },
@@ -131,86 +106,11 @@ export default {
       return x == this.directionPickerOpen.x && y == this.directionPickerOpen.y;
     },
 
-    /*     findArrowRef(x, y) {
-      let refName = this.getRefFromCoordinates(x, y);
-      return this.arrowRefs.find(arrowRef => arrowRef.name === refName);
-    }, */
-
-    /* repeat(time) {
-      let { playingDiv } = this;
-
-      let { x, y, refName, direction } = playingDiv;
-
-      let ref = this.$refs[refName];
-
-      if (ref) {
-        ref[0].classList.remove("highlight");
-
-        if (this.isArrowRef(x, y)) {
-          direction = this.findArrowRef(x, y).direction;
-        }
-
-        let note = this.allScales[x][y];
-
-        synth.triggerAttackRelease(note, "8n", time);
-
-        let nextCoordinates = this.nextCoordinateBasedOnDirection(
-          x,
-          y,
-          direction
-        );
-
-        let nextPlayingDivRef = this.getRefFromCoordinates(
-          nextCoordinates.x,
-          nextCoordinates.y
-        );
-        this.$store.dispatch("setPlayingDiv", {
-          ...nextCoordinates,
-          refName: nextPlayingDivRef
-        });
-        let nextPlayingDiv = this.$refs[nextPlayingDivRef];
-        if (nextPlayingDiv) {
-          nextPlayingDiv[0].classList.add("highlight");
-        }
-      } else {
-        Tone.Transport.stop();
-        this.$store.commit("changeIsPlayingState", false);
-      }
-    }, */
-    /*    refFinder(x, y) {
-      return this.$refs["r" + x + y];
-    }, */
-
-    /*    addArrowRef(payload) {
-      let { x, y, direction, refName } = payload;
-
-      let indexOfDuplicate = this.checkIfArrowRefExists(refName);
-      if (indexOfDuplicate !== -1) {
-        this.arrowRefs[indexOfDuplicate].direction = direction;
-        return;
-      }
-      this.arrowRefs.push({ x, y, name: refName, direction: direction });
-    } */
-
-    /*     checkIfArrowRefExists(refName) {
-      return this.arrowRefs.findIndex(ref => ref.name == refName);
-    }, */
-
     openDirectionPicker(payload) {
       this.directionPickerOpen = payload;
     },
 
-    /*     isArrow(x, y) {
-      let answer = this.arrowRefs.find(item => item.x === x && item.y === y);
-      return answer ? true : false;
-    }, */
-    /*    isArrowRef(x, y) {
-      let refname = this.getRefFromCoordinates(x, y);
-      let arrowRef = this.arrowRefs.find(arrowRef => arrowRef.name === refname);
-      return arrowRef ? true : false;
-    }, */
     mouseEventHandler(x, y) {
-      this.colorCalcXY(x, y);
       this.mousePos = { x, y };
     },
     createGridClass(n) {
@@ -222,8 +122,6 @@ export default {
       return blend * 18;
     },
     colorCalcDif(n, coordinate) {
-      /*       console.log("colorCalc");
-       */
       let pos = this.highlightPos[coordinate];
 
       let numbers = [n, pos];
@@ -271,15 +169,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(["playingDiv"]),
+    ...mapState(["playingDiv", "isPlaying"]),
     highlightPos() {
       let pos;
-      switch (this.highlightTarget) {
-        case "playingDiv":
+      switch (this.isPlaying) {
+        case true:
           pos = this.playingDiv;
 
           break;
-        case "mousePos":
+        case false:
           pos = this.mousePos;
           break;
       }
