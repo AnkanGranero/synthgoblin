@@ -52,16 +52,12 @@ export default {
     },
 
     addArrowRef(payload) {
-      this.direction = payload;
-      console.log("payload", payload);
-
       let { x, y, refName } = this.refForSquare;
-      this.$store.dispatch("addArrowRef", {
-        x,
-        y,
-        refName,
-        direction: payload
-      });
+      let payloadForStore = { x, y, refName, direction: payload };
+
+      this.$store.dispatch("addArrowRef", payloadForStore);
+
+      this.direction = payload;
     },
 
     setDirection(payload) {

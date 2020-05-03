@@ -37,6 +37,7 @@ export default new Vuex.Store({
     },
     changeDirectionOnArrowRef(state , payload) {
       let { index, direction } = payload;
+      
       state.arrowRefs[index].direction = direction;
     },
     setDirection(state, payload) {
@@ -77,7 +78,9 @@ export default new Vuex.Store({
   },
   getters: {
   findArrowRefIndex: (state) => (refName) => {
-    let index = state.arrowRefs.findIndex(ref => ref.name == refName);
+    console.log("refname", refName);
+    
+    let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
     return index;
   },
     findArrowRef: (state) => (refName) => {
