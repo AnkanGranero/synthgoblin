@@ -15,10 +15,9 @@ kanske att det slutar spela om man trycker någponstans på skärmen
         @mouseover="mouseEventHandler(x, y)"
         :style="colorStyling(x,y)"
         class="button-wrapper"
-        :ref="'r'+x+y"
+        :ref="getRefFromCoordinates(x,y)"
       >
         <square
-          @click="handleClick"
           @openDirectionPicker="openDirectionPicker"
           :refForSquare="refForSquare(x,y)"
           :directionPickerOpen="isdirectionPickerOpen(x,y)"
@@ -32,9 +31,9 @@ kanske att det slutar spela om man trycker någponstans på skärmen
 
 <script>
 import square from "./Square";
-import * as Tone from "tone";
+import { mapState } from "vuex";
 
-const synth = new Tone.Synth({
+/* const synth = new Tone.Synth({
   oscillator: {
     type: "square",
     modulationFrequency: 0.2
@@ -46,7 +45,7 @@ const synth = new Tone.Synth({
     sustain: 0.2,
     release: 0.2
   }
-});
+}); */
 
 export default {
   name: "GridLayout",
@@ -56,9 +55,9 @@ export default {
   data() {
     return {
       mousePos: { x: 0, y: 0 },
-      arrowRef: [],
-      arrowRefs: [],
-      direction: "",
+      /*       arrowRef: [],
+      arrowRefs: [], */
+      /*      direction: "", */
       directionPickerOpen: {}
     };
   },
@@ -75,34 +74,30 @@ export default {
       type: Array,
       default: () => []
     }
-  },
-  mounted() {
-    async function prepare() {
-      /* ; */
-      const reverb = new Tone.Reverb({
-        decay: 5,
-        wet: 0.3,
-        preDelay: 0.2
-      }).toMaster();
-      await reverb.generate();
-      /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
-      synth.connect(reverb);
-    }
-    prepare();
+
+    /*     highlightedDiv: {
+      type: String,
+      default: ""
+    } */
   },
 
   methods: {
+    getRefFromCoordinates(x, y) {
+      return `r${x}-${y}`;
+    },
     refForSquare(x, y) {
-      const refName = `r${x}${y}`;
+      const refName = this.getRefFromCoordinates(x, y);
       return {
         x,
         y,
         refName
       };
     },
-
-    getRefFromCoordinates(x, y) {
-      return `r${x}${y}`;
+    addHighlight(refName) {
+      let ref = this.$refs[refName];
+      if (ref) {
+        ref[0].classList.remove("highlight");
+      }
     },
 
     colorStyling(x, y) {
@@ -136,35 +131,12 @@ export default {
       return x == this.directionPickerOpen.x && y == this.directionPickerOpen.y;
     },
 
-    findArrowRef(x, y) {
+    /*     findArrowRef(x, y) {
       let refName = this.getRefFromCoordinates(x, y);
       return this.arrowRefs.find(arrowRef => arrowRef.name === refName);
-    },
-    loop() {
-      Tone.Transport.scheduleRepeat(this.repeat, "8n");
-      Tone.Transport.bpm.value = 300;
-      Tone.Transport.start();
-    },
-    nextCoordinateBasedOnDirection(x, y, direction) {
-      switch (direction) {
-        case "down":
-          y += 1;
-          break;
-        case "right":
-          x += 1;
-          break;
-        case "left":
-          x -= 1;
-          break;
-        case "up":
-          y -= 1;
-          break;
-      }
+    }, */
 
-      return { x, y, direction };
-    },
-
-    repeat(time) {
+    /* repeat(time) {
       let { playingDiv } = this;
 
       let { x, y, refName, direction } = playingDiv;
@@ -204,14 +176,12 @@ export default {
         Tone.Transport.stop();
         this.$store.commit("changeIsPlayingState", false);
       }
-    },
-    refFinder(x, y) {
+    }, */
+    /*    refFinder(x, y) {
       return this.$refs["r" + x + y];
-    },
+    }, */
 
-    addArrowRef(payload) {
-      console.log("adding arrow");
-
+    /*    addArrowRef(payload) {
       let { x, y, direction, refName } = payload;
 
       let indexOfDuplicate = this.checkIfArrowRefExists(refName);
@@ -220,47 +190,25 @@ export default {
         return;
       }
       this.arrowRefs.push({ x, y, name: refName, direction: direction });
-    },
-    removeArrowRef(payload) {
-      let index = this.checkIfArrowRefExists(payload.refName);
-      console.log("lets remove", index);
+    } */
 
-      if (index !== -1) {
-        this.arrowRefs.splice(index, 1);
-        console.log("removed ", this.arrowRefs);
-      }
-    },
-    checkIfArrowRefExists(refName) {
+    /*     checkIfArrowRefExists(refName) {
       return this.arrowRefs.findIndex(ref => ref.name == refName);
-    },
+    }, */
 
     openDirectionPicker(payload) {
-      console.log("open directionP in GL");
-
       this.directionPickerOpen = payload;
     },
 
-    handleClick(payload) {
-      if (payload.status == "remove") {
-        this.removeArrowRef(payload);
-        return;
-      }
-      this.addArrowRef(payload);
-      if (payload.status == "play") {
-        this.$store.dispatch("setPlayingDiv", payload);
-        this.$store.dispatch("changeIsPlayingState", true);
-        this.loop();
-      }
-    },
-    isArrow(x, y) {
+    /*     isArrow(x, y) {
       let answer = this.arrowRefs.find(item => item.x === x && item.y === y);
       return answer ? true : false;
-    },
-    isArrowRef(x, y) {
+    }, */
+    /*    isArrowRef(x, y) {
       let refname = this.getRefFromCoordinates(x, y);
       let arrowRef = this.arrowRefs.find(arrowRef => arrowRef.name === refname);
       return arrowRef ? true : false;
-    },
+    }, */
     mouseEventHandler(x, y) {
       this.colorCalcXY(x, y);
       this.mousePos = { x, y };
@@ -274,6 +222,8 @@ export default {
       return blend * 18;
     },
     colorCalcDif(n, coordinate) {
+      /*       console.log("colorCalc");
+       */
       let pos = this.highlightPos[coordinate];
 
       let numbers = [n, pos];
@@ -321,14 +271,13 @@ export default {
     }
   },
   computed: {
-    playingDiv() {
-      return this.$store.state.playingDiv;
-    },
+    ...mapState(["playingDiv"]),
     highlightPos() {
       let pos;
       switch (this.highlightTarget) {
         case "playingDiv":
           pos = this.playingDiv;
+
           break;
         case "mousePos":
           pos = this.mousePos;
@@ -348,7 +297,9 @@ $square: 6.666666666666667%;
   display: grid;
   grid-template-rows: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
   @media only screen and (min-width: 768px) {
-    height: 80vh;
+    /* height: 80vh; */
+    height: 100%;
+    width: 100%;
   }
 }
 .button-wrapper {

@@ -27,9 +27,6 @@ export default {
     }
   },
   computed: {
-    playingDiv() {
-      return this.$store.state.playingDiv;
-    },
     whatDirection() {
       let { direction } = this;
       let x = ["left", "right"];

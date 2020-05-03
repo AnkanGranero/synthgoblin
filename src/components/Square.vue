@@ -2,11 +2,11 @@
   <div class="square" @mousedown="handleClick">
     <Direction-picker
       v-if="directionPickerOpen"
-      @directionSet="setDirection"
+      @directionSet="addArrowRef"
       @removeArrowDiv="removeArrowDiv"
     />
 
-    <div v-if="direction" class="square__arrow-wrapper" @click="play">
+    <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
       <div :class="whatDirection"></div>
     </div>
   </div>
@@ -38,11 +38,8 @@ export default {
   },
   methods: {
     handleClick() {
-      if (!this.direction) {
-        this.openDirectionPicker();
-        return;
-      }
-      this.closeDirectionPicker();
+      this.openDirectionPicker();
+      return;
     },
     openDirectionPicker() {
       if (this.directionPickerOpen) {
@@ -54,31 +51,32 @@ export default {
       this.$emit("openDirectionPicker", { x, y });
     },
 
-    emitArrowRef(arg) {
+    addArrowRef(payload) {
+      this.direction = payload;
+      console.log("payload", payload);
+
       let { x, y, refName } = this.refForSquare;
-      let { direction } = this;
-      this.$emit("click", { x, y, refName, direction, status: arg });
+      this.$store.dispatch("addArrowRef", {
+        x,
+        y,
+        refName,
+        direction: payload
+      });
     },
 
     setDirection(payload) {
       this.direction = payload;
-      this.emitArrowRef("hold"); //hold kan vara ett dåligt namn eftersom den inte kommer stanna spelandet
     },
     closeDirectionPicker() {
       this.$emit("closeDirectionPicker");
     },
-    play() {
-      if (!this.$store.state.isPlaying) {
-        this.emitArrowRef("play");
-      } else {
-        this.openDirectionPicker();
-      }
+    clickedOnArrow() {
+      this.openDirectionPicker();
     },
     removeArrowDiv() {
-      console.log("nu hoppas jag den kan tas bort ");
-
+      let { refName } = this.refForSquare;
       this.direction = "";
-      this.emitArrowRef("remove");
+      this.$store.dispatch("removeArrowRef", refName);
     }
   },
   computed: {
@@ -176,31 +174,32 @@ export default {
     align-items: center;
     justify-content: center;
   }
+  $arrow-size: 10px;
   //denna kod är nu duplicerad
   .arrow-left {
-    border-bottom: 10px solid transparent;
-    border-right: 10px solid rgb(51, 51, 51);
+    border-bottom: $arrow-size solid transparent;
+    border-right: $arrow-size solid rgb(51, 51, 51);
 
-    border-top: 10px solid transparent;
+    border-top: $arrow-size solid transparent;
   }
   .arrow-down {
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
+    border-left: $arrow-size solid transparent;
+    border-right: $arrow-size solid transparent;
 
-    border-top: 10px solid rgb(51, 51, 51);
+    border-top: $arrow-size solid rgb(51, 51, 51);
   }
 
   .arrow-right {
-    border-bottom: 10px solid transparent;
-    border-left: 10px solid rgb(51, 51, 51);
+    border-bottom: $arrow-size solid transparent;
+    border-left: $arrow-size solid rgb(51, 51, 51);
 
-    border-top: 10px solid transparent;
+    border-top: $arrow-size solid transparent;
   }
   .arrow-up {
-    border-left: 10px solid transparent;
-    border-bottom: 10px solid rgb(51, 51, 51);
+    border-left: $arrow-size solid transparent;
+    border-bottom: $arrow-size solid rgb(51, 51, 51);
 
-    border-right: 10px solid transparent;
+    border-right: $arrow-size solid transparent;
   }
 }
 .image {
