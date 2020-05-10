@@ -13,7 +13,9 @@
     >
       <Triangle :direction="'left'" :borderSize="'12px'" />
     </div>
-    <div class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--2"></div>
+    <div
+      class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--2"
+    ></div>
     <div
       class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--3"
       @mousedown="setDirection('right')"

@@ -1,4 +1,5 @@
-//skapa dynamisk komponent som har innehåll på den som vi valt och vi har importerat alla dom som egna komponenter 
+//skapa dynamisk komponent som har innehåll på den som vi valt och vi har
+importerat alla dom som egna komponenter
 <template>
   <div class="modal">
     <Menu @menuEmit="modalEmit" />

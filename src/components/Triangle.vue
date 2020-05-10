@@ -19,7 +19,7 @@ export default {
     },
     color: {
       type: String,
-      default: "white"
+      default: "grey"
     },
     headerText: {
       type: String,

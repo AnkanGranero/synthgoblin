@@ -1,10 +1,8 @@
-//jag har en array med den spelande koordinaterna, som när den ersätts 
-först tar bort styling till den första sen lägger till till den nya
-
-
-//lägg till knappar för att välja prop value mousePos som highlightTarget
-// ha en propterty playing så att om man trycker på en pil när det spelas så kommer modal upp,
-kanske att det slutar spela om man trycker någponstans på skärmen
+//jag har en array med den spelande koordinaterna, som när den ersätts först tar
+bort styling till den första sen lägger till till den nya //lägg till knappar
+för att välja prop value mousePos som highlightTarget // ha en propterty playing
+så att om man trycker på en pil när det spelas så kommer modal upp, kanske att
+det slutar spela om man trycker någponstans på skärmen
 
 <template>
   <div class="pageWrapper">
@@ -13,21 +11,20 @@ kanske att det slutar spela om man trycker någponstans på skärmen
         v-for="x in 15"
         :key="x"
         @mouseover="mouseEventHandler(x, y)"
-        :style="colorStyling(x,y)"
+        :style="colorStyling(x, y)"
         class="button-wrapper"
-        :ref="getRefFromCoordinates(x,y)"
+        :ref="getRefFromCoordinates(x, y)"
       >
         <square
           @openDirectionPicker="openDirectionPicker"
-          :refForSquare="refForSquare(x,y)"
-          :directionPickerOpen="isdirectionPickerOpen(x,y)"
+          :refForSquare="refForSquare(x, y)"
+          :directionPickerOpen="isdirectionPickerOpen(x, y)"
           @closeDirectionPicker="closeDirectionPicker"
         ></square>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import square from "./Square";
@@ -50,10 +47,7 @@ export default {
       type: String,
       default: "classic"
     },
-    highlightTarget: {
-      type: String,
-      default: "playingDiv"
-    },
+
     allScales: {
       type: Array,
       default: () => []
@@ -90,12 +84,7 @@ export default {
           };
         case "classic": {
           let backgroundColors = {
-            background:
-              "rgb(" +
-              this.colorCalcDif(y, "y") +
-              "," +
-              this.colorCalcDif(x, "x") +
-              ",250)"
+            background: this.colorCalcDifBoth(x, y)
           };
           this.$store.dispatch("setBackgroundColors", backgroundColors);
           return backgroundColors;
@@ -121,6 +110,22 @@ export default {
       let blend = subtract < 0 ? subtract * -1 : subtract;
       return blend * 18;
     },
+    colorCalcDifBoth(x, y) {
+      if (
+        this.isPlaying &
+        (x === this.playingDiv.x) &
+        (y === this.playingDiv.y)
+      ) {
+        return "white";
+      }
+      return (
+        "rgb(" +
+        this.colorCalcDif(y, "y") +
+        "," +
+        this.colorCalcDif(x, "x") +
+        ",250)"
+      );
+    },
     colorCalcDif(n, coordinate) {
       let pos = this.highlightPos[coordinate];
 
@@ -132,7 +137,7 @@ export default {
 
       return 250 - difference;
     },
-    colorCalcX(n) {
+    /*     colorCalcX(n) {
       let subtract = n - (this.highlightPos.x - 1);
       let blend = subtract < 0 ? subtract * -1 : subtract;
       return blend * 18;
@@ -148,7 +153,7 @@ export default {
 
       numbers[highest] = add;
       numbers[lowest] = subtract;
-    },
+    }, */
     colorCalcDifference(x, y) {
       let xArr = [x, this.highlightPos.x];
       let yArr = [y, this.highlightPos.y];
@@ -209,7 +214,7 @@ $square: 6.666666666666667%;
 }
 
 .highlight {
-  border: 1px solid rgb(110, 110, 160);
-  z-index: 20;
+  /*   border: 1px solid rgb(110, 110, 160);
+  z-index: 20; */
 }
 </style>
