@@ -1,21 +1,16 @@
 <template>
   <div class="slidecontainer">
-    <input
-      type="range"
-      min="2"
-      orient="vertical"
-      max="100"
-      v-model="slideValue"
-      class="slidecontainer__slider"
-      id="myRange"
-      ref="slider"
-    />
+    <!--     <span>{{ slideValue }}</span> -->
     <div
-      class="slidecontainer__twin"
+      class="slider"
+      @mouseleave="clicked=false"
       @mousedown="mouseHandler"
-      @mouseup="mouseHandler"
+      @mouseup="clicked=false"
+      @mousemove="mouseHandler"
+      ref="slider"
     >
-      <div class="slidecontainer__knob" :style="knobPosition" ref="knob"></div>
+      <div class="slider__track"></div>
+      <div class="slider__knob" :style="knobPosition"></div>
     </div>
   </div>
 </template>
@@ -24,57 +19,70 @@ export default {
   name: "sliders",
   data() {
     return {
-      slideValue: 100
+      slideValue: 50,
+      clicked: false
     };
   },
   methods: {
     changeMousePos(event) {
       console.log("mouseEvent", event);
     },
-    mouseHandler() {
-      let ref = this.$refs["knob"];
-      console.log("ref", ref);
+    mouseHandler(event) {
+      if (event.type === "mousedown") {
+        this.clicked = true;
+      }
 
-      ref.style.borderradius = "50%";
+      if (this.clicked) {
+        let divPos = this.$refs.slider.getBoundingClientRect();
+        let { top, bottom } = divPos;
+
+        let mousePosY = event.clientY;
+        let mouseFromTop = mousePosY - top;
+        let divBottom = bottom - top;
+        let mousePercentage = (mouseFromTop / divBottom) * 100;
+
+        this.slideValue = mousePercentage;
+      }
     }
   },
   computed: {
     knobPosition() {
-      return { top: `${100 - this.slideValue}%` };
+      let topValue = this.slideValue < 100 ? this.slideValue : 100;
+      return { top: `${topValue}%` };
     }
   }
 };
 </script>
 <style lang="scss">
+$background: #54bb5a;
+$yellow: #d9d283;
+
 .slidecontainer {
   height: 100%;
+  position: relative;
+  background: transparent;
+  width: 40%;
+  max-height: 100%;
+}
+.slider {
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
   display: flex;
-  &__slider {
-    writing-mode: tb-lr; /* IE */
-    -webkit-appearance: slider-vertical; /* WebKit */
-    /*     -webkit-appearance: none; */
-    height: 100%;
-    width: 5px;
-    /*    transform: rotate(90deg); */
-    margin: 0;
-    ::-webkit-slider-runnable-track {
-      background: red;
-    }
-    ::-webkit-slider-thumb {
-      background: green;
-      width: 100px;
-    }
+  justify-content: center;
+  z-index: -2;
+
+  &__track {
+    background: $background;
+    width: 5%;
   }
-  &__twin {
-    height: 100%;
-    background: red;
-    width: 5px;
-  }
+
   &__knob {
-    background: green;
-    width: 10px;
+    width: 80%;
+    background: $yellow;
     height: 10px;
-    position: relative;
+    position: absolute;
+    border-radius: 10%;
   }
 }
 </style>
