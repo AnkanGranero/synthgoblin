@@ -14,9 +14,14 @@
       <div class="tv__left">
         <img src="./assets/kugghjul.svg" class="tv__large-button" alt />
         <div class="tv__buttons">
-          <div v-for="(wave,index) in waves" :key="index">
+          <div v-for="(wave,index) in waves" :key="index" @click="changeWave(wave)">
             <button class="tv__btn">
-              <img class="tv__image" :src="waveImg(wave)" alt />
+              <img
+                class="tv__image"
+                :src="waveImg(wave)"
+                alt="waveform select button"
+                :class="{ 'tv__image--active': selectedWaveform === wave}"
+              />
             </button>
           </div>
         </div>
@@ -26,7 +31,10 @@
       </div>
       <div class="tv__right">
         <img src="./assets/play.svg" class="tv__large-button" alt="play button" @click="play" />
-        <slider @changedBpm="changeBpm" />
+        <div class="sliderContainer">
+          <slider @changedBpm="changeBpm" />
+          <slider @changedBpm="changeBpm" />
+        </div>
       </div>
       <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
     </div>
@@ -78,8 +86,9 @@ export default {
       intervals: "",
       allScales: [],
       modalOpen: false,
-      waves: ["sinus", "square", "sawtooth", "triangle"],
-      bpm: 150
+      waves: ["sine", "square", "sawtooth", "triangle"],
+      bpm: 150,
+      selectedWaveform: "square"
     };
   },
   mounted() {
@@ -98,6 +107,10 @@ export default {
     prepare();
   },
   methods: {
+    changeWave(val) {
+      synth.oscillator.type = val;
+      this.selectedWaveform = val;
+    },
     changeBpm(val) {
       this.bpm = val;
       Tone.Transport.bpm.value = val;
@@ -257,18 +270,10 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
 //så småningom byta font till smoothare utstickande bitar
 $square: 6.666666666666667%;
-$background: #54bb5a;
+$hagridGreen: #54bb5a;
 $yellow: #d9d283;
-$green: #368a3c;
-/* .overlay {
-  height: 100vh;
-  z-index: -3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5%;
-  position: relative;
-} */
+$leafGreen: #368a3c;
+$blue: rgb(141, 223, 232);
 
 #hagrid {
   /*   z-index: -3;
@@ -280,13 +285,13 @@ $green: #368a3c;
   padding: 0 5%;
   display: flex;
   flex-direction: column;
-  background: $background;
+  background: $hagridGreen;
 }
 body {
   margin: 0;
   min-width: fit-content;
   min-height: fit-content;
-  background: $background;
+  background: $hagridGreen;
   margin: 0;
   color: rgb(60, 58, 58);
   font-size: 1.5rem;
@@ -372,6 +377,12 @@ body {
     display: flex;
     align-items: center;
     flex-direction: column;
+
+    .sliderContainer {
+      display: flex;
+      height: 100%;
+      justify-content: space-around;
+    }
   }
   &__buttons {
     height: 100%;
@@ -387,12 +398,16 @@ body {
   &__image {
     height: 70px;
     width: 70px;
-    background: $background;
-    border: 12px solid $background;
+    background: $hagridGreen;
+    border: 12px solid $hagridGreen;
     border-radius: 10%;
+    &--active {
+      background: $yellow !important;
+      border: 12px solid $yellow !important;
+    }
     &:hover {
-      background: $yellow;
-      border: 12px solid $yellow;
+      background: $blue;
+      border: 12px solid $blue;
     }
   }
 }
