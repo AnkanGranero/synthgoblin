@@ -26,7 +26,7 @@
       </div>
       <div class="tv__right">
         <img src="./assets/play.svg" class="tv__large-button" alt="play button" @click="play" />
-        <slider />
+        <slider @changedBpm="changeBpm" />
       </div>
       <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
     </div>
@@ -78,9 +78,8 @@ export default {
       intervals: "",
       allScales: [],
       modalOpen: false,
-      waves: ["sinus", "square", "sawtooth", "triangle"]
-      /*       colorCenter: { x: 10, y: 10 }
-       */
+      waves: ["sinus", "square", "sawtooth", "triangle"],
+      bpm: 150
     };
   },
   mounted() {
@@ -99,6 +98,10 @@ export default {
     prepare();
   },
   methods: {
+    changeBpm(val) {
+      this.bpm = val;
+      Tone.Transport.bpm.value = val;
+    },
     waveImg(wave) {
       return require(`./assets/${wave}.svg`);
     },
@@ -155,11 +158,10 @@ export default {
     async play() {
       Tone.Transport.stop();
       this.$store.commit("changeIsPlayingState", true);
-      //gör en check om vi redan spelar
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
       this.$store.dispatch("setPlayingDiv", firstArrowRef);
-      Tone.Transport.scheduleRepeat(this.repeat, "8n");
-      Tone.Transport.bpm.value = 300;
+      Tone.Transport.scheduleRepeat(this.repeat, "16n");
+      Tone.Transport.bpm.value = this.bpm;
       Tone.Transport.start();
     },
     repeat(time) {

@@ -1,6 +1,5 @@
 <template>
   <div class="slidecontainer">
-    <!--     <span>{{ slideValue }}</span> -->
     <div
       class="slider"
       @mouseleave="clicked=false"
@@ -12,6 +11,7 @@
       <div class="slider__track"></div>
       <div class="slider__knob" :style="knobPosition"></div>
     </div>
+    <span class="value">{{ slideValueToBpm }} BPM</span>
   </div>
 </template>
 <script>
@@ -24,9 +24,6 @@ export default {
     };
   },
   methods: {
-    changeMousePos(event) {
-      console.log("mouseEvent", event);
-    },
     mouseHandler(event) {
       if (event.type === "mousedown") {
         this.clicked = true;
@@ -42,13 +39,21 @@ export default {
         let mousePercentage = (mouseFromTop / divBottom) * 100;
 
         this.slideValue = mousePercentage;
+        this.$emit("changedBpm", this.slideValueToBpm);
       }
     }
   },
   computed: {
     knobPosition() {
-      let topValue = this.slideValue < 100 ? this.slideValue : 100;
+      let topValue =
+        this.slideValueToInteger < 100 ? this.slideValueToInteger : 100;
       return { top: `${topValue}%` };
+    },
+    slideValueToInteger() {
+      return Math.round(this.slideValue);
+    },
+    slideValueToBpm() {
+      return 200 - this.slideValueToInteger;
     }
   }
 };
@@ -56,6 +61,13 @@ export default {
 <style lang="scss">
 $background: #54bb5a;
 $yellow: #d9d283;
+
+.value {
+  color: white;
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+}
 
 .slidecontainer {
   height: 100%;
