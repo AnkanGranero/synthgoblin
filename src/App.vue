@@ -279,10 +279,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-@font-face {
-  font-family: "nintendo";
-  src: url("./assets/fonts/press_start.ttf");
-}
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
 //så småningom byta font till smoothare utstickande bitar
 $square: 6.666666666666667%;

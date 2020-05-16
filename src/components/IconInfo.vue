@@ -23,6 +23,9 @@
           ry="10.42"
         />
       </g>
+      <g id="Layer_5" data-name="Layer 5">
+        <text class="cls-3" transform="translate(13.73 19.88)">i</text>
+      </g>
     </svg>
   </div>
 </template>
@@ -50,5 +53,10 @@ export default {
 .icon {
   height: 100%;
   width: 100%;
+}
+.cls-3 {
+  font-size: 12px;
+  font-family: OpenSans-ExtraBold, Open Sans;
+  font-weight: 800;
 }
 </style>
