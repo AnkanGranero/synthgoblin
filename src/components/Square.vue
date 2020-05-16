@@ -77,9 +77,6 @@ export default {
   },
   computed: {
     whatDirection() {
-      /*    if (!this.isClicked) {
-        return;
-      } */
       let { direction } = this;
 
       let cssClass;
@@ -103,27 +100,6 @@ export default {
       return cssClass;
     }
   }
-  /*    whatDirection() {
-      let direction = this.arrowDirection;
-      console.log("direction", direction);
-
-      let degrees;
-      switch (direction) {
-        case "left":
-          degrees = "180deg";
-          break;
-        case "right":
-          degrees = "0deg";
-          break;
-        case "up":
-          degrees = "-90deg";
-          break;
-        case "down":
-          degrees = "90deg";
-          break;
-      }
-      return [{ transform: `rotate(${degrees})` }];
-    } */
 };
 </script>
 

@@ -24,13 +24,12 @@ export default new Vuex.Store({
     addArrowRef(state, payload) {
       state.arrowRefs.push(payload);
     },
-    removeArrowRef(state, getters, payload) {
-      let index = getters.findArrowRefIndex(payload.refName);
-      console.log("lets remove", index);
+    removeArrowRef(state, payload) {
+      
+      let index = this.getters.findArrowRefIndex(payload);
 
       if (index !== -1) {
         state.arrowRefs.splice(index, 1);
-        console.log("removed ", this.arrowRefs);
       }
     },
     changeDirectionOnArrowRef(state, payload) {
@@ -47,8 +46,6 @@ export default new Vuex.Store({
       commit("changeIsPlayingState", payload);
     },
     setPlayingDiv({ commit }, payload) {
-      
-
       commit("changePlayingDiv", payload);
     },
     setBackgroundColors({ commit }, payload) {
@@ -58,7 +55,6 @@ export default new Vuex.Store({
       let { x, y, direction, refName } = payload;
 
       let indexOfDuplicate = getters.findArrowRefIndex(refName);
-      console.log("adding arrow", indexOfDuplicate);
 
       if (indexOfDuplicate !== -1) {
         commit("changeDirectionOnArrowRef", {
@@ -70,6 +66,7 @@ export default new Vuex.Store({
       commit("addArrowRef", { x, y, refName, direction: direction });
     },
     removeArrowRef({ commit }, payload) {
+     
       commit("removeArrowRef", payload);
     },
     setDirection({ commit }, payload) {
@@ -78,7 +75,6 @@ export default new Vuex.Store({
   },
   getters: {
     findArrowRefIndex: state => refName => {
-      console.log("refname", refName);
 
       let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
       return index;

@@ -15,6 +15,7 @@
     </div>
     <div
       class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--2"
+      @mousedown="removeArrowDiv"
     ></div>
     <div
       class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--3"
@@ -100,7 +101,6 @@ $arrow-border-size: 10px;
     align-items: center;
     height: 100%;
     width: 100%;
-    /* background: black; */
   }
 }
 </style>
