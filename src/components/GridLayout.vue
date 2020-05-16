@@ -86,7 +86,7 @@ export default {
           let backgroundColors = {
             background: this.colorCalcDifBoth(x, y)
           };
-          this.$store.dispatch("setBackgroundColors", backgroundColors);
+          /*         this.$store.dispatch("setBackgroundColors", backgroundColors);*/
           return backgroundColors;
         }
       }
@@ -113,8 +113,8 @@ export default {
     colorCalcDifBoth(x, y) {
       if (
         this.isPlaying &
-        (x === this.playingDiv.x) &
-        (y === this.playingDiv.y)
+        (x === this.colorCenter.x) &
+        (y === this.colorCenter.y)
       ) {
         return "white";
       }
@@ -175,11 +175,16 @@ export default {
   },
   computed: {
     ...mapState(["playingDiv", "isPlaying"]),
+    colorCenter() {
+      return this.playingDiv
+        ? this.playingDiv
+        : { x: 10, y: 10, refName: "r10,10" };
+    },
     highlightPos() {
       let pos;
       switch (this.isPlaying) {
         case true:
-          pos = this.playingDiv;
+          pos = this.colorCenter;
 
           break;
         case false:

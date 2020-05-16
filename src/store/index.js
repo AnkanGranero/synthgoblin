@@ -6,7 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     isPlaying: false,
-    playingDiv: { x: 10, y: 10, refName: "r10,10" },
+    playingDiv: null,
     backgroundColors: "",
     arrowRefs: [],
     direction: ""
@@ -47,7 +47,7 @@ export default new Vuex.Store({
       commit("changeIsPlayingState", payload);
     },
     setPlayingDiv({ commit }, payload) {
-      console.log("sätter playing div", payload);
+      
 
       commit("changePlayingDiv", payload);
     },

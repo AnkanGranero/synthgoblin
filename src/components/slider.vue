@@ -11,7 +11,7 @@
       <div class="slider__track"></div>
       <div class="slider__knob" :style="knobPosition"></div>
     </div>
-    <span class="value">{{ slideValueToBpm }} BPM</span>
+    <span class="value">{{ slideValueToBpm }} {{ value }}</span>
   </div>
 </template>
 <script>
@@ -22,6 +22,12 @@ export default {
       slideValue: 50,
       clicked: false
     };
+  },
+  props: {
+    value: {
+      type: String,
+      default: ""
+    }
   },
   methods: {
     mouseHandler(event) {
@@ -39,7 +45,7 @@ export default {
         let mousePercentage = (mouseFromTop / divBottom) * 100;
 
         this.slideValue = mousePercentage;
-        this.$emit("changedBpm", this.slideValueToBpm);
+        this.$emit("changedValue", this.slideValueToBpm);
       }
     }
   },
@@ -92,9 +98,9 @@ $yellow: #d9d283;
   &__knob {
     width: 80%;
     background: $yellow;
-    height: 10px;
+    height: 15px;
     position: absolute;
-    border-radius: 10%;
+    border-radius: 10px;
   }
 }
 </style>

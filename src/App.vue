@@ -12,7 +12,8 @@
     <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
     <div class="tv">
       <div class="tv__left">
-        <img src="./assets/kugghjul.svg" class="tv__large-button" alt />
+        <IconInfo class="tv__large-button" />
+
         <div class="tv__buttons">
           <div v-for="(wave,index) in waves" :key="index" @click="changeWave(wave)">
             <button class="tv__btn">
@@ -30,10 +31,10 @@
         <GridLayout :styling="styling" :allScales="allScales" ref="gridLayout" />
       </div>
       <div class="tv__right">
-        <img src="./assets/play.svg" class="tv__large-button" alt="play button" @click="play" />
+        <IconPlay class="tv__large-button" @clicked="play" />
         <div class="sliderContainer">
-          <slider @changedBpm="changeBpm" />
-          <slider @changedBpm="changeBpm" />
+          <Slider @changedValue="changedSliderValue" value="Bpm" />
+          <Slider @changedValue="changedSliderValue" value="Filter" />
         </div>
       </div>
       <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
@@ -45,19 +46,20 @@
 </template>
 
 <script>
-import GridLayout from "./components/GridLayout";
 /* import Triangle from "./components/Triangle"; */
-import Modal from "./components/Modal";
-import Overlay from "./components/Overlay";
+import { Modal, Overlay, Slider, GridLayout } from "./components/index.js";
+
+import IconInfo from "./components/IconInfo";
+import IconPlay from "./components/IconPlay";
+
 import * as Tone from "tone";
 import { mapState } from "vuex";
-import slider from "./components/slider";
 /* import colorStyling from "./helpers/colorFunctions.js";
  */
 
 const synth = new Tone.Synth({
   oscillator: {
-    type: "square",
+    type: "sawtooth",
     modulationFrequency: 0.2
   },
 
@@ -73,10 +75,11 @@ export default {
   name: "App",
   components: {
     GridLayout,
-    /*     Triangle, */
-    slider,
+    Slider,
     Modal,
-    Overlay
+    Overlay,
+    IconInfo,
+    IconPlay
   },
   data() {
     return {
@@ -88,7 +91,7 @@ export default {
       modalOpen: false,
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
-      selectedWaveform: "square"
+      selectedWaveform: "sawtooth"
     };
   },
   mounted() {
@@ -101,8 +104,10 @@ export default {
         preDelay: 0.2
       }).toMaster();
       await reverb.generate();
+
       /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
       synth.connect(reverb);
+      console.log(synth);
     }
     prepare();
   },
@@ -111,7 +116,7 @@ export default {
       synth.oscillator.type = val;
       this.selectedWaveform = val;
     },
-    changeBpm(val) {
+    changedSliderValue(val) {
       this.bpm = val;
       Tone.Transport.bpm.value = val;
     },
@@ -169,10 +174,20 @@ export default {
       }
     },
     async play() {
-      Tone.Transport.stop();
-      this.$store.commit("changeIsPlayingState", true);
+      if (this.isPlaying) {
+        Tone.Transport.cancel();
+        this.$store.dispatch("changeIsPlayingState", false);
+        this.$store.dispatch("setPlayingDiv", null);
+        return;
+      }
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
+      if (!firstArrowRef) {
+        return;
+      }
       this.$store.dispatch("setPlayingDiv", firstArrowRef);
+
+      this.$store.commit("changeIsPlayingState", true);
+
       Tone.Transport.scheduleRepeat(this.repeat, "16n");
       Tone.Transport.bpm.value = this.bpm;
       Tone.Transport.start();
@@ -180,8 +195,7 @@ export default {
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
 
-      /*       this.colorCenter = { x, y };
-       */ let gridRefs = this.$refs.gridLayout.$refs;
+      let gridRefs = this.$refs.gridLayout.$refs;
       let ref = gridRefs[refName];
 
       if (ref) {
@@ -215,7 +229,9 @@ export default {
           nextPlayingDiv[0].classList.add("highlight");
         }
       } else {
-        Tone.Transport.stop();
+        console.log("out of bounds");
+
+        Tone.Transport.cancel();
         this.$store.commit("changeIsPlayingState", false);
       }
     },
@@ -246,7 +262,7 @@ export default {
     } */
   },
   computed: {
-    ...mapState(["playingDiv"]),
+    ...mapState(["playingDiv", "isPlaying"]),
     overlayVisible() {
       return this.modalOpen;
     },
@@ -307,7 +323,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  margin: 0 0 7% 0;
+  margin: 0 0 6% 0;
   &__h1 {
     color: #d9d283;
     margin: 0;
@@ -321,13 +337,14 @@ body {
     position: relative;
     top: -57px;
     left: 13px;
+    font-size: 1.7rem;
   }
   &__leaf {
     height: 300px;
     position: absolute;
     /*  top: 8rem;
     right: 16rem; */
-    bottom: -57%;
+    bottom: -49%;
     right: -39%;
   }
 }
@@ -348,8 +365,11 @@ body {
 
   &__large-button {
     /*     align-self: flex-start; */
+
     width: 150px;
     margin-bottom: 20%;
+    /*   background: $hagridGreen;
+    border-radius: 20%; */
   }
 
   &__left {
@@ -416,8 +436,8 @@ body {
   width: 80%;
   text-align: right;
   &__signature {
-    margin-top: 1%;
-    font-size: 1rem;
+    margin: 0.5%;
+    font-size: 0.8rem;
   }
 }
 </style>
