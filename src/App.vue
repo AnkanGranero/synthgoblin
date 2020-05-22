@@ -1,53 +1,63 @@
 <template>
   <div id="hagrid">
-    <div class="header">
-      <h1 class="header__h1" @click="openModal">Hagrid</h1>
-      <p class="header__sub">grid sequencer</p>
-      <img class="header__leaf" src="./assets/blad.svg" alt="leaf" />
-    </div>
-
     <!--     <div class="header">
       <button class="header__btn" @click="play">PLAY</button>
     </div>-->
     <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
-    <div class="tv">
-      <div class="tv__left">
-        <IconInfo class="tv__large-button" />
+    <div class="tv-wrapper">
+      <div class="header">
+        <div class="header__empty"></div>
+        <div class="header__center">
+          <h1 class="header__h1" @click="openModal">Hagrid</h1>
+          <p class="header__sub">grid sequencer</p>
+        </div>
+        <img class="header__leaf" src="./assets/blad.svg" alt="leaf" />
+      </div>
+      <div class="tv">
+        <div class="tv__left">
+          <IconInfo class="tv__large-button" />
 
-        <div class="tv__buttons">
-          <div v-for="(wave,index) in waves" :key="index" @click="changeWave(wave)">
-            <button class="tv__btn">
-              <img
-                class="tv__image"
-                :src="waveImg(wave)"
-                alt="waveform select button"
-                :class="{ 'tv__image--active': selectedWaveform === wave}"
-              />
-            </button>
+          <div class="tv__buttons">
+            <div v-for="(wave,index) in waves" :key="index" @click="changeWave(wave)">
+              <div>
+                <WaveComponent
+                  @click="changeWave(wave)"
+                  :waveForm="wave"
+                  alt="waveform select button"
+                  :selectedWaveForm="(selectedWaveform == wave)"
+                ></WaveComponent>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="tv__middle">
-        <GridLayout :styling="styling" :allScales="allScales" ref="gridLayout" />
-      </div>
-      <div class="tv__right">
-        <IconPlay class="tv__large-button" @clicked="play" />
-        <div class="sliderContainer">
-          <Slider @changedValue="changedSliderValue" value="Bpm" />
-          <Slider @changedValue="changedSliderValue" value="Filter" />
+        <div class="tv__middle">
+          <GridLayout :styling="styling" :allScales="allScales" ref="gridLayout" />
         </div>
+        <div class="tv__right">
+          <IconPlay class="tv__large-button" @clicked="play" />
+          <div class="sliderContainer">
+            <Slider @changedValue="changedSliderValue" value="BPM" />
+            <Slider @changedValue="changedSliderValue" value="Filter" />
+          </div>
+        </div>
+        <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
       </div>
-      <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
-    </div>
-    <div class="footer">
-      <p class="footer__signature">made by Andreas Granér</p>
+      <div class="footer">
+        <p class="footer__signature">made by Andreas Granér</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 /* import Triangle from "./components/Triangle"; */
-import { Modal, Overlay, Slider, GridLayout } from "./components/index.js";
+import {
+  Modal,
+  Overlay,
+  Slider,
+  GridLayout,
+  WaveComponent
+} from "./components/index.js";
 
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
@@ -56,7 +66,10 @@ import * as Tone from "tone";
 import { mapState } from "vuex";
 /* import colorStyling from "./helpers/colorFunctions.js";
  */
+/* var lowPassFreq = new Tone.Signal(300, Tone.Frequency);
+ */
 
+const lowPass = new Tone.Filter(50, "lowpass").toMaster();
 const synth = new Tone.Synth({
   oscillator: {
     type: "sawtooth",
@@ -79,7 +92,8 @@ export default {
     Modal,
     Overlay,
     IconInfo,
-    IconPlay
+    IconPlay,
+    WaveComponent
   },
   data() {
     return {
@@ -107,6 +121,7 @@ export default {
 
       /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
       synth.connect(reverb);
+      synth.connect(lowPass);
       console.log(synth);
     }
     prepare();
@@ -121,7 +136,7 @@ export default {
       Tone.Transport.bpm.value = val;
     },
     waveImg(wave) {
-      return require(`./assets/${wave}.svg`);
+      return require(`./assets/waves/${wave}.svg`);
     },
     openModal() {
       this.modalOpen = true;
@@ -283,9 +298,9 @@ export default {
 //så småningom byta font till smoothare utstickande bitar
 $square: 6.666666666666667%;
 $hagridGreen: #54bb5a;
+$blue: rgb(141, 223, 232);
 $yellow: #d9d283;
 $leafGreen: #368a3c;
-$blue: rgb(141, 223, 232);
 
 #hagrid {
   /*   z-index: -3;
@@ -294,54 +309,97 @@ $blue: rgb(141, 223, 232);
   -ms-flex-align: center;
   align-items: center;
   -ms-flex-pack: center;
-  padding: 0 5%;
+  padding: 0 14%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   background: $hagridGreen;
+  width: 100%;
+  height: 146%;
+}
+html {
+  min-height: 100%;
+  min-width: 100%;
 }
 body {
+  height: 100%;
+  width: 100%;
+  min-height: 100%;
   margin: 0;
   min-width: fit-content;
   min-height: fit-content;
   background: $hagridGreen;
   margin: 0;
-  color: rgb(60, 58, 58);
+
   font-size: 1.5rem;
   letter-spacing: -1px;
 }
 * {
   font-family: "Open Sans", sans-serif;
-
   /*   font-family: "Roboto", sans-serif; */
 }
 
-.header {
+.tv-wrapper {
   display: flex;
   flex-direction: column;
-  position: relative;
-  margin: 0 0 6% 0;
-  &__h1 {
-    color: #d9d283;
-    margin: 0;
-    /* font-size: 200px; */
-    font-size: 13rem;
-    letter-spacing: -0.4rem;
-  }
-  &__sub {
-    margin: 0;
-    padding: 0;
+  width: 100%;
+  height: 85%;
+
+  .header {
+    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    /* flex-direction: column; */
     position: relative;
-    top: -57px;
-    left: 13px;
-    font-size: 1.7rem;
-  }
-  &__leaf {
-    height: 300px;
-    position: absolute;
-    /*  top: 8rem;
-    right: 16rem; */
+    /*     position: absolute; */
+    justify-content: center;
+    margin-bottom: 10%;
+    margin-top: 6%;
+    /*    position: absolute;
+    left: 33%;
+    width: 33%; */
+
+    /*  margin: 0 0 6% 0; */
+
+    &__h1 {
+      color: #d9d283;
+      margin: 0;
+      /* font-size: 200px; */
+      /*     font-size: 13rem; */
+      font-size: 12.5vw;
+      letter-spacing: -0.4rem;
+      line-height: 0.8;
+    }
+    &__sub {
+      margin: 0;
+      padding: 0;
+      top: -57px;
+      left: 13px;
+      margin-left: 2%;
+      /*  font-size: 1.7rem; */
+      font-size: 1.7vw;
+    }
+    &__leaf {
+      /*  height: 300px; */
+      height: 19vw;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      top: 56%;
+
+      /*     position: absolute;
+
     bottom: -49%;
-    right: -39%;
+    right: -39%; */
+    }
+    &__middle {
+      flex-grow: 4;
+    }
+    &__left,
+    &__leaf {
+      flex-grow: 1;
+    }
   }
 }
 
@@ -353,19 +411,26 @@ body {
   display: flex;
 
   justify-content: space-between;
-
-  padding: 10% 0;
+  height: 100%;
+  min-height: 46%;
+  padding: 12.5% 0;
   @media only screen and (min-width: 768px) {
-    height: 50vw;
+    width: 100%;
+    min-width: 90vh;
   }
 
   &__large-button {
     /*     align-self: flex-start; */
 
     width: 150px;
-    margin-bottom: 20%;
+    width: 50%;
+    margin-bottom: 19%;
     /*   background: $hagridGreen;
     border-radius: 20%; */
+  }
+  &__btn-wrapper {
+    display: flex;
+    justify-content: center;
   }
 
   &__left {
@@ -373,6 +438,7 @@ body {
     display: flex;
     align-items: center;
     flex-direction: column;
+    flex-basis: 0;
   }
   &__circle {
     background: white;
@@ -393,6 +459,7 @@ body {
     display: flex;
     align-items: center;
     flex-direction: column;
+    flex-basis: 0;
 
     .sliderContainer {
       display: flex;
@@ -407,29 +474,12 @@ body {
     justify-content: space-between;
   }
   &__btn {
-    background: transparent;
-    border: none;
-    outline: none;
-  }
-  &__image {
-    height: 70px;
-    width: 70px;
-    background: $hagridGreen;
-    border: 12px solid $hagridGreen;
-    border-radius: 10%;
-    &--active {
-      background: $yellow !important;
-      border: 12px solid $yellow !important;
-    }
-    &:hover {
-      background: $blue;
-      border: 12px solid $blue;
-    }
+    margin: 5%;
   }
 }
 
 .footer {
-  width: 80%;
+  width: 100%;
   text-align: right;
   &__signature {
     margin: 0.5%;
