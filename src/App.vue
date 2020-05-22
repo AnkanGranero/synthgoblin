@@ -128,8 +128,6 @@ export default {
       /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
       synth.connect(reverb);
       synth.connect(filter);
-
-      console.log(synth);
     }
     prepare();
   },
@@ -256,8 +254,6 @@ export default {
           nextPlayingDiv[0].classList.add("highlight");
         }
       } else {
-        console.log("out of bounds");
-
         Tone.Transport.cancel();
         this.$store.commit("changeIsPlayingState", false);
       }
@@ -366,8 +362,10 @@ body {
     position: relative;
     /*     position: absolute; */
     justify-content: center;
-    margin-bottom: 13%;
-    margin-top: 5%;
+    margin: 5% 0;
+    @media only screen and (min-width: $medium) {
+      margin-bottom: 13%;
+    }
     /*    position: absolute;
     left: 33%;
     width: 33%; */
@@ -379,9 +377,19 @@ body {
       margin: 0;
       /* font-size: 200px; */
       /*     font-size: 13rem; */
-      font-size: 12.5vw;
+
       letter-spacing: -0.4rem;
       line-height: 0.8;
+      font-size: 4.4rem;
+      @media only screen and (min-width: 375px) {
+        font-size: 5.1rem;
+      }
+      @media only screen and (min-width: 425px) {
+        font-size: 5.7rem;
+      }
+      @media only screen and (min-width: $medium) {
+        font-size: 12.5vw;
+      }
     }
     &__sub {
       margin: 0;
@@ -389,8 +397,18 @@ body {
       top: -57px;
       left: 13px;
       margin-left: 2%;
-      /*  font-size: 1.7rem; */
-      font-size: 1.7vw;
+      font-size: 0.58rem;
+      @media only screen and (min-width: 375px) {
+        font-size: 0.7rem;
+      }
+      @media only screen and (min-width: 425px) {
+        font-size: 0.84rem;
+      }
+
+      @media only screen and (min-width: $medium) {
+        /*  font-size: 1.7rem; */
+        font-size: 1.7vw;
+      }
     }
     &__leaf {
       /*  height: 300px; */
@@ -544,7 +562,10 @@ body {
   text-align: right;
   &__signature {
     margin: 0.5%;
-    font-size: 0.8rem;
+    font-size: 0.6rem;
+    @media only screen and (min-width: $medium) {
+      font-size: 0.8rem;
+    }
   }
 }
 </style>
