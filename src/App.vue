@@ -1,8 +1,5 @@
 <template>
   <div id="hagrid">
-    <!--     <div class="header">
-      <button class="header__btn" @click="play">PLAY</button>
-    </div>-->
     <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
     <div class="tv-wrapper">
       <div class="header">
@@ -14,6 +11,10 @@
         <img class="header__leaf" src="./assets/blad.svg" alt="leaf" />
       </div>
       <div class="tv">
+        <div class="tv__top-mobile">
+          <IconPlay class="tv__large-button" @clicked="play" />
+          <IconInfo class="tv__large-button" />
+        </div>
         <div class="tv__left">
           <IconInfo class="tv__large-button" />
 
@@ -282,10 +283,6 @@ export default {
 
       return { x, y, direction };
     }
-    /*     findArrowRef(x, y) {
-      let refName = this.getRefFromCoordinates(x, y);
-      return this.arrowRefs.find(arrowRef => arrowRef.name === refName);
-    } */
   },
   computed: {
     ...mapState(["playingDiv", "isPlaying"]),
@@ -312,21 +309,21 @@ $hagridGreen: #54bb5a;
 $blue: rgb(141, 223, 232);
 $yellow: #d9d283;
 $leafGreen: #368a3c;
+$medium: 768px;
 
 #hagrid {
-  /*   z-index: -3;
- */
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
   -ms-flex-pack: center;
-  /* padding: 0 14%; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background: $hagridGreen;
   width: 100%;
-  height: 146%;
+  height: 100%;
+  @media only screen and (min-width: $medium) {
+    height: 146%;
+  }
 }
 html {
   min-height: 100%;
@@ -354,8 +351,11 @@ body {
   display: flex;
   flex-direction: column;
   /*   width: 100%; */
-  margin: 0 14%;
-  height: 85%;
+  height: 100%;
+  @media only screen and (min-width: $medium) {
+    height: 85%;
+    margin: 0 14%;
+  }
 
   .header {
     display: flex;
@@ -418,25 +418,42 @@ body {
 
 .tv {
   background: black;
-  width: 80%;
+  width: 100%;
   border-radius: 10px;
   align-content: center;
   display: flex;
+  min-height: 100%;
 
   justify-content: space-between;
   /*   height: 100%;
   min-height: 46%; */
-  padding: 12.5% 0;
-  width: 100%;
+  height: 100%;
+  flex-direction: column;
+
+  @media only screen and (min-width: $medium) {
+    min-height: unset;
+
+    padding: 12.5% 0;
+    height: unset;
+    width: 80%;
+    width: 100%;
+    flex-direction: row;
+  }
+
+  &__top-mobile {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10% 0 5%;
+    @media only screen and (min-width: $medium) {
+      display: none;
+    }
+  }
 
   &__large-button {
-    /*     align-self: flex-start; */
-
-    width: 150px;
-    width: 50%;
-    margin-bottom: 19%;
-    /*   background: $hagridGreen;
-    border-radius: 20%; */
+    @media only screen and (min-width: $medium) {
+      width: 50%;
+      margin-bottom: 19%;
+    }
   }
   &__btn-wrapper {
     display: flex;
@@ -444,12 +461,38 @@ body {
   }
 
   &__left {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    flex-basis: 0;
+    display: none;
+    @media only screen and (min-width: $medium) {
+      display: flex;
+      align-items: center;
+      flex-basis: 0;
+      justify-content: center;
+      flex-grow: 1;
+      flex-direction: column;
+    }
     /*   min-width: 271px; */
+  }
+  &__right {
+    display: none;
+
+    @media only screen and (min-width: $medium) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-basis: 0;
+      flex-grow: 1;
+      flex-direction: column;
+    }
+    /*  min-width: 271px; */
+    .sliderContainer {
+      display: none;
+      @media only screen and (min-width: $medium) {
+        display: flex;
+        height: 100%;
+        justify-content: space-around;
+        width: 48%;
+      }
+    }
   }
   &__circle {
     background: white;
@@ -459,33 +502,37 @@ body {
   }
   &__middle {
     /*    flex-grow: 4; */
-    width: 50%;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     max-width: 606px;
+    min-height: 50%;
+    min-width: 100%;
+    padding: 5%;
+    box-sizing: border-box;
+    @media only screen and (min-width: $medium) {
+      padding: unset;
+      width: 50%;
+      height: unset;
+      min-height: unset;
+      min-width: unset;
+    }
     /*     padding: 10px;
     border: 2px solid rgb(133, 130, 130); */
     /*  min-width: 490px; */
   }
-  &__right {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    flex-basis: 0;
-    /*  min-width: 271px; */
-    .sliderContainer {
-      display: flex;
-      height: 100%;
-      justify-content: space-around;
-      width: 48%;
-    }
-  }
+
   &__buttons {
     height: 100%;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: none;
+
+    @media only screen and (min-width: $medium) {
+      display: unset;
+      flex-direction: column;
+      justify-content: space-between;
+    }
   }
   &__btn {
     margin: 5%;

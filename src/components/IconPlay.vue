@@ -57,12 +57,21 @@ export default {
 </script>
 
 <style lang="scss">
+$medium: 768px;
+
 .wrapper {
-  height: 150px;
-  width: 150px;
+  /*   height: 40%;
+  width: 40%; */
+
+  @media only screen and (min-width: $medium) {
+    height: 150px;
+    width: 150px;
+  }
 }
 .icon {
-  height: 100%;
-  width: 100%;
+  @media only screen and (min-width: $medium) {
+    height: 100%;
+    width: 100%;
+  }
 }
 </style>

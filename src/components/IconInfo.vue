@@ -46,13 +46,20 @@ export default {
 </script>
 
 <style lang="scss">
+$medium: 768px;
 .wrapper {
-  height: 150px;
-  width: 150px;
+  height: 100px;
+  width: 100px;
+  @media only screen and (min-width: $medium) {
+    height: 150px;
+    width: 150px;
+  }
 }
 .icon {
-  height: 100%;
-  width: 100%;
+  @media only screen and (min-width: $medium) {
+    height: 100%;
+    width: 100%;
+  }
 }
 .cls-3 {
   font-size: 12px;
