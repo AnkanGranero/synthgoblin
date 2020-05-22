@@ -36,8 +36,8 @@
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
           <div class="sliderContainer">
-            <Slider @changedValue="changedSliderValue" value="BPM" />
-            <Slider @changedValue="changedSliderValue" value="Filter" />
+            <Slider @changedValue="changedSliderValue" type="bpm" />
+            <Slider @changedValue="changedSliderValue" type="reverb" />
           </div>
         </div>
         <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
@@ -69,7 +69,16 @@ import { mapState } from "vuex";
 /* var lowPassFreq = new Tone.Signal(300, Tone.Frequency);
  */
 
-const lowPass = new Tone.Filter(50, "lowpass").toMaster();
+/* const lowPass = new Tone.Filter(300, "lowpass").toMaster(); */
+const reverb = new Tone.Reverb({
+  decay: 5,
+  wet: 0.3,
+  preDelay: 0.2
+}).toMaster();
+var filter = new Tone.Filter({
+  type: "bandpass",
+  Q: 120
+}).toMaster();
 const synth = new Tone.Synth({
   oscillator: {
     type: "sawtooth",
@@ -112,16 +121,13 @@ export default {
     this.createAllPitchArrs();
     async function prepare() {
       /* ; */
-      const reverb = new Tone.Reverb({
-        decay: 5,
-        wet: 0.3,
-        preDelay: 0.2
-      }).toMaster();
+
       await reverb.generate();
 
       /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
       synth.connect(reverb);
-      synth.connect(lowPass);
+      synth.connect(filter);
+
       console.log(synth);
     }
     prepare();
@@ -131,9 +137,14 @@ export default {
       synth.oscillator.type = val;
       this.selectedWaveform = val;
     },
-    changedSliderValue(val) {
-      this.bpm = val;
-      Tone.Transport.bpm.value = val;
+    changedSliderValue({ val, type }) {
+      if (type === "bpm") {
+        this.bpm = val;
+        Tone.Transport.bpm.value = val;
+      }
+      if (type === "reverb") {
+        reverb.wet.value = val;
+      }
     },
     waveImg(wave) {
       return require(`./assets/waves/${wave}.svg`);

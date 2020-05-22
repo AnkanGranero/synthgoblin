@@ -11,7 +11,10 @@
       <div class="slider__track"></div>
       <div class="slider__knob" :style="knobPosition"></div>
     </div>
-    <span class="value">{{ slideValueToBpm }} {{ value }}</span>
+    <span class="type">
+      {{ type }}
+      <span class="value">{{ slideValueForType }}</span>
+    </span>
   </div>
 </template>
 <script>
@@ -24,7 +27,7 @@ export default {
     };
   },
   props: {
-    value: {
+    type: {
       type: String,
       default: ""
     }
@@ -45,7 +48,10 @@ export default {
         let mousePercentage = (mouseFromTop / divBottom) * 100;
 
         this.slideValue = mousePercentage;
-        this.$emit("changedValue", this.slideValueToBpm);
+        this.$emit("changedValue", {
+          val: this.slideValueForType,
+          type: this.type
+        });
       }
     }
   },
@@ -59,20 +65,46 @@ export default {
       return Math.round(this.slideValue);
     },
     slideValueToBpm() {
-      return 200 - this.slideValueToInteger;
+      let fullRange = this.slideValueToInteger * 2;
+
+      return 250 - fullRange;
+    },
+    slideValueToReverb() {
+      let bottomUp = 100 - this.slideValueToInteger;
+      console.log(this.slideValueToInteger);
+
+      let rounded = Math.round(bottomUp / 10);
+      let percentage = rounded / 10;
+      return percentage;
+    },
+    slideValueForType() {
+      let val = "";
+      switch (this.type) {
+        case "reverb":
+          val = this.slideValueToReverb;
+          break;
+        case "bpm":
+          val = this.slideValueToBpm;
+      }
+      return val;
     }
   }
 };
 </script>
 <style lang="scss">
-$background: #54bb5a;
+$hagridGreen: #54bb5a;
 $yellow: #d9d283;
 
-.value {
+.type {
   color: white;
   display: block;
   margin-top: 10px;
   text-align: center;
+  text-transform: uppercase;
+  color: $yellow;
+}
+.value {
+  color: $yellow;
 }
 
 .slider-wrapper {
@@ -91,7 +123,7 @@ $yellow: #d9d283;
   z-index: -2;
 
   &__track {
-    background: $background;
+    background: $hagridGreen;
     width: 5%;
   }
 
