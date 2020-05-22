@@ -38,12 +38,13 @@ $yellow: #d9d283;
 .wave {
   display: flex;
   justify-content: center;
+  margin: 2%;
 
   &__btn {
     height: 70px;
     width: 70px;
     height: 100%;
-    width: 23%;
+    width: 25%;
     background: $hagridGreen;
     border-radius: 10%;
     box-sizing: border-box;

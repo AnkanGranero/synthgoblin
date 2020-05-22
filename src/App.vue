@@ -309,7 +309,7 @@ $leafGreen: #368a3c;
   -ms-flex-align: center;
   align-items: center;
   -ms-flex-pack: center;
-  padding: 0 14%;
+  /* padding: 0 14%; */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -342,7 +342,8 @@ body {
 .tv-wrapper {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  /*   width: 100%; */
+  margin: 0 14%;
   height: 85%;
 
   .header {
@@ -354,8 +355,8 @@ body {
     position: relative;
     /*     position: absolute; */
     justify-content: center;
-    margin-bottom: 10%;
-    margin-top: 6%;
+    margin-bottom: 13%;
+    margin-top: 5%;
     /*    position: absolute;
     left: 33%;
     width: 33%; */
@@ -394,7 +395,8 @@ body {
     right: -39%; */
     }
     &__middle {
-      flex-grow: 4;
+      /*  flex-grow: 4; */
+      width: 50%;
     }
     &__left,
     &__leaf {
@@ -411,13 +413,10 @@ body {
   display: flex;
 
   justify-content: space-between;
-  height: 100%;
-  min-height: 46%;
+  /*   height: 100%;
+  min-height: 46%; */
   padding: 12.5% 0;
-  @media only screen and (min-width: 768px) {
-    width: 100%;
-    min-width: 90vh;
-  }
+  width: 100%;
 
   &__large-button {
     /*     align-self: flex-start; */
@@ -439,6 +438,7 @@ body {
     align-items: center;
     flex-direction: column;
     flex-basis: 0;
+    /*   min-width: 271px; */
   }
   &__circle {
     background: white;
@@ -447,12 +447,14 @@ body {
     border-radius: 100%;
   }
   &__middle {
-    flex-grow: 4;
+    /*    flex-grow: 4; */
+    width: 50%;
     display: flex;
     justify-content: center;
     max-width: 606px;
     /*     padding: 10px;
     border: 2px solid rgb(133, 130, 130); */
+    /*  min-width: 490px; */
   }
   &__right {
     flex-grow: 1;
@@ -460,11 +462,12 @@ body {
     align-items: center;
     flex-direction: column;
     flex-basis: 0;
-
+    /*  min-width: 271px; */
     .sliderContainer {
       display: flex;
       height: 100%;
       justify-content: space-around;
+      width: 48%;
     }
   }
   &__buttons {

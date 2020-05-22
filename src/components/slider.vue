@@ -1,5 +1,5 @@
 <template>
-  <div class="slidecontainer">
+  <div class="slider-wrapper">
     <div
       class="slider"
       @mouseleave="clicked=false"
@@ -75,7 +75,7 @@ $yellow: #d9d283;
   text-align: center;
 }
 
-.slidecontainer {
+.slider-wrapper {
   height: 100%;
   position: relative;
   background: transparent;
@@ -96,9 +96,10 @@ $yellow: #d9d283;
   }
 
   &__knob {
-    width: 80%;
     background: $yellow;
-    height: 15px;
+
+    height: 4%;
+    width: 75%;
     position: absolute;
     border-radius: 10px;
   }

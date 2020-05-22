@@ -1,5 +1,10 @@
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56.02 55.95" fill="#70b865">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 56.02 55.95"
+    :fill="fillColor"
+    :class="{'svg' : !selectedWaveForm }"
+  >
     <defs />
     <title>sine</title>
     <g id="Layer_13" data-name="Layer 13">
@@ -17,7 +22,18 @@
 
 <script>
 export default {
-  name: "sine"
+  name: "sine",
+  props: {
+    selectedWaveForm: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    fillColor() {
+      return this.selectedWaveForm ? "#d9d283" : "#70b865";
+    }
+  }
 };
 </script>
 
@@ -27,7 +43,7 @@ export default {
   stroke: #1d1d1b;
   stroke-miterlimit: 10;
 }
-svg {
+.svg {
   &:hover {
     fill: rgb(141, 223, 232);
   }

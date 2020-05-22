@@ -6,7 +6,8 @@
     data-name="Layer 10"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 56.02 55.95"
-    fill="#70b865"
+    :fill="fillColor"
+    :class="{'svg' : !selectedWaveForm }"
   >
     <defs />
     <title>sawtooth</title>
@@ -21,12 +22,23 @@
 
 <script>
 export default {
-  name: "sawtooth"
+  name: "sawtooth",
+  props: {
+    selectedWaveForm: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    fillColor() {
+      return this.selectedWaveForm ? "#d9d283" : "#70b865";
+    }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-svg {
+.svg {
   &:hover {
     fill: rgb(141, 223, 232);
   }

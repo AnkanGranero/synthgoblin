@@ -204,10 +204,10 @@ $square: 6.666666666666667%;
   width: 80vh;
   display: grid;
   grid-template-rows: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
+  height: 100%;
+  width: 100%;
   @media only screen and (min-width: 768px) {
     /* height: 80vh; */
-    height: 100%;
-    width: 100%;
   }
 }
 .button-wrapper {

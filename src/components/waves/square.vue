@@ -1,7 +1,12 @@
 
 
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56.02 55.95" fill="#70b865">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 56.02 55.95"
+    :fill="fillColor"
+    :class="{'svg' : !selectedWaveForm }"
+  >
     <defs />
     <title>square</title>
     <g id="Layer_11" data-name="Layer 11">
@@ -20,12 +25,23 @@
 </template>
 <script>
 export default {
-  name: "square"
+  name: "square",
+  props: {
+    selectedWaveForm: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    fillColor() {
+      return this.selectedWaveForm ? "#d9d283" : "#70b865";
+    }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-svg {
+.svg {
   &:hover {
     fill: rgb(141, 223, 232);
   }
