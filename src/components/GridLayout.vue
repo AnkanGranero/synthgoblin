@@ -6,13 +6,13 @@ det slutar spela om man trycker någponstans på skärmen
 
 <template>
   <div class="pageWrapper">
-    <div v-for="y in 15" :key="y" :class="createGridClass(y)">
+    <div v-for="y in gridSize.y" :key="y" :class="createRowClass(y)">
       <div
-        v-for="x in 15"
+        v-for="x in gridSize.x"
         :key="x"
         @mouseover="mouseEventHandler(x, y)"
         :style="colorStyling(x, y)"
-        class="button-wrapper"
+        :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
       >
         <square
@@ -102,8 +102,11 @@ export default {
     mouseEventHandler(x, y) {
       this.mousePos = { x, y };
     },
-    createGridClass(n) {
+    createRowClass(n) {
       return `row row-${n}`;
+    },
+    createColClass(n) {
+      return `col col-${n}`;
     },
     colorCalcY(n) {
       let subtract = n - (this.highlightPos.y - 1);
@@ -192,6 +195,15 @@ export default {
           break;
       }
       return pos;
+    },
+    gridSize() {
+      let gridSize = this.$store.getters.getGridSize;
+      return gridSize;
+    },
+
+    gridSizeY() {
+      let { y } = this.$store.getters.getGridSize;
+      return y;
     }
   }
 };
@@ -203,18 +215,19 @@ $square: 6.666666666666667%;
   height: 120vh;
   width: 80vh;
   display: grid;
-  grid-template-rows: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
+  grid-auto-rows: auto;
   height: 100%;
   width: 100%;
   @media only screen and (min-width: 768px) {
     /* height: 80vh; */
   }
 }
-.button-wrapper {
+.col {
+  width: 100%;
 }
 
 .row {
-  display: grid;
+  display: flex;
   grid-template-columns: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
 }
 

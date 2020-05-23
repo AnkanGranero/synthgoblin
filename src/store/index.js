@@ -9,7 +9,11 @@ export default new Vuex.Store({
     playingDiv: null,
     backgroundColors: "",
     arrowRefs: [],
-    direction: ""
+    direction: "",
+    gridSize: {
+      x: 15,
+      y: 15
+    }
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -39,6 +43,10 @@ export default new Vuex.Store({
     },
     setDirection(state, payload) {
       state.direction = payload;
+    },
+    setGridSize(state, payload) {
+      
+      state.gridSize = payload
     }
   },
   actions: {
@@ -71,6 +79,10 @@ export default new Vuex.Store({
     },
     setDirection({ commit }, payload) {
       commit("setDirection", payload);
+    },
+    changeGridSize({commit}, payload) {
+      
+      commit("setGridSize", payload)
     }
   },
   getters: {
@@ -88,6 +100,9 @@ export default new Vuex.Store({
     },
     getPlayingDiv: state => {
       return state.playingDiv;
+    },
+    getGridSize: state => {
+      return state.gridSize;
     }
   },
   modules: {}

@@ -5,7 +5,7 @@
       <div class="header">
         <div class="header__empty"></div>
         <div class="header__center">
-          <h1 class="header__h1" @click="openModal">Hagrid</h1>
+          <h1 class="header__h1">Hagrid</h1>
           <p class="header__sub">grid sequencer</p>
         </div>
         <img class="header__leaf" src="./assets/blad.svg" alt="leaf" />
@@ -13,10 +13,10 @@
       <div class="tv">
         <div class="tv__top-mobile">
           <IconPlay class="tv__large-button" @clicked="play" />
-          <IconInfo class="tv__large-button" />
+          <IconInfo class="tv__large-button" @clicked="openModal" />
         </div>
         <div class="tv__left">
-          <IconInfo class="tv__large-button" />
+          <IconInfo class="tv__large-button" @clicked="openModal" />
 
           <div class="tv__buttons">
             <div v-for="(wave,index) in waves" :key="index" @click="changeWave(wave)">

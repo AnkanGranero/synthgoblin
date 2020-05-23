@@ -151,27 +151,27 @@ export default {
   .arrow-left {
     border-bottom: $arrow-size solid transparent;
     border-right: $arrow-size solid rgb(51, 51, 51);
-
     border-top: $arrow-size solid transparent;
+    position: absolute;
   }
   .arrow-down {
     border-left: $arrow-size solid transparent;
     border-right: $arrow-size solid transparent;
-
     border-top: $arrow-size solid rgb(51, 51, 51);
+    position: absolute;
   }
 
   .arrow-right {
     border-bottom: $arrow-size solid transparent;
     border-left: $arrow-size solid rgb(51, 51, 51);
-
     border-top: $arrow-size solid transparent;
+    position: absolute;
   }
   .arrow-up {
     border-left: $arrow-size solid transparent;
     border-bottom: $arrow-size solid rgb(51, 51, 51);
-
     border-right: $arrow-size solid transparent;
+    position: absolute;
   }
 }
 .image {

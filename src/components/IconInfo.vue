@@ -1,5 +1,10 @@
 <template>
-  <div class="wrapper" @mouseover="mouseOver = true" @mouseleave="mouseOver = false">
+  <div
+    class="wrapper"
+    @mouseover="mouseOver = true"
+    @mouseleave="mouseOver = false"
+    @click="handleClick"
+  >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32.12 32.01">
       <defs />
       <title>kugghjul</title>
@@ -40,6 +45,13 @@ export default {
   computed: {
     fillColor() {
       return this.mouseOver ? "rgb(141, 223, 232)" : "#52bb59";
+    }
+  },
+  methods: {
+    handleClick() {
+      console.log("tryckt");
+
+      this.$emit("clicked");
     }
   }
 };
