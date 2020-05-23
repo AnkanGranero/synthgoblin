@@ -60,12 +60,12 @@ export default {
 $medium: 768px;
 
 .wrapper {
-  /*   height: 40%;
-  width: 40%; */
+  height: 100px;
+  width: 100px;
 
   @media only screen and (min-width: $medium) {
-    height: 150px;
-    width: 150px;
+    height: unset;
+    width: unset;
   }
 }
 .icon {

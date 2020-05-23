@@ -297,7 +297,7 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss" >
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
 //så småningom byta font till smoothare utstickande bitar
 $square: 6.666666666666667%;
@@ -313,19 +313,40 @@ $medium: 768px;
   align-items: center;
   -ms-flex-pack: center;
   box-sizing: border-box;
-  display: flex;
+  display: block;
   flex-direction: column;
   width: 100%;
   height: 100%;
+
   @media only screen and (min-width: $medium) {
+    display: flex;
     height: 146%;
   }
 }
 html {
-  min-height: 100%;
-  min-width: 100%;
+  font-size: 10px;
+  @media only screen and (min-width: 768px) {
+    font-size: 10px;
+  }
+  @media only screen and (min-width: 1400px) {
+    font-size: 14px;
+  }
+  @media only screen and (min-width: 1640px) {
+    font-size: 16px;
+  }
+  @media only screen and (min-width: 2000px) {
+    font-size: 19px;
+  }
+  @media only screen and (min-width: 2300px) {
+    font-size: 21px;
+  }
+  @media only screen and (min-width: 2560px) {
+    font-size: 23px;
+  }
 }
+
 body {
+  background: #54bb5a;
   height: 100%;
   width: 100%;
   min-height: 100%;
@@ -354,18 +375,17 @@ body {
   }
 
   .header {
-    display: flex;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr;
-    /* flex-direction: column; */
-    position: relative;
-    /*     position: absolute; */
-    justify-content: center;
-    margin: 5% 0;
+    display: none;
     @media only screen and (min-width: $medium) {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr;
+      position: relative;
+      justify-content: center;
+      margin: 5% 0;
       margin-bottom: 13%;
     }
+
     /*    position: absolute;
     left: 33%;
     width: 33%; */
@@ -380,7 +400,9 @@ body {
 
       letter-spacing: -0.4rem;
       line-height: 0.8;
-      font-size: 4.4rem;
+      font-size: 12.5vw;
+      font-size: 12.9rem;
+      /*       font-size: 4.4rem;
       @media only screen and (min-width: 375px) {
         font-size: 5.1rem;
       }
@@ -389,7 +411,7 @@ body {
       }
       @media only screen and (min-width: $medium) {
         font-size: 12.5vw;
-      }
+      } */
     }
     &__sub {
       margin: 0;
@@ -397,7 +419,8 @@ body {
       top: -57px;
       left: 13px;
       margin-left: 2%;
-      font-size: 0.58rem;
+      font-size: 1.7vw;
+      /*       font-size: 0.58rem;
       @media only screen and (min-width: 375px) {
         font-size: 0.7rem;
       }
@@ -406,17 +429,23 @@ body {
       }
 
       @media only screen and (min-width: $medium) {
-        /*  font-size: 1.7rem; */
+       
         font-size: 1.7vw;
-      }
+      } */
     }
     &__leaf {
-      /*  height: 300px; */
-      height: 19vw;
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      top: 56%;
+      display: none;
+      @media only screen and (min-width: 768px) {
+        display: unset;
+        height: 19vw;
+        position: absolute;
+        bottom: 0;
+        top: 56%;
+        right: -11%;
+      }
+      @media only screen and (min-width: 1024px) {
+        right: 0;
+      }
 
       /*     position: absolute;
 
@@ -447,8 +476,10 @@ body {
   min-height: 46%; */
   height: 100%;
   flex-direction: column;
+  position: absolute;
 
   @media only screen and (min-width: $medium) {
+    position: unset;
     min-height: unset;
 
     padding: 12.5% 0;
@@ -524,7 +555,7 @@ body {
     height: 100%;
     display: flex;
     justify-content: center;
-    max-width: 606px;
+    /* max-width: 606px; */
     min-height: 50%;
     min-width: 100%;
     padding: 5%;
@@ -542,12 +573,11 @@ body {
   }
 
   &__buttons {
-    height: 100%;
-    display: flex;
     display: none;
 
     @media only screen and (min-width: $medium) {
-      display: unset;
+      height: 100%;
+      display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
@@ -562,10 +592,11 @@ body {
   text-align: right;
   &__signature {
     margin: 0.5%;
-    font-size: 0.6rem;
+    font-size: 0.8rem;
+    /*     font-size: 0.6rem;
     @media only screen and (min-width: $medium) {
       font-size: 0.8rem;
-    }
+    } */
   }
 }
 </style>

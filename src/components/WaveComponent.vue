@@ -48,6 +48,9 @@ $yellow: #d9d283;
     background: $hagridGreen;
     border-radius: 10%;
     box-sizing: border-box;
+    @media only screen and (min-width: 2300px) {
+      width: 36%;
+    }
   }
 }
 </style>
