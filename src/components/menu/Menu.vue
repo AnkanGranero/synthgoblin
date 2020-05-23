@@ -30,6 +30,10 @@
 
 <script>
 /* import Triangle from "../Triangle"; */
+
+const arpeggios = ["major7", "minor7", "custom"];
+const arpeggioNotes = { major7: [4, 3, 4, 1], minor7: [3, 4, 3, 2] };
+
 export default {
   name: "Menu",
   /*   props: {
@@ -43,16 +47,17 @@ export default {
     return {
       fields: {
         x: "",
-        y: ""
+        y: "",
+        arpeggio: []
       },
       menuOptions: {
-        main: ["theme", "scales"],
+        main: ["theme", "arpeggio"],
         themes: ["classic", "80s"],
-        scales: ["Y-axis", "X-axis", "custom"],
+        arpeggio: arpeggios,
         grid_size: []
       },
       menuTree: [],
-      pickedMenuOption: ["themes", "scales", "grid_size"],
+      pickedMenuOption: ["themes", "arpeggio", "grid_size"],
       chooseGridSize: false
     };
   },
@@ -83,6 +88,11 @@ export default {
         x = Number(x);
         y = Number(y);
         this.$store.dispatch("changeGridSize", { x, y });
+        this.eventEmitter("closeModal");
+      }
+      if (option == "minor7" || option == "major7") {
+        this.$store.dispatch("changeArpeggio", arpeggioNotes[option]);
+        this.eventEmitter("createAllArs");
         this.eventEmitter("closeModal");
       }
       this.menuTree.push(this.pickedMenuOption);

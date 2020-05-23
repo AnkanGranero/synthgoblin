@@ -13,7 +13,8 @@ export default new Vuex.Store({
     gridSize: {
       x: 15,
       y: 15
-    }
+    },
+    arpeggio: [4, 3, 4, 1]
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -47,7 +48,12 @@ export default new Vuex.Store({
     setGridSize(state, payload) {
       
       state.gridSize = payload
-    }
+    },
+        setArpeggio(state, payload) {
+      
+      state.arpeggio = payload
+    },
+
   },
   actions: {
     changeIsPlayingState({ commit }, payload) {
@@ -83,6 +89,11 @@ export default new Vuex.Store({
     changeGridSize({commit}, payload) {
       
       commit("setGridSize", payload)
+    },
+        changeArpeggio({commit}, payload) {
+      console.log("payload", payload);
+      
+      commit("setArpeggio", payload)
     }
   },
   getters: {
@@ -103,6 +114,9 @@ export default new Vuex.Store({
     },
     getGridSize: state => {
       return state.gridSize;
+    },
+    getArpeggio: state => {
+      return state.arpeggio
     }
   },
   modules: {}

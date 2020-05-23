@@ -114,7 +114,6 @@ export default {
   data() {
     return {
       styling: "classic",
-      arpeggio: [4, 3, 4, 1],
       intervals: "",
       allScales: [],
       modalOpen: false,
@@ -126,8 +125,6 @@ export default {
   mounted() {
     this.createAllPitchArrs();
     async function prepare() {
-      /* ; */
-
       await reverb.generate();
 
       /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
@@ -172,7 +169,7 @@ export default {
       let allArrs = [];
       let startKey = 0;
 
-      for (let i = 0; i <= 15; i++) {
+      for (let i = 0; i <= this.gridSize.y; i++) {
         let arr = this.createPitchArr(startKey);
         allArrs.push(arr);
         let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
@@ -184,7 +181,7 @@ export default {
       let arr = [];
       let pianoKey = startKey;
 
-      for (let i = 0; i <= 15; i++) {
+      for (let i = 0; i <= this.gridSize.x; i++) {
         arr.push(this.hertzCalculator(pianoKey));
         let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
         pianoKey += interval;
@@ -201,6 +198,10 @@ export default {
       switch (payload) {
         case "closeModal":
           this.modalOpen = false;
+          break;
+        case "createAllArs":
+          this.createAllPitchArrs();
+          break;
       }
     },
     async play() {
@@ -286,9 +287,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying"]),
+    ...mapState(["playingDiv", "isPlaying", "gridSize"]),
     overlayVisible() {
       return this.modalOpen;
+    },
+    arpeggio() {
+      return this.$store.getters.getArpeggio;
     },
     backgroundColors() {
       if (this.$store.state.isPlaying) {
