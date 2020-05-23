@@ -100,6 +100,7 @@ export default {
     display: flex;
     font-size: 2rem;
     margin-bottom: 2rem;
+    cursor: pointer;
   }
   &__triangle {
     margin-right: 2rem;

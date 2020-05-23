@@ -129,16 +129,21 @@ export default {
         ",250)"
       );
     },
+
     colorCalcDif(n, coordinate) {
       let pos = this.highlightPos[coordinate];
+
+      let availableDistance = this.gridSize[coordinate] - 1;
 
       let numbers = [n, pos];
       numbers.sort((a, b) => b - a);
       let high = numbers[0];
       let low = numbers[1];
-      let difference = (high - low) * 18;
+      let difference = high - low;
+      let percentageAway = difference / availableDistance;
 
-      return 250 - difference;
+      let invert = 250 * percentageAway;
+      return 250 - invert;
     },
     /*     colorCalcX(n) {
       let subtract = n - (this.highlightPos.x - 1);

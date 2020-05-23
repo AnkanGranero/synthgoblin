@@ -105,11 +105,16 @@ export default {
     IconPlay,
     WaveComponent
   },
+  created: function() {
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      this.$store.dispatch("changeGridSize", { x: 8, y: 16 });
+    }
+  },
   data() {
     return {
       styling: "classic",
-      /*   scale: [1, 2, 2, 2, 1, 2, 2], */
-      scale: [4, 3, 4, 1],
+      arpeggio: [4, 3, 4, 1],
       intervals: "",
       allScales: [],
       modalOpen: false,
@@ -158,7 +163,7 @@ export default {
     },
     createScale() {
       if (this.intervals) {
-        this.scale = this.intervals.split("");
+        this.arpeggio = this.intervals.split("");
         this.createAllPitchArrs();
       }
       this.modalOpen = false;
@@ -170,7 +175,7 @@ export default {
       for (let i = 0; i <= 15; i++) {
         let arr = this.createPitchArr(startKey);
         allArrs.push(arr);
-        let interval = parseInt(this.scale[i % this.scale.length], 10);
+        let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
         startKey += interval;
       }
       this.allScales = allArrs;
@@ -181,7 +186,7 @@ export default {
 
       for (let i = 0; i <= 15; i++) {
         arr.push(this.hertzCalculator(pianoKey));
-        let interval = parseInt(this.scale[i % this.scale.length], 10);
+        let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
         pianoKey += interval;
       }
       return arr;
