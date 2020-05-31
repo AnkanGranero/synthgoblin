@@ -9,6 +9,7 @@
       @touchstart="clicked=true"
       @touchmove="mouseHandler"
       @touchend="clicked=false"
+      @touchcancel="clicked=false"
       ref="slider"
     >
       <div class="slider__track"></div>
@@ -68,11 +69,20 @@ export default {
         let divPos = this.$refs.slider.getBoundingClientRect();
         let { top, bottom } = divPos;
 
-        let mousePosY = event.clientY;
+        let mousePosY = event.clientY
+          ? event.clientY
+          : event.touches[0].clientY;
         let totalSlide = bottom - top;
         let mouseFromTop = mousePosY - top;
         let mousePercentage = (mouseFromTop / totalSlide) * 100;
-        this.slideValue = mousePercentage > 0 ? mousePercentage : 0;
+
+        if (mousePercentage < 0) {
+          mousePercentage = 0;
+        }
+        if (mousePercentage > 100) {
+          mousePercentage = 100;
+        }
+        this.slideValue = mousePercentage;
 
         this.$emit("changedValue", {
           val: this.customSlideValue,

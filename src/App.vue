@@ -109,7 +109,7 @@ export default {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
       this.$store.commit("isMobile");
-      this.$store.dispatch("changeGridSize", { x: 8, y: 16 });
+      this.$store.dispatch("changeGridSize", { x: 6, y: 8 });
     }
   },
   data() {
@@ -225,11 +225,9 @@ export default {
     },
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
-      console.log("playing");
 
       let gridRefs = this.$refs.gridLayout.$refs;
       let ref = gridRefs[refName];
-      console.log("ref", ref);
 
       if (ref) {
         ref[0].classList.remove("highlight");
