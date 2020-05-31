@@ -6,6 +6,9 @@
       @mousedown="mouseHandler"
       @mouseup="clicked=false"
       @mousemove="mouseHandler"
+      @touchstart="clicked=true"
+      @touchmove="mouseHandler"
+      @touchend="clicked=false"
       ref="slider"
     >
       <div class="slider__track"></div>
@@ -13,7 +16,7 @@
     </div>
     <span class="type">
       {{ type }}
-      <span class="value">{{ slideValueForType }}</span>
+      <span class="value">{{ customSlideValue }}</span>
     </span>
   </div>
 </template>
@@ -30,6 +33,29 @@ export default {
     type: {
       type: String,
       default: ""
+    },
+    maxValue: {
+      type: Number,
+      default: 100
+    },
+    minValue: {
+      type: Number,
+      default: 100
+    },
+    initialValue: {
+      type: Number,
+      default: 0
+    },
+    integer: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  created: function() {
+    if (this.initialValue) {
+      this.slideValue = this.valueToSlide(this.initialValue);
+      console.log("hej");
     }
   },
   methods: {
@@ -43,50 +69,51 @@ export default {
         let { top, bottom } = divPos;
 
         let mousePosY = event.clientY;
+        let totalSlide = bottom - top;
         let mouseFromTop = mousePosY - top;
-        let divBottom = bottom - top;
-        let mousePercentage = (mouseFromTop / divBottom) * 100;
+        let mousePercentage = (mouseFromTop / totalSlide) * 100;
+        this.slideValue = mousePercentage > 0 ? mousePercentage : 0;
 
-        this.slideValue = mousePercentage;
         this.$emit("changedValue", {
-          val: this.slideValueForType,
+          val: this.customSlideValue,
           type: this.type
         });
       }
+    },
+    valueToSlide(value) {
+      let totalRange = this.maxValue;
+      let valueWithoutMin = value - (this.minValue - 1);
+      let percentage = valueWithoutMin / totalRange;
+
+      let backToValue = this.integer
+        ? Math.round(percentage * 100)
+        : percentage * 100;
+      console.log("BTW", backToValue);
+
+      return 100 - backToValue;
     }
   },
   computed: {
     knobPosition() {
       let topValue =
         this.slideValueToInteger < 100 ? this.slideValueToInteger : 100;
-      return { top: `${topValue}%` };
+      return { bottom: `${topValue}%` };
     },
     slideValueToInteger() {
-      return Math.round(this.slideValue);
+      return 100 - Math.round(this.slideValue);
     },
-    slideValueToBpm() {
-      let fullRange = this.slideValueToInteger * 2;
 
-      return 250 - fullRange;
-    },
-    slideValueToReverb() {
-      let bottomUp = 100 - this.slideValueToInteger;
-      console.log(this.slideValueToInteger);
+    customSlideValue() {
+      let { maxValue, minValue } = this;
+      let totalRange = maxValue - minValue;
+      let percentage = totalRange / 100;
+      let totalCustomValue = percentage * this.slideValueToInteger + minValue;
 
-      let rounded = Math.round(bottomUp / 10);
-      let percentage = rounded / 10;
-      return percentage;
-    },
-    slideValueForType() {
-      let val = "";
-      switch (this.type) {
-        case "reverb":
-          val = this.slideValueToReverb;
-          break;
-        case "bpm":
-          val = this.slideValueToBpm;
-      }
-      return val;
+      let totalCustomValueRounded = Math.round(totalCustomValue * 10) / 10;
+
+      return this.integer
+        ? Math.round(totalCustomValueRounded)
+        : totalCustomValueRounded;
     }
   }
 };
@@ -102,6 +129,8 @@ $yellow: #d9d283;
   text-align: center;
   text-transform: uppercase;
   color: $yellow;
+  position: absolute;
+  white-space: pre-wrap;
 }
 .value {
   color: $yellow;
@@ -111,7 +140,7 @@ $yellow: #d9d283;
   height: 100%;
   position: relative;
   background: transparent;
-  width: 40%;
+  min-width: 40%;
   max-height: 100%;
 }
 .slider {
@@ -121,6 +150,7 @@ $yellow: #d9d283;
   display: flex;
   justify-content: center;
   z-index: -2;
+  min-width: 60px;
 
   &__track {
     background: $hagridGreen;

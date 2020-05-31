@@ -14,7 +14,8 @@ export default new Vuex.Store({
       x: 15,
       y: 15
     },
-    arpeggio: [4, 3, 4, 1]
+    arpeggio: [4, 3, 4, 1],
+    isMobile: false
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -37,9 +38,11 @@ export default new Vuex.Store({
         state.arrowRefs.splice(index, 1);
       }
     },
+    clearAllArrowRefs(state) {
+      state.arrowRefs = []
+    },
     changeDirectionOnArrowRef(state, payload) {
       let { index, direction } = payload;
-
       state.arrowRefs[index].direction = direction;
     },
     setDirection(state, payload) {
@@ -53,6 +56,9 @@ export default new Vuex.Store({
       
       state.arpeggio = payload
     },
+      isMobile(state) {
+      state.isMobile = true;
+      }
 
   },
   actions: {
@@ -87,14 +93,15 @@ export default new Vuex.Store({
       commit("setDirection", payload);
     },
     changeGridSize({commit}, payload) {
-      
-      commit("setGridSize", payload)
+      commit("changeIsPlayingState",false);
+     /*  commit("clearAllArrowRefs"); */
+      commit("setGridSize", payload);
     },
         changeArpeggio({commit}, payload) {
-      console.log("payload", payload);
       
       commit("setArpeggio", payload)
-    }
+    },
+  
   },
   getters: {
     findArrowRefIndex: state => refName => {

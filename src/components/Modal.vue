@@ -24,18 +24,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$hagridGreen: #54bb5a;
+
 .modal {
-  background: black;
+  width: 50%;
+  left: 23%;
+  background: $hagridGreen;
   border: 5px solid white;
-  height: 33%;
-  width: 33%;
-  position: absolute;
-  left: 33%;
-  top: 30%;
+  height: 50%;
+  position: fixed;
+  top: 26%;
   z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media only screen and (min-width: 375px) {
+    width: 33%;
+    left: 33%;
+    height: 50%;
+  }
 }
 </style>

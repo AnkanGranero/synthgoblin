@@ -37,8 +37,8 @@
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
           <div class="sliderContainer">
-            <Slider @changedValue="changedSliderValue" type="bpm" />
-            <Slider @changedValue="changedSliderValue" type="reverb" />
+            <Slider @changedValue="changedSliderValue" type="bpm" :maxValue="250" :minValue="50" />
+            <Slider @changedValue="changedSliderValue" type="reverb" :maxValue="1" :minValue="0" />
           </div>
         </div>
         <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
@@ -108,6 +108,7 @@ export default {
   created: function() {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
+      this.$store.commit("isMobile");
       this.$store.dispatch("changeGridSize", { x: 8, y: 16 });
     }
   },
@@ -127,7 +128,6 @@ export default {
     async function prepare() {
       await reverb.generate();
 
-      /*       var pingPong = new Tone.PingPongDelay("4n", 0.2).toMaster(); */
       synth.connect(reverb);
       synth.connect(filter);
     }
@@ -169,7 +169,7 @@ export default {
       let allArrs = [];
       let startKey = 0;
 
-      for (let i = 0; i <= this.gridSize.y; i++) {
+      for (let i = 0; i <= this.gridSize.x; i++) {
         let arr = this.createPitchArr(startKey);
         allArrs.push(arr);
         let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
@@ -181,7 +181,7 @@ export default {
       let arr = [];
       let pianoKey = startKey;
 
-      for (let i = 0; i <= this.gridSize.x; i++) {
+      for (let i = 0; i <= this.gridSize.y; i++) {
         arr.push(this.hertzCalculator(pianoKey));
         let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
         pianoKey += interval;
@@ -225,9 +225,11 @@ export default {
     },
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
+      console.log("playing");
 
       let gridRefs = this.$refs.gridLayout.$refs;
       let ref = gridRefs[refName];
+      console.log("ref", ref);
 
       if (ref) {
         ref[0].classList.remove("highlight");

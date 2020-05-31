@@ -1,8 +1,10 @@
 <template>
   <div
     class="wrapper"
-    @mouseover="mouseOver = true"
-    @mouseleave="mouseOver = false"
+    @mouseover="mouseTouchHandler"
+    @mouseleave="mouseTouchHandler"
+    @touchstart="mouseTouchHandler"
+    @touchend="mouseTouchHandler"
     @click="$emit('clicked')"
   >
     <svg
@@ -47,8 +49,31 @@ export default {
       mouseOver: false
     };
   },
+  methods: {
+    mouseTouchHandler(event) {
+      if (this.isMobile) {
+        switch (event.type) {
+          case "touchstart":
+            this.mouseOver = true;
+            break;
+          case "touchend":
+            this.mouseOver = false;
+            break;
+        }
+      } else {
+        switch (event.type) {
+          case "mouseover":
+            this.mouseOver = true;
+            break;
+          case "mouseleave":
+            this.mouseOver = false;
+            break;
+        }
+      }
+    }
+  },
   computed: {
-    ...mapState(["isPlaying"]),
+    ...mapState(["isPlaying", "isMobile"]),
     fillColor() {
       return this.mouseOver ? "rgb(141, 223, 232)" : "#52bb59";
     }

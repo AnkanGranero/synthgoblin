@@ -1,35 +1,28 @@
 <template>
   <div>
     <div class="menu">
-      <div v-if="chooseGridSize" class="grid-size">
-        <span>X</span>
-        <input v-model="fields.x" value="x" />
-        <span>Y</span>
-        <input v-model="fields.y" value="y" />
-      </div>
+      <InputOptions
+        v-if="inputOption"
+        :inputOption="inputOption"
+        :initialValues="fields"
+        v-bind="fields"
+        @closeModal="eventEmitter('closeModal');"
+      />
       <div
         v-for="(option, index) in pickedMenuOption"
         :key="index"
         class="menu__option"
         @click="choosenMenuOption(option)"
-      >
-        <!--   <Triangle class="menu__triangle" /> -->
-        {{ option }}
-      </div>
-      <div v-if="chooseGridSize" class="menu__option" @click="choosenMenuOption('enter')">
-        <!-- <Triangle class="menu__triangle" /> -->
-        enter
-      </div>
-      <div class="menu__option" @click="choosenMenuOption('back')">
-        <!-- <Triangle class="menu__triangle" /> -->
-        back
-      </div>
+      >{{ option }}</div>
+      <!--       <div v-if="chooseGridSize" class="menu__option" @click="choosenMenuOption('enter')">enter</div>
+      -->
+      <div class="menu__option" @click="choosenMenuOption('back')">back</div>
     </div>
   </div>
 </template>
 
 <script>
-/* import Triangle from "../Triangle"; */
+import InputOptions from "./InputOptions";
 
 const arpeggios = ["major7", "minor7", "custom"];
 const arpeggioNotes = { major7: [4, 3, 4, 1], minor7: [3, 4, 3, 2] };
@@ -46,26 +39,29 @@ export default {
   data() {
     return {
       fields: {
-        x: "",
-        y: "",
+        gridsize: {
+          x: "",
+          y: ""
+        },
         arpeggio: []
       },
       menuOptions: {
         main: ["theme", "arpeggio"],
         themes: ["classic", "80s"],
         arpeggio: arpeggios,
-        grid_size: []
+        gridsize: ["x", "y"]
       },
       menuTree: [],
-      pickedMenuOption: ["themes", "arpeggio", "grid_size"],
-      chooseGridSize: false
+      pickedMenuOption: ["themes", "arpeggio", "gridsize"],
+      chooseGridSize: false,
+      inputOption: ""
     };
   },
   mounted: function() {
     this.fields = this.$store.getters.getGridSize;
   },
   components: {
-    /*    Triangle */
+    InputOptions
   },
   methods: {
     eventEmitter(message) {
@@ -80,16 +76,10 @@ export default {
 
         return;
       }
-      if (option == "grid_size") {
-        this.chooseGridSize = true;
+      if (option == "gridsize") {
+        this.inputOption = "gridsize";
       }
-      if (option == "enter") {
-        let { x, y } = this.fields;
-        x = Number(x);
-        y = Number(y);
-        this.$store.dispatch("changeGridSize", { x, y });
-        this.eventEmitter("closeModal");
-      }
+
       if (option == "minor7" || option == "major7") {
         this.$store.dispatch("changeArpeggio", arpeggioNotes[option]);
         this.eventEmitter("createAllArs");
@@ -98,6 +88,15 @@ export default {
       this.menuTree.push(this.pickedMenuOption);
       this.pickedMenuOption = this.menuOptions[option];
     }
+    /*    changeGridSize() { */
+    /*       console.log("change grid size", payload);
+
+      let { x, y } = this.fields;
+      x = Number(x);
+      y = Number(y); */
+    /*  this.$store.dispatch("changeGridSize", { x, y }); */
+    /*       this.eventEmitter("closeModal");
+    } */
   }
 };
 </script>
@@ -105,12 +104,30 @@ export default {
 <style lang="scss" scoped>
 .menu {
   color: white;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
 
-  &__option {
+  @media only screen and (min-width: 375px) {
+    display: unset;
+  }
+  &__input-wrapper {
     display: flex;
+    justify-content: center;
+  }
+  &__input {
+    width: 15%;
+    margin-left: 5%;
+  }
+  &__option {
+    /*     display: flex;
+ */
     font-size: 2rem;
     margin-bottom: 2rem;
     cursor: pointer;
+    text-align: center;
+    @media only screen and (min-width: 375px) {
+    }
   }
   &__triangle {
     margin-right: 2rem;
@@ -119,6 +136,5 @@ export default {
 .grid-size {
   display: flex;
   flex-direction: column;
-  margin-bottom: 2rem;
 }
 </style>

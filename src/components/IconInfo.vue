@@ -49,8 +49,6 @@ export default {
   },
   methods: {
     handleClick() {
-      console.log("tryckt");
-
       this.$emit("clicked");
     }
   }

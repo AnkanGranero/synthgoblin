@@ -202,8 +202,7 @@ export default {
       return pos;
     },
     gridSize() {
-      let gridSize = this.$store.getters.getGridSize;
-      return gridSize;
+      return this.$store.getters.getGridSize;
     },
 
     gridSizeY() {

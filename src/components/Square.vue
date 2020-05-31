@@ -60,9 +60,6 @@ export default {
       this.direction = payload;
     },
 
-    setDirection(payload) {
-      this.direction = payload;
-    },
     closeDirectionPicker() {
       this.$emit("closeDirectionPicker");
     },
