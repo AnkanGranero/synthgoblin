@@ -6,7 +6,7 @@
         :inputOption="inputOption"
         :initialValues="fields"
         v-bind="fields"
-        @closeModal="eventEmitter('closeModal');"
+        @back="inputOption=false"
       />
       <div
         v-for="(option, index) in pickedMenuOption"
@@ -14,8 +14,6 @@
         class="menu__option"
         @click="choosenMenuOption(option)"
       >{{ option }}</div>
-      <!--       <div v-if="chooseGridSize" class="menu__option" @click="choosenMenuOption('enter')">enter</div>
-      -->
       <div class="menu__option" @click="choosenMenuOption('back')">back</div>
     </div>
   </div>
@@ -29,12 +27,6 @@ const arpeggioNotes = { major7: [4, 3, 4, 1], minor7: [3, 4, 3, 2] };
 
 export default {
   name: "Menu",
-  /*   props: {
-    menuOptions: {
-      type: Array,
-      default: () => []
-    }
-  }, */
 
   data() {
     return {
@@ -48,8 +40,7 @@ export default {
       menuOptions: {
         main: ["theme", "arpeggio"],
         themes: ["classic", "80s"],
-        arpeggio: arpeggios,
-        gridsize: ["x", "y"]
+        arpeggio: arpeggios
       },
       menuTree: [],
       pickedMenuOption: ["themes", "arpeggio", "gridsize"],
@@ -78,6 +69,7 @@ export default {
       }
       if (option == "gridsize") {
         this.inputOption = "gridsize";
+        return;
       }
 
       if (option == "minor7" || option == "major7") {

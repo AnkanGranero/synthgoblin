@@ -1,6 +1,6 @@
 <template>
   <div class="input-wrapper menu__option">
-    <SliderContainer @enter="$emit('closeModal')">
+    <SliderContainer @back="$emit('back')">
       <div v-for="(key,index) in Object.keys(values)" :key="index" slot="sliderSlot">
         <Slider
           @changedValue="changedSliderValue"
@@ -59,9 +59,6 @@ export default {
     }
   },
   methods: {
-    /*     changedValue(payload) {
-      this.$emit("changedValue", payload);
-    }, */
     changedSliderValue({ val, type }) {
       this.values[type] = val;
     }

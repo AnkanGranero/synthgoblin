@@ -56,7 +56,6 @@ export default {
   created: function() {
     if (this.initialValue) {
       this.slideValue = this.valueToSlide(this.initialValue);
-      console.log("hej");
     }
   },
   methods: {
@@ -98,7 +97,6 @@ export default {
       let backToValue = this.integer
         ? Math.round(percentage * 100)
         : percentage * 100;
-      console.log("BTW", backToValue);
 
       return 100 - backToValue;
     }

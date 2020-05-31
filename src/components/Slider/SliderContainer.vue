@@ -3,9 +3,9 @@
     <div class="slot-container">
       <slot name="sliderSlot" />
     </div>
-
-    <span class="enter-btn" @click="$emit('closeModal')">close</span>
-    <span>close</span>
+    <div class="btn-wrapper">
+      <span @click="$emit('back')">back</span>
+    </div>
   </div>
 </template>
 
@@ -30,8 +30,11 @@ $medium: 768px;
   justify-content: space-around;
   margin-top: 15%;
 }
-.enter-btn {
+.btn-wrapper {
   flex-grow: 1;
   margin-top: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 </style>
