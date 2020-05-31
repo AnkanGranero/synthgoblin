@@ -7,7 +7,7 @@
     />
 
     <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
-      <div :class="whatDirection"></div>
+      <div :class="[whatDirection,hidden]"></div>
     </div>
   </div>
 </template>
@@ -32,7 +32,6 @@ export default {
   },
   data() {
     return {
-      isClicked: false,
       direction: ""
     };
   },
@@ -47,7 +46,6 @@ export default {
         return;
       }
       const { x, y } = this.refForSquare;
-
       this.$emit("openDirectionPicker", { x, y });
     },
 
@@ -95,12 +93,18 @@ export default {
           break;
       }
       return cssClass;
+    },
+    hidden() {
+      return this.directionPickerOpen ? "hidden" : null;
     }
   }
 };
 </script>
 
 <style lang="scss">
+.hidden {
+  display: none;
+}
 .square {
   height: 100%;
   width: 100%;

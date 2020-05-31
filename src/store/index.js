@@ -94,7 +94,6 @@ export default new Vuex.Store({
     },
     changeGridSize({commit}, payload) {
       commit("changeIsPlayingState",false);
-     /*  commit("clearAllArrowRefs"); */
       commit("setGridSize", payload);
     },
         changeArpeggio({commit}, payload) {

@@ -5,7 +5,7 @@ så att om man trycker på en pil när det spelas så kommer modal upp, kanske a
 det slutar spela om man trycker någponstans på skärmen
 
 <template>
-  <div class="pageWrapper">
+  <div class="page-wrapper">
     <div v-for="y in gridSize.y" :key="y" :class="createRowClass(y)">
       <div
         v-for="x in gridSize.x"
@@ -215,7 +215,7 @@ export default {
 <style lang="scss" scoped>
 $square: 6.666666666666667%;
 
-.pageWrapper {
+.page-wrapper {
   height: 120vh;
   width: 80vh;
   display: grid;
