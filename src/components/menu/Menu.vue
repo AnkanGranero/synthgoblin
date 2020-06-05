@@ -4,9 +4,11 @@
       <InputOptions
         v-if="inputOption"
         :inputOption="inputOption"
-        :initialValues="fields"
+        :initialValues="fields[inputOption]"
         v-bind="fields"
         @back="inputOption=false"
+        :inputType="inputType"
+        @changeArpeggio="changeArpeggio"
       />
       <div
         v-for="(option, index) in pickedMenuOption"
@@ -35,7 +37,9 @@ export default {
           x: "",
           y: ""
         },
-        arpeggio: []
+        custom: {
+          arpeggio: ""
+        }
       },
       menuOptions: {
         main: ["theme", "arpeggio"],
@@ -49,7 +53,7 @@ export default {
     };
   },
   mounted: function() {
-    this.fields = this.$store.getters.getGridSize;
+    this.fields.gridsize = this.$store.getters.getGridSize;
   },
   components: {
     InputOptions
@@ -67,28 +71,42 @@ export default {
 
         return;
       }
-      if (option == "gridsize") {
-        this.inputOption = "gridsize";
+      if (option === "gridsize" || option === "custom") {
+        this.inputOption = option;
         return;
       }
 
       if (option == "minor7" || option == "major7") {
-        this.$store.dispatch("changeArpeggio", arpeggioNotes[option]);
-        this.eventEmitter("createAllArs");
-        this.eventEmitter("closeModal");
+        this.changeArpeggio(arpeggioNotes[option]);
       }
       this.menuTree.push(this.pickedMenuOption);
       this.pickedMenuOption = this.menuOptions[option];
-    }
-    /*    changeGridSize() { */
-    /*       console.log("change grid size", payload);
+    },
+    changeArpeggio(newArpeggio) {
+      console.log("payload", newArpeggio);
 
-      let { x, y } = this.fields;
-      x = Number(x);
-      y = Number(y); */
-    /*  this.$store.dispatch("changeGridSize", { x, y }); */
-    /*       this.eventEmitter("closeModal");
-    } */
+      this.$store.dispatch("changeArpeggio", newArpeggio);
+      this.eventEmitter("createAllArs");
+      this.eventEmitter("closeModal");
+    }
+  },
+  computed: {
+    inputType() {
+      let inputType;
+      switch (this.inputOption) {
+        case "gridsize": {
+          inputType = "slider";
+          break;
+        }
+        case "custom": {
+          inputType = "textInput";
+          break;
+        }
+      }
+      console.log("inputType", inputType);
+
+      return inputType;
+    }
   }
 };
 </script>

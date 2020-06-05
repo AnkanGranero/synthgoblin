@@ -11,8 +11,12 @@ export default new Vuex.Store({
     arrowRefs: [],
     direction: "",
     gridSize: {
-      x: 15,
-      y: 15
+      coordinates: { 
+        x: 15,
+        y: 15
+      },
+      maxValue: 25
+    
     },
     arpeggio: [4, 3, 4, 1],
     isMobile: false
@@ -50,14 +54,19 @@ export default new Vuex.Store({
     },
     setGridSize(state, payload) {
       
-      state.gridSize = payload
+      state.isPlaying = false;
+      state.gridSize.coordinates = payload
     },
         setArpeggio(state, payload) {
-      
+        
       state.arpeggio = payload
+      
     },
       isMobile(state) {
       state.isMobile = true;
+      },
+      setGridMaxValue(state) {
+      state.gridSize.maxValue = payload
       }
 
   },
@@ -100,6 +109,9 @@ export default new Vuex.Store({
       
       commit("setArpeggio", payload)
     },
+    changeGridMaxValue({commit}) {
+        commit("setGridMaxValue", payload)
+    }
   
   },
   getters: {
@@ -119,7 +131,7 @@ export default new Vuex.Store({
       return state.playingDiv;
     },
     getGridSize: state => {
-      return state.gridSize;
+      return state.gridSize.coordinates;
     },
     getArpeggio: state => {
       return state.arpeggio

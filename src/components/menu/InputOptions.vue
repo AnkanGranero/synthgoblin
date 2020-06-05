@@ -1,15 +1,25 @@
 <template>
-  <div class="input-wrapper menu__option">
+  <div class="input-options input-options__option">
     <SliderContainer @back="$emit('back')">
       <div v-for="(key,index) in Object.keys(values)" :key="index" slot="sliderSlot">
         <Slider
+          v-if="inputType === 'slider'"
           @changedValue="changedSliderValue"
           :type="key"
-          :initialValue="12"
-          :maxValue="25"
+          :initialValue="values[key]"
+          :maxValue="gridMaxValue"
           :minValue="2"
           :integer="true"
         />
+        <div v-else-if="inputType === 'textInput'" class="input-options__input-wrapper">
+          <input
+            v-model="values.arpeggio"
+            @keypress="handleInput"
+            class="input-options__text-input"
+          />
+          <span>write intervals in semitones</span>
+          <span @click="changeArpeggio">ok</span>
+        </div>
       </div>
     </SliderContainer>
   </div>
@@ -29,18 +39,6 @@ export default {
     };
   },
   props: {
-    x: {
-      type: Number,
-      default: 15
-    },
-    y: {
-      type: Number,
-      default: 15
-    },
-    arpeggio: {
-      type: Array,
-      default: () => []
-    },
     choosenField: {
       type: Array,
       default: () => []
@@ -56,18 +54,36 @@ export default {
     fields: {
       type: Object,
       default: () => {}
+    },
+    inputType: {
+      type: String,
+      default: ""
     }
   },
   methods: {
     changedSliderValue({ val, type }) {
       this.values[type] = val;
+    },
+    changeArpeggio() {
+      let newArpeggio = this.values.arpeggio.split("").map(i => Number(i));
+      this.$emit("changeArpeggio", newArpeggio);
+    },
+    handleInput(event) {
+      if (event.charCode < 48 || event.charCode > 57) {
+        event.preventDefault();
+      }
+    }
+  },
+  computed: {
+    gridMaxValue() {
+      return this.$store.state.gridSize.maxValue;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.input-wrapper {
+.input-options {
   height: 100%;
   width: 100%;
   color: white;
@@ -75,14 +91,24 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-}
-.menu__option {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  cursor: pointer;
-  text-align: center;
-}
-.option {
-  color: white;
+
+  &__input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+  }
+
+  &__text-input {
+    width: 85%;
+  }
+
+  &__option {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    cursor: pointer;
+    text-align: center;
+  }
 }
 </style>
