@@ -1,6 +1,8 @@
 <template>
   <div id="hagrid">
     <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
+
+    <SecretModal @changeGridSize="changeGridSize" />
     <div class="tv-wrapper">
       <div class="header">
         <div class="header__empty"></div>
@@ -32,7 +34,7 @@
           </div>
         </div>
         <div class="tv__middle">
-          <GridLayout :styling="styling" :allScales="allScales" ref="gridLayout" />
+          <GridLayout :styling="styling" ref="gridLayout" />
         </div>
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
@@ -57,8 +59,10 @@ import {
   Overlay,
   Slider,
   GridLayout,
-  WaveComponent
+  WaveComponent,
+  SecretModal
 } from "./components/index.js";
+import { createAllArpeggios } from "./utils/pitchCalculations";
 
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
@@ -103,7 +107,8 @@ export default {
     Overlay,
     IconInfo,
     IconPlay,
-    WaveComponent
+    WaveComponent,
+    SecretModal
   },
   created: function() {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -116,7 +121,6 @@ export default {
     return {
       styling: "classic",
       intervals: "",
-      allScales: [],
       modalOpen: false,
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
@@ -124,7 +128,7 @@ export default {
     };
   },
   mounted() {
-    this.createAllPitchArrs();
+    this.createAllArpeggios();
     async function prepare() {
       await reverb.generate();
 
@@ -147,6 +151,11 @@ export default {
         reverb.wet.value = val;
       }
     },
+    changeGridSize(gridSize) {
+      this.$store.dispatch("changeGridSize", gridSize);
+      let newArpeggios = this.createAllArpeggios(this.arpeggio, this.gridSize);
+      this.$store.dispatch("changeAllArpeggios", newArpeggios);
+    },
     waveImg(wave) {
       return require(`./assets/waves/${wave}.svg`);
     },
@@ -158,39 +167,12 @@ export default {
       this.styling = styling;
       this.modalOpen = false;
     },
-    createScale() {
-      if (this.intervals) {
-        this.arpeggio = this.intervals.split("");
-        this.createAllPitchArrs();
-      }
-      this.modalOpen = false;
-    },
-    createAllPitchArrs() {
-      let allArrs = [];
-      let startKey = 0;
 
-      for (let i = 0; i <= this.gridSize.x; i++) {
-        let arr = this.createPitchArr(startKey);
-        allArrs.push(arr);
-        let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
-        startKey += interval;
-      }
-      this.allScales = allArrs;
+    createAllArpeggios() {
+      let allArpeggios = createAllArpeggios(this.arpeggio, this.gridSize);
+      this.$store.dispatch("createAllArpeggios", allArpeggios);
     },
-    createPitchArr(startKey) {
-      let arr = [];
-      let pianoKey = startKey;
 
-      for (let i = 0; i <= this.gridSize.y; i++) {
-        arr.push(this.hertzCalculator(pianoKey));
-        let interval = parseInt(this.arpeggio[i % this.arpeggio.length], 10);
-        pianoKey += interval;
-      }
-      return arr;
-    },
-    hertzCalculator(n) {
-      return Math.pow(2, n / 12) * 55;
-    },
     closeOverlay() {
       this.modalOpen = false;
     },
@@ -200,7 +182,7 @@ export default {
           this.modalOpen = false;
           break;
         case "createAllArs":
-          this.createAllPitchArrs();
+          this.createAllArpeggios();
           break;
       }
     },
@@ -237,7 +219,7 @@ export default {
           direction = isArrow.direction;
         }
 
-        let note = this.allScales[x][y];
+        let note = this.allArpeggios[x][y];
 
         synth.triggerAttackRelease(note, "8n", time);
 
@@ -287,7 +269,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying", "gridSize"]),
+    ...mapState(["playingDiv", "isPlaying", "allArpeggios"]),
+    gridSize() {
+      return this.$store.getters.getGridSize;
+    },
     overlayVisible() {
       return this.modalOpen;
     },

@@ -27,6 +27,7 @@
 <script>
 import Slider from "../Slider";
 import SliderContainer from "../Slider/SliderContainer";
+import { createAllArpeggios } from "../../utils/pitchCalculations";
 export default {
   name: "inputOptions",
   components: {
@@ -63,18 +64,28 @@ export default {
   methods: {
     changedSliderValue({ val, type }) {
       this.values[type] = val;
+      this.$store.dispatch("setPlayingDiv", false);
+      let newArpeggios = createAllArpeggios(this.arpeggio, this.gridSize);
+      this.$store.dispatch("createAllArpeggios", newArpeggios);
     },
     changeArpeggio() {
       let newArpeggio = this.values.arpeggio.split("").map(i => Number(i));
       this.$emit("changeArpeggio", newArpeggio);
     },
     handleInput(event) {
-      if (event.charCode < 48 || event.charCode > 57) {
+      let { charCode } = event;
+      if ((charCode < 48 || charCode > 57) && charCode !== 0) {
         event.preventDefault();
       }
     }
   },
   computed: {
+    gridSize() {
+      return this.$store.getters.getGridSize;
+    },
+    arpeggio() {
+      return this.$store.getters.getArpeggio;
+    },
     gridMaxValue() {
       return this.$store.state.gridSize.maxValue;
     }

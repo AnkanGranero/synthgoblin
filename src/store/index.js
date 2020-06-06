@@ -19,6 +19,7 @@ export default new Vuex.Store({
     
     },
     arpeggio: [4, 3, 4, 1],
+    allArpeggios: [],
     isMobile: false
   },
   mutations: {
@@ -65,8 +66,11 @@ export default new Vuex.Store({
       isMobile(state) {
       state.isMobile = true;
       },
-      setGridMaxValue(state) {
+      setGridMaxValue(state, payload) {
       state.gridSize.maxValue = payload
+      },
+      setAllArpeggios(state,payload) {
+        state.allArpeggios = payload
       }
 
   },
@@ -109,8 +113,11 @@ export default new Vuex.Store({
       
       commit("setArpeggio", payload)
     },
-    changeGridMaxValue({commit}) {
-        commit("setGridMaxValue", payload)
+    changeGridMaxValue({commit}, payload) {
+        commit("setGridMaxValue", Number(payload))
+    },
+    createAllArpeggios({commit}, payload) {
+      commit("setAllArpeggios", payload)
     }
   
   },

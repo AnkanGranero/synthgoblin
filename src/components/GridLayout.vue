@@ -46,11 +46,6 @@ export default {
     styling: {
       type: String,
       default: "classic"
-    },
-
-    allScales: {
-      type: Array,
-      default: () => []
     }
   },
 
@@ -203,11 +198,6 @@ export default {
     },
     gridSize() {
       return this.$store.getters.getGridSize;
-    },
-
-    gridSizeY() {
-      let { y } = this.$store.getters.getGridSize;
-      return y;
     }
   }
 };
