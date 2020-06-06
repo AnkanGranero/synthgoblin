@@ -17,7 +17,6 @@ export default {
   },
   methods: {
     handleInput(event) {
-      console.log(event.charCode);
       let { charCode } = event;
 
       if ((charCode < 48 || charCode > 57) && charCode !== 0) {
