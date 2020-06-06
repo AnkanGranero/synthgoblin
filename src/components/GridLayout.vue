@@ -14,6 +14,7 @@ det slutar spela om man trycker någponstans på skärmen
         :style="colorStyling(x, y)"
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
+        @click="$emit( 'clickedSquare', {x,y} )"
       >
         <square
           @openDirectionPicker="openDirectionPicker"

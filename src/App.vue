@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="tv__middle">
-          <GridLayout :styling="styling" ref="gridLayout" />
+          <GridLayout :styling="styling" ref="gridLayout" @clickedSquare="playNote" />
         </div>
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
@@ -69,12 +69,7 @@ import IconPlay from "./components/IconPlay";
 
 import * as Tone from "tone";
 import { mapState } from "vuex";
-/* import colorStyling from "./helpers/colorFunctions.js";
- */
-/* var lowPassFreq = new Tone.Signal(300, Tone.Frequency);
- */
 
-/* const lowPass = new Tone.Filter(300, "lowpass").toMaster(); */
 const reverb = new Tone.Reverb({
   decay: 5,
   wet: 0.3,
@@ -138,6 +133,11 @@ export default {
     prepare();
   },
   methods: {
+    playNote(payload) {
+      let { x, y } = payload;
+      let note = this.allArpeggios[x][y];
+      synth.triggerAttackRelease(note, "8n");
+    },
     changeWave(val) {
       synth.oscillator.type = val;
       this.selectedWaveform = val;
