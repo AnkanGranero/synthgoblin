@@ -15,9 +15,9 @@
       <div class="slider__track"></div>
       <div class="slider__knob" :style="knobPosition"></div>
     </div>
-    <span class="type">
+    <span class="slider-wrapper__type">
       {{ type }}
-      <span class="value">{{ customSlideValue }}</span>
+      <span class="slider-wrapper__value">{{ customSlideValue }}</span>
     </span>
   </div>
 </template>
@@ -130,26 +130,23 @@ export default {
 $hagridGreen: #54bb5a;
 $yellow: #d9d283;
 
-.type {
-  color: white;
-  display: block;
-  margin-top: 10px;
-  text-align: center;
-  text-transform: uppercase;
-  color: $yellow;
-  position: absolute;
-  white-space: pre-wrap;
-}
-.value {
-  color: $yellow;
-}
-
 .slider-wrapper {
   height: 100%;
   position: relative;
   background: transparent;
   min-width: 40%;
   max-height: 100%;
+  font-family: "Source Sans Pro", sans-serif;
+
+  &__type {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    color: $yellow;
+    position: absolute;
+    white-space: pre-wrap;
+  }
 }
 .slider {
   height: 100%;

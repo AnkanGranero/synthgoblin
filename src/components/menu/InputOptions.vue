@@ -17,7 +17,7 @@
             @keypress="handleInput"
             class="input-options__text-input"
           />
-          <span>write intervals in semitones</span>
+          <p>write intervals in semitones</p>
           <span @click="changeArpeggio">ok</span>
         </div>
       </div>

@@ -352,16 +352,12 @@ body {
 
   font-size: 1.5rem;
   letter-spacing: -1px;
-}
-* {
   font-family: "Open Sans", sans-serif;
-  /*   font-family: "Roboto", sans-serif; */
 }
 
 .tv-wrapper {
   display: flex;
   flex-direction: column;
-  /*   width: 100%; */
   height: 100%;
   @media only screen and (min-width: $medium) {
     height: 85%;
