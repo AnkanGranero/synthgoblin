@@ -42,12 +42,12 @@ export default {
         }
       },
       menuOptions: {
-        main: ["theme", "arpeggio"],
         themes: ["classic", "80s"],
-        arpeggio: arpeggios
+        arpeggio: arpeggios,
+        angle: ["diatonic", "symetric"]
       },
       menuTree: [],
-      pickedMenuOption: ["themes", "arpeggio", "gridsize"],
+      pickedMenuOption: ["gridsize", "arpeggio", "angle"],
       chooseGridSize: false,
       inputOption: ""
     };
@@ -76,6 +76,12 @@ export default {
         return;
       }
 
+      if (option === "diatonic" || option === "symetric") {
+        this.eventEmitter("closeModal");
+        this.$store.dispatch("changeAngle", option);
+        this.eventEmitter("createAllArs");
+      }
+
       if (option == "minor7" || option == "major7") {
         this.changeArpeggio(arpeggioNotes[option]);
       }
@@ -83,8 +89,6 @@ export default {
       this.pickedMenuOption = this.menuOptions[option];
     },
     changeArpeggio(newArpeggio) {
-      console.log("payload", newArpeggio);
-
       this.$store.dispatch("changeArpeggio", newArpeggio);
       this.eventEmitter("createAllArs");
       this.eventEmitter("closeModal");
@@ -103,7 +107,6 @@ export default {
           break;
         }
       }
-      console.log("inputType", inputType);
 
       return inputType;
     }

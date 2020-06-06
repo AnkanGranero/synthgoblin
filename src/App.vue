@@ -123,7 +123,7 @@ export default {
     };
   },
   mounted() {
-    this.createAllArpeggios();
+    this.createNewArpeggios();
     async function prepare() {
       await reverb.generate();
 
@@ -153,8 +153,7 @@ export default {
     },
     changeGridSize(gridSize) {
       this.$store.dispatch("changeGridSize", gridSize);
-      let newArpeggios = this.createAllArpeggios(this.arpeggio, this.gridSize);
-      this.$store.dispatch("changeAllArpeggios", newArpeggios);
+      this.createNewArpeggios();
     },
     waveImg(wave) {
       return require(`./assets/waves/${wave}.svg`);
@@ -168,9 +167,13 @@ export default {
       this.modalOpen = false;
     },
 
-    createAllArpeggios() {
-      let allArpeggios = createAllArpeggios(this.arpeggio, this.gridSize);
-      this.$store.dispatch("createAllArpeggios", allArpeggios);
+    createNewArpeggios() {
+      let newArpeggios = createAllArpeggios(
+        this.arpeggio,
+        this.gridSize,
+        this.angle
+      );
+      this.$store.dispatch("createAllArpeggios", newArpeggios);
     },
 
     closeOverlay() {
@@ -182,7 +185,7 @@ export default {
           this.modalOpen = false;
           break;
         case "createAllArs":
-          this.createAllArpeggios();
+          this.createNewArpeggios();
           break;
       }
     },
@@ -269,7 +272,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying", "allArpeggios"]),
+    ...mapState(["playingDiv", "isPlaying", "allArpeggios", "angle"]),
     gridSize() {
       return this.$store.getters.getGridSize;
     },
@@ -479,6 +482,16 @@ body {
     flex-direction: row;
   }
 
+  /*   &__small-button-wrapper {
+    position: absolute;
+    bottom: -10%;
+    left: 0;
+  }
+
+  &__small-button {
+    color: white;
+  } */
+
   &__top-mobile {
     display: flex;
     justify-content: space-evenly;
@@ -550,6 +563,7 @@ body {
     min-width: 100%;
     padding: 5%;
     box-sizing: border-box;
+    position: relative;
     @media only screen and (min-width: $medium) {
       padding: unset;
       width: 50%;

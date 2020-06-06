@@ -28,6 +28,7 @@
 import Slider from "../Slider";
 import SliderContainer from "../Slider/SliderContainer";
 import { createAllArpeggios } from "../../utils/pitchCalculations";
+import { mapState } from "vuex";
 export default {
   name: "inputOptions",
   components: {
@@ -65,7 +66,11 @@ export default {
     changedSliderValue({ val, type }) {
       this.values[type] = val;
       this.$store.dispatch("setPlayingDiv", false);
-      let newArpeggios = createAllArpeggios(this.arpeggio, this.gridSize);
+      let newArpeggios = createAllArpeggios(
+        this.arpeggio,
+        this.gridSize,
+        this.angle
+      );
       this.$store.dispatch("createAllArpeggios", newArpeggios);
     },
     changeArpeggio() {
@@ -80,6 +85,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(["angle"]),
     gridSize() {
       return this.$store.getters.getGridSize;
     },

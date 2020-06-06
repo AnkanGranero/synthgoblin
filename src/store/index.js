@@ -20,7 +20,8 @@ export default new Vuex.Store({
     },
     arpeggio: [4, 3, 4, 1],
     allArpeggios: [],
-    isMobile: false
+    isMobile: false,
+    angle: "symetric"
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -71,6 +72,9 @@ export default new Vuex.Store({
       },
       setAllArpeggios(state,payload) {
         state.allArpeggios = payload
+      },
+      setAngle(state, payload) {
+        state.angle = payload
       }
 
   },
@@ -118,6 +122,9 @@ export default new Vuex.Store({
     },
     createAllArpeggios({commit}, payload) {
       commit("setAllArpeggios", payload)
+    },
+    changeAngle({commit}, payload) {
+      commit("setAngle", payload)
     }
   
   },
