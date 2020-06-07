@@ -25,7 +25,7 @@
   </div>
 </template>
 <script>
-import Slider from "../Slider";
+import Slider from "../Slider/Slider";
 import SliderContainer from "../Slider/SliderContainer";
 import { createAllArpeggios } from "../../utils/pitchCalculations";
 import { mapState } from "vuex";
