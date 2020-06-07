@@ -52,7 +52,6 @@ export default {
       default: false
     }
   },
-
   created: function() {
     if (this.initialValue) {
       this.slideValue = this.valueToSlide(this.initialValue);

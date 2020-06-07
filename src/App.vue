@@ -53,7 +53,6 @@
 </template>
 
 <script>
-/* import Triangle from "./components/Triangle"; */
 import {
   Modal,
   Overlay,
