@@ -134,7 +134,9 @@ export default {
   methods: {
     playNote(payload) {
       let { x, y } = payload;
-      let note = this.allArpeggios[x][y];
+      //we need to subtract one since the coordinates starts on 1
+      //and the allArpeggios arr start at index 0
+      let note = this.allArpeggios[x - 1][y - 1];
       synth.triggerAttackRelease(note, "8n");
     },
     changeWave(val) {
@@ -220,8 +222,9 @@ export default {
         if (isArrow) {
           direction = isArrow.direction;
         }
-
-        let note = this.allArpeggios[x][y];
+        //we need to subtract one since the coordinates starts on 1
+        //and the allArpeggios arr start at index 0
+        let note = this.allArpeggios[x - 1][y - 1];
 
         synth.triggerAttackRelease(note, "8n", time);
 
