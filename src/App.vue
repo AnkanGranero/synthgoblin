@@ -133,6 +133,7 @@ export default {
   },
   methods: {
     playNote(payload) {
+      if (this.isPlaying) return;
       let { x, y } = payload;
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0

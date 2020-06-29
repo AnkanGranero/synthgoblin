@@ -1,9 +1,3 @@
-//jag har en array med den spelande koordinaterna, som när den ersätts först tar
-bort styling till den första sen lägger till till den nya //lägg till knappar
-för att välja prop value mousePos som highlightTarget // ha en propterty playing
-så att om man trycker på en pil när det spelas så kommer modal upp, kanske att
-det slutar spela om man trycker någponstans på skärmen
-
 <template>
   <div class="page-wrapper">
     <div v-for="y in gridSize.y" :key="y" :class="createRowClass(y)">
