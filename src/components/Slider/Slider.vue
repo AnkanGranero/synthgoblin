@@ -138,7 +138,8 @@ $yellow: #d9d283;
   font-family: "Source Sans Pro", sans-serif;
 
   &__type {
-    display: block;
+    display: flex;
+    flex-direction: column;
     margin-top: 10px;
     text-align: center;
     text-transform: uppercase;
