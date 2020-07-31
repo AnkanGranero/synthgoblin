@@ -145,7 +145,7 @@ $yellow: #d9d283;
     text-transform: uppercase;
     color: $yellow;
     position: absolute;
-    white-space: pre-wrap;
+    /*     white-space: pre-wrap; */
   }
 }
 .slider {

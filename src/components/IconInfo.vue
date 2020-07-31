@@ -29,7 +29,7 @@
         />
       </g>
       <g id="Layer_5" data-name="Layer 5">
-        <text class="cls-3" transform="translate(13.73 19.88)">i</text>
+        <text class="cls-3" transform="translate(11.5 19.88)">H</text>
       </g>
     </svg>
   </div>
@@ -77,5 +77,6 @@ $medium: 768px;
   font-size: 12px;
   font-family: OpenSans-ExtraBold, Open Sans;
   font-weight: 800;
+  color: rgb(141, 223, 232);
 }
 </style>
