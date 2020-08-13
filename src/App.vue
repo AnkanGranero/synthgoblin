@@ -92,6 +92,14 @@ const synth = new Tone.Synth({
   }
 });
 
+let midiOutput = null;
+
+window.navigator.requestMIDIAccess().then(function(midiAccess) {
+  const outputs = Array.from(midiAccess.outputs.values());
+  console.log("outputs", outputs);
+  midiOutput = outputs[0];
+});
+
 export default {
   name: "App",
   components: {
@@ -118,7 +126,8 @@ export default {
       modalOpen: false,
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
-      selectedWaveform: "sawtooth"
+      selectedWaveform: "sawtooth",
+      lastPlayedMidiNote: null
     };
   },
   mounted() {
@@ -135,6 +144,7 @@ export default {
     playNote(payload) {
       if (this.isPlaying) return;
       let { x, y } = payload;
+
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0
       let note = this.allArpeggios[x - 1][y - 1];
@@ -196,6 +206,9 @@ export default {
         Tone.Transport.cancel();
         this.$store.dispatch("changeIsPlayingState", false);
         this.$store.dispatch("setPlayingDiv", null);
+        midiOutput.send([0x80, this.lastPlayedMidiNote, 0x7f]);
+        console.log("last#", this.lastPlayedMidiNote);
+        /*       this.lastPlayedMidiNote = null; */
         return;
       }
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
@@ -209,6 +222,7 @@ export default {
       Tone.Transport.scheduleRepeat(this.repeat, "16n");
       Tone.Transport.bpm.value = this.bpm;
       Tone.Transport.start();
+      midiOutput.send([0x80, 0x3c, 0x74]);
     },
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
@@ -218,6 +232,7 @@ export default {
 
       if (ref) {
         ref[0].classList.remove("highlight");
+        this.noteOn = true;
 
         let isArrow = this.$store.getters.findArrowRef(refName);
         if (isArrow) {
@@ -228,6 +243,13 @@ export default {
         let note = this.allArpeggios[x - 1][y - 1];
 
         synth.triggerAttackRelease(note, "8n", time);
+        console.log("note", note);
+        let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
+        if (this.lastPlayedMidiNote) {
+          midiOutput.send([0x80, midiNote, 0x74]);
+        }
+        midiOutput.send([0x90, midiNote, 0x74]);
+        this.lastPlayedMidiNote = midiNote;
 
         let nextCoordinates = this.nextCoordinateBasedOnDirection(
           x,
