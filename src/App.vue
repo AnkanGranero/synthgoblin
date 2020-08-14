@@ -568,8 +568,9 @@ body {
   &__clear {
     background: red;
     border-radius: 100%;
-    height: 20px;
-    width: 20px;
+    border: none;
+    height: 15px;
+    width: 15px;
 
     position: absolute;
     bottom: -70px;
