@@ -35,7 +35,7 @@
           <button class="tv__clear" @click="clearAllArrows" />
         </div>
         <div class="tv__middle">
-          <GridLayout :styling="styling" ref="gridLayout" @clickedSquare="playNote" />
+          <GridLayout :styling="styling" ref="gridLayout" @clicked-square="playNote" />
         </div>
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
