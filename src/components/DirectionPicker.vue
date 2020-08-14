@@ -39,13 +39,22 @@ export default {
   components: {
     Triangle
   },
+  props: {
+    refForSquare: {
+      type: Object,
+      default: () => {}
+    }
+  },
   methods: {
     setDirection(dir) {
-      this.$emit("directionSet", dir);
+      let { x, y, refName } = this.refForSquare;
+      let payloadForStore = { x, y, refName, direction: dir };
+
+      this.$store.dispatch("addArrowRef", payloadForStore);
     },
 
     removeArrowDiv() {
-      this.$emit("removeArrowDiv");
+      this.$store.dispatch("removeArrowRef", this.refForSquare.refName);
     }
   }
 };

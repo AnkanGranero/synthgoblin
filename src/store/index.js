@@ -9,7 +9,6 @@ export default new Vuex.Store({
     playingDiv: null,
     backgroundColors: "",
     arrowRefs: [],
-    direction: "",
     gridSize: {
       coordinates: { 
         x: 15,
@@ -51,9 +50,7 @@ export default new Vuex.Store({
       let { index, direction } = payload;
       state.arrowRefs[index].direction = direction;
     },
-    setDirection(state, payload) {
-      state.direction = payload;
-    },
+ 
     setGridSize(state, payload) {
       
       state.isPlaying = false;
@@ -106,8 +103,9 @@ export default new Vuex.Store({
      
       commit("removeArrowRef", payload);
     },
-    setDirection({ commit }, payload) {
-      commit("setDirection", payload);
+    removeAllArrowRefs( {commit }) {
+      console.log("clearrr");
+      commit("clearAllArrowRefs")
     },
     changeGridSize({commit}, payload) {
       commit("changeIsPlayingState",false);

@@ -8,13 +8,14 @@
         :style="colorStyling(x, y)"
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
-        @click="$emit( 'clickedSquare', {x,y} )"
+        @click="$emit( 'clicked-square', {x,y} )"
       >
         <square
           @openDirectionPicker="openDirectionPicker"
           :refForSquare="refForSquare(x, y)"
           :directionPickerOpen="isdirectionPickerOpen(x, y)"
           @closeDirectionPicker="closeDirectionPicker"
+          :direction="direction(x,y)"
         ></square>
       </div>
     </div>
@@ -45,6 +46,12 @@ export default {
   },
 
   methods: {
+    direction(x, y) {
+      const arrowRef = this.$store.getters.findArrowRef(
+        this.getRefFromCoordinates(x, y)
+      );
+      return arrowRef ? arrowRef.direction : null;
+    },
     getRefFromCoordinates(x, y) {
       return `r${x}-${y}`;
     },

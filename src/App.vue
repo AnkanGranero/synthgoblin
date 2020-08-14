@@ -32,6 +32,7 @@
               </div>
             </div>
           </div>
+          <button class="tv__clear" @click="clearAllArrows" />
         </div>
         <div class="tv__middle">
           <GridLayout :styling="styling" ref="gridLayout" @clickedSquare="playNote" />
@@ -272,6 +273,9 @@ export default {
       }
 
       return { x, y, direction };
+    },
+    clearAllArrows() {
+      this.$store.dispatch("removeAllArrowRefs");
     }
   },
   computed: {
@@ -416,18 +420,6 @@ body {
       left: 13px;
       margin-left: 2%;
       font-size: 1.7vw;
-      /*       font-size: 0.58rem;
-      @media only screen and (min-width: 375px) {
-        font-size: 0.7rem;
-      }
-      @media only screen and (min-width: 425px) {
-        font-size: 0.84rem;
-      }
-
-      @media only screen and (min-width: $medium) {
-       
-        font-size: 1.7vw;
-      } */
     }
     &__leaf {
       display: none;
@@ -442,14 +434,8 @@ body {
       @media only screen and (min-width: 1024px) {
         right: 0;
       }
-
-      /*     position: absolute;
-
-    bottom: -49%;
-    right: -39%; */
     }
     &__middle {
-      /*  flex-grow: 4; */
       width: 50%;
     }
     &__left,
@@ -485,16 +471,6 @@ body {
     flex-direction: row;
   }
 
-  /*   &__small-button-wrapper {
-    position: absolute;
-    bottom: -10%;
-    left: 0;
-  }
-
-  &__small-button {
-    color: white;
-  } */
-
   &__top-mobile {
     display: flex;
     justify-content: space-evenly;
@@ -517,6 +493,7 @@ body {
 
   &__left {
     display: none;
+    position: relative;
     @media only screen and (min-width: $medium) {
       display: flex;
       align-items: center;
@@ -538,7 +515,6 @@ body {
       flex-grow: 1;
       flex-direction: column;
     }
-    /*  min-width: 271px; */
     .sliderContainer {
       display: none;
       @media only screen and (min-width: $medium) {
@@ -556,17 +532,17 @@ body {
     border-radius: 100%;
   }
   &__middle {
-    /*    flex-grow: 4; */
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    /* max-width: 606px; */
     min-height: 50%;
     min-width: 100%;
     padding: 5%;
     box-sizing: border-box;
     position: relative;
+
     @media only screen and (min-width: $medium) {
       padding: unset;
       width: 50%;
@@ -574,9 +550,6 @@ body {
       min-height: unset;
       min-width: unset;
     }
-    /*     padding: 10px;
-    border: 2px solid rgb(133, 130, 130); */
-    /*  min-width: 490px; */
   }
 
   &__buttons {
@@ -592,6 +565,15 @@ body {
   &__btn {
     margin: 5%;
   }
+  &__clear {
+    background: red;
+    border-radius: 100%;
+    height: 20px;
+    width: 20px;
+
+    position: absolute;
+    bottom: -70px;
+  }
 }
 
 .footer {
@@ -600,10 +582,6 @@ body {
   &__signature {
     margin: 0.5%;
     font-size: 0.8rem;
-    /*     font-size: 0.6rem;
-    @media only screen and (min-width: $medium) {
-      font-size: 0.8rem;
-    } */
   }
 }
 </style>

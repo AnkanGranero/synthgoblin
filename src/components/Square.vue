@@ -1,10 +1,6 @@
 <template>
   <div class="square" @mousedown="handleClick">
-    <Direction-picker
-      v-if="directionPickerOpen"
-      @directionSet="addArrowRef"
-      @removeArrowDiv="removeArrowDiv"
-    />
+    <Direction-picker v-if="directionPickerOpen" :ref-for-square="refForSquare" />
 
     <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
       <div :class="[whatDirection,hidden]"></div>
@@ -25,16 +21,16 @@ export default {
     directionPickerOpen: {
       default: false,
       type: Boolean
+    },
+    direction: {
+      default: "",
+      type: String
     }
   },
   components: {
     DirectionPicker
   },
-  data() {
-    return {
-      direction: ""
-    };
-  },
+
   methods: {
     handleClick() {
       this.openDirectionPicker();
@@ -49,25 +45,11 @@ export default {
       this.$emit("openDirectionPicker", { x, y });
     },
 
-    addArrowRef(payload) {
-      let { x, y, refName } = this.refForSquare;
-      let payloadForStore = { x, y, refName, direction: payload };
-
-      this.$store.dispatch("addArrowRef", payloadForStore);
-
-      this.direction = payload;
-    },
-
     closeDirectionPicker() {
       this.$emit("closeDirectionPicker");
     },
     clickedOnArrow() {
       this.openDirectionPicker();
-    },
-    removeArrowDiv() {
-      let { refName } = this.refForSquare;
-      this.direction = "";
-      this.$store.dispatch("removeArrowRef", refName);
     }
   },
   computed: {
