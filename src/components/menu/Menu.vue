@@ -1,114 +1,91 @@
 <template>
-  <div>
-    <div class="menu">
-      <InputOptions
-        v-if="inputOption"
-        :inputOption="inputOption"
-        :initialValues="fields[inputOption]"
-        v-bind="fields"
-        @back="inputOption=false"
-        :inputType="inputType"
-        @changeArpeggio="changeArpeggio"
-      />
-      <div
-        v-for="(option, index) in pickedMenuOption"
+  <div class="menu" :class="{ 'menu-black': menuStep.length }">
+    <ul v-if="!menuOptionComponent">
+      <li
+        v-for="(value, index) in currentMenuValues.values"
         :key="index"
+        @click="setMenuStep(index)"
         class="menu__option"
-        @click="choosenMenuOption(option)"
-      >{{ option }}</div>
-      <div class="menu__option" @click="choosenMenuOption('back')">back</div>
-    </div>
+      >{{ value.name }}</li>
+    </ul>
+    <component
+      v-else
+      :is="menuOptionComponent.component"
+      @changedValue="changedValue"
+      v-bind="menuOptionComponent"
+    />
+    <div class="menu__option" @click="back()">back</div>
   </div>
 </template>
 
 <script>
-import InputOptions from "./InputOptions";
-
-const arpeggios = ["major7", "minor7", "custom"];
-const arpeggioNotes = { major7: [4, 3, 4, 1], minor7: [3, 4, 3, 2] };
+import { menuValues } from "../../menuValues";
+import SliderContainer from "../Slider/SliderContainer";
+/* import InputOptions from "./InputOptions";
+ */
+/* const arpeggios = ["major7", "minor7", "custom"];
+const arpeggioNotes = { major7: [4, 3, 4, 1], minor7: [3, 4, 3, 2] }; */
 
 export default {
   name: "Menu",
 
   data() {
     return {
-      fields: {
-        gridsize: {
-          x: "",
-          y: ""
-        },
-        custom: {
-          arpeggio: ""
-        }
-      },
-      menuOptions: {
-        themes: ["classic", "80s"],
-        arpeggio: arpeggios,
-        angle: ["diatonic", "symetric"]
-      },
-      menuTree: [],
-      pickedMenuOption: ["gridsize", "arpeggio", "angle"],
-      chooseGridSize: false,
-      inputOption: ""
+      menuStep: []
     };
   },
-  mounted: function() {
-    this.fields.gridsize = this.$store.getters.getGridSize;
-  },
   components: {
-    InputOptions
+    SliderContainer
   },
   methods: {
-    eventEmitter(message) {
-      this.$emit("menuEmit", message);
+    setMenuStep(index) {
+      this.menuStep.push(index);
     },
-    choosenMenuOption(option) {
-      if (option == "back") {
-        this.chooseGridSize = false;
-        this.menuTree.length
-          ? (this.pickedMenuOption = this.menuTree.pop())
-          : this.eventEmitter("closeModal");
-
-        return;
+    back() {
+      const { menuStep } = this;
+      if (menuStep.length) {
+        menuStep.splice(-1, 1);
       }
-      if (option === "gridsize" || option === "custom") {
-        this.inputOption = option;
-        return;
-      }
-
-      if (option === "diatonic" || option === "symetric") {
-        this.eventEmitter("closeModal");
-        this.$store.dispatch("changeAngle", option);
-        this.eventEmitter("createAllArs");
-      }
-
-      if (option == "minor7" || option == "major7") {
-        this.changeArpeggio(arpeggioNotes[option]);
-      }
-      this.menuTree.push(this.pickedMenuOption);
-      this.pickedMenuOption = this.menuOptions[option];
     },
-    changeArpeggio(newArpeggio) {
-      this.$store.dispatch("changeArpeggio", newArpeggio);
-      this.eventEmitter("createAllArs");
-      this.eventEmitter("closeModal");
+    changedValue({ val, name }) {
+      /*   this.values[type] = val; */
+      console.log("type ", name);
+      this.$store.dispatch("setPlayingDiv", false);
+      /*       let newArpeggios = createAllArpeggios(
+        this.arpeggio,
+        this.gridSize,
+        this.angle
+      ); */
+      if (name === "x" || name === "y") {
+        // change grid size sen create All arpeggios
+        let newGridSize = this.gridSize;
+        console.log("gridSize", newGridSize);
+        (newGridSize[name] = val),
+          this.$store.dispatch("setGridSize", newGridSize);
+        this.$store.dispatch("createAllArpeggios");
+      }
     }
   },
-  computed: {
-    inputType() {
-      let inputType;
-      switch (this.inputOption) {
-        case "gridsize": {
-          inputType = "slider";
-          break;
-        }
-        case "custom": {
-          inputType = "textInput";
-          break;
-        }
-      }
 
-      return inputType;
+  computed: {
+    //hur gör jag nu för flera steg i detta menyträd?
+    gridSize() {
+      return this.$store.getters.getGridSize;
+    },
+    currentMenuValues() {
+      const { menuStep } = this;
+      switch (menuStep.length) {
+        case 1:
+          return menuValues.values[menuStep[0]];
+        case 2:
+          return menuValues[menuStep[0]].values[menuStep[1]];
+      }
+      return menuValues;
+    },
+    menuOptionComponent() {
+      return this.currentMenuValues.type === "component"
+        ? this.currentMenuValues
+        : false;
     }
   }
 };
@@ -116,13 +93,20 @@ export default {
 
 <style lang="scss" scoped>
 .menu {
+  &-black {
+    background: black;
+  }
+  width: 100%;
+  height: 100%;
   color: white;
   display: flex;
   flex-direction: column;
   align-content: center;
 
   @media only screen and (min-width: 375px) {
-    display: unset;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
   }
   &__input-wrapper {
     display: flex;

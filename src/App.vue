@@ -39,8 +39,20 @@
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
           <div class="sliderContainer">
-            <Slider @changedValue="changedSliderValue" type="bpm" :maxValue="250" :minValue="50" />
-            <Slider @changedValue="changedSliderValue" type="reverb" :maxValue="1" :minValue="0" />
+            <Slider
+              @changedValue="changedSliderValue"
+              :largeText="false"
+              name="bpm"
+              :maxValue="250"
+              :minValue="50"
+            />
+            <Slider
+              @changedValue="changedSliderValue"
+              :largeText="false"
+              name="reverb"
+              :maxValue="1"
+              :minValue="0"
+            />
           </div>
         </div>
         <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
@@ -62,10 +74,8 @@ import {
   SecretModal
 } from "./components/index.js";
 import { createAllArpeggios } from "./utils/pitchCalculations";
-
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
-
 import * as Tone from "tone";
 import { mapState } from "vuex";
 
@@ -97,7 +107,6 @@ let midiOutput = null;
 window.navigator.requestMIDIAccess().then(function(midiAccess) {
   const outputs = Array.from(midiAccess.outputs.values());
   console.log("outputs", outputs);
-  midiOutput = outputs[0];
 });
 
 export default {
@@ -208,7 +217,6 @@ export default {
         this.$store.dispatch("setPlayingDiv", null);
         midiOutput.send([0x80, this.lastPlayedMidiNote, 0x7f]);
         console.log("last#", this.lastPlayedMidiNote);
-        /*       this.lastPlayedMidiNote = null; */
         return;
       }
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
@@ -298,6 +306,10 @@ export default {
   },
   computed: {
     ...mapState(["playingDiv", "isPlaying", "allArpeggios", "angle"]),
+    midiOutput() {
+      let output = this.$store.getters.getMidiOutputs;
+      return output ? output[0] : null;
+    },
     gridSize() {
       return this.$store.getters.getGridSize;
     },

@@ -21,7 +21,8 @@ export default new Vuex.Store({
     arpeggio: [4, 3, 4, 1],
     allArpeggios: [],
     isMobile: false,
-    angle: "symetric"
+    angle: "symetric",
+    midiOutputs: []
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -75,6 +76,9 @@ export default new Vuex.Store({
       },
       setAngle(state, payload) {
         state.angle = payload
+      },
+      addMidiOutput(state, payload) {
+        state.midiOutputs = payload
       }
 
   },
@@ -125,6 +129,9 @@ export default new Vuex.Store({
     },
     changeAngle({commit}, payload) {
       commit("setAngle", payload)
+    },
+    addMidiOutputs({commit}, payload) {
+      commit("addMidiOutputs", payload)
     }
   
   },
@@ -149,6 +156,9 @@ export default new Vuex.Store({
     },
     getArpeggio: state => {
       return state.arpeggio
+    },
+    getMidiOutputs: state => {
+      return state.midiOutputs
     }
   },
   modules: {}
