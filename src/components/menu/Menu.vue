@@ -29,10 +29,6 @@
 import { menuValues } from "../../menuValues";
 import SliderContainer from "../Slider/SliderContainer";
 import MidiOutputs from "../menu/MidiOutputs";
-/* import InputOptions from "./InputOptions";
- */
-/* const arpeggios = ["major7", "minor7", "custom"];
-const arpeggioNotes = { major7: [4, 3, 4, 1], minor7: [3, 4, 3, 2] }; */
 
 export default {
   name: "Menu",
@@ -50,7 +46,7 @@ export default {
   methods: {
     handleClick(value, index) {
       if (value.type === "text") {
-        this.setMenuStep(value, index);
+        this.menuStep.push(index);
         return;
       }
       if (value.type === "component") {
@@ -63,11 +59,7 @@ export default {
       }
       this.menuChoice(value);
     },
-    setComponentData() {},
-    setMenuStep(value, index) {
-      this.menuStep.push(index);
-      return;
-    },
+
     back() {
       const { menuStep } = this;
       if (this.componentData) {
@@ -181,9 +173,5 @@ export default {
 }
 .active {
   color: $hagrid-green;
-}
-.grid-size {
-  display: flex;
-  flex-direction: column;
 }
 </style>

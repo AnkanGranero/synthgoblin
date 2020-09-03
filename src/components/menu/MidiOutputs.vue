@@ -33,24 +33,12 @@ export default {
       localStorage.setItem("midiOutput", payload.name);
       this.$store.dispatch("modalIsOpen", false);
     }
-  },
-  computed: {
-    midiOutOnOff() {
-      return this.midiOut ? "on" : "off";
-    }
   }
 };
 </script>
 
 <style lang="scss">
 .midi-out {
-  &__toggle {
-    color: red;
-  }
-  &__on {
-    color: $hagrid-green;
-  }
-
   &__options {
     list-style: none;
     padding: 0;
