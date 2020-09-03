@@ -86,10 +86,15 @@ const menuValues = {
         type: "text",
         values: [{
             name:"minor",
-            type: "text"
+            action:"changeArpeggio",
+            payload: [3, 4, 3, 2]
+
+
         },{
             name:"major",
-            type: "text"
+            action:"changeArpeggio",
+            payload: [4, 3, 4, 1]
+
         }, {
             name:"custom",
             type: "component",
@@ -97,6 +102,30 @@ const menuValues = {
         }
 
         ]
+    },
+    {
+        
+        name: "Angle",
+        type: "text",
+        values: [
+           {
+            name: "symetric",
+            action: "changeAngle",
+            payload: "symetric"
+           },
+           {
+            name: "diatonic",
+            action: "changeAngle",
+            payload: "diatonic"
+       
+           },
+    ]
+        
+    },
+    {
+        name: "Midi out",
+        type: "component",
+        component: "MidiOut"
     }
       
   ]

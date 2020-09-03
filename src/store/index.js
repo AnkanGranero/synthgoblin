@@ -22,7 +22,8 @@ export default new Vuex.Store({
     allArpeggios: [],
     isMobile: false,
     angle: "symetric",
-    midiOutputs: []
+    midiOutput: null,
+    modalIsOpen: false
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -60,7 +61,7 @@ export default new Vuex.Store({
       state.isPlaying = false;
       state.gridSize.coordinates = payload
     },
-        setArpeggio(state, payload) {
+    setArpeggio(state, payload) {
         
       state.arpeggio = payload
       
@@ -77,12 +78,20 @@ export default new Vuex.Store({
       setAngle(state, payload) {
         state.angle = payload
       },
-      addMidiOutput(state, payload) {
-        state.midiOutputs = payload
+      setMidiOutput(state, payload) {
+        state.midiOutput = payload
+      },
+      setModal(state, payload) {
+        state.modalIsOpen = payload;
       }
 
   },
   actions: {
+    modalIsOpen({ commit }, payload) {
+
+      commit("setModal", payload);
+
+    },
     changeIsPlayingState({ commit }, payload) {
       commit("changeIsPlayingState", payload);
     },
@@ -117,7 +126,7 @@ export default new Vuex.Store({
       commit("changeIsPlayingState",false);
       commit("setGridSize", payload);
     },
-        changeArpeggio({commit}, payload) {
+    changeArpeggio({commit}, payload) {
       
       commit("setArpeggio", payload)
     },
@@ -130,9 +139,10 @@ export default new Vuex.Store({
     changeAngle({commit}, payload) {
       commit("setAngle", payload)
     },
-    addMidiOutputs({commit}, payload) {
-      commit("addMidiOutputs", payload)
-    }
+    addMidiOutput({commit}, payload) {
+      commit("setMidiOutput", payload)
+    },
+
   
   },
   getters: {
@@ -157,8 +167,8 @@ export default new Vuex.Store({
     getArpeggio: state => {
       return state.arpeggio
     },
-    getMidiOutputs: state => {
-      return state.midiOutputs
+    getMidiOutput: state => {
+      return state.midiOutput
     }
   },
   modules: {}

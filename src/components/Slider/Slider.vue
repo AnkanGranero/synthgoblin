@@ -154,10 +154,10 @@ $yellow: #d9d283;
       font-size: 15px;
     } */
     font-size: 30px;
-    @media screen and (min-width: 768px) {
+    @media screen and (min-width: $ipad) {
       font-size: 15px;
     }
-    @media screen and (min-width: 1400px) {
+    @media screen and (min-width: $desktop-large) {
       font-size: 30px;
     }
     /*     white-space: pre-wrap; */

@@ -1,6 +1,6 @@
 <template>
   <div id="hagrid">
-    <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
+    <Modal v-if="modalIsOpen" @modalEmit="modalEventHandler" />
 
     <SecretModal @changeGridSize="changeGridSize" />
     <div class="tv-wrapper">
@@ -78,6 +78,11 @@ import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
 import * as Tone from "tone";
 import { mapState } from "vuex";
+import {
+  midiPlay,
+  midiStop,
+  getMidiOutputFromLocalStorage
+} from "./midi-service/midiService";
 
 const reverb = new Tone.Reverb({
   decay: 5,
@@ -100,13 +105,6 @@ const synth = new Tone.Synth({
     sustain: 0.2,
     release: 0.2
   }
-});
-
-let midiOutput = null;
-
-window.navigator.requestMIDIAccess().then(function(midiAccess) {
-  const outputs = Array.from(midiAccess.outputs.values());
-  console.log("outputs", outputs);
 });
 
 export default {
@@ -132,7 +130,6 @@ export default {
     return {
       styling: "classic",
       intervals: "",
-      modalOpen: false,
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
       selectedWaveform: "sawtooth",
@@ -148,6 +145,7 @@ export default {
       synth.connect(filter);
     }
     prepare();
+    this.checkLocalStorage();
   },
   methods: {
     playNote(payload) {
@@ -163,12 +161,12 @@ export default {
       synth.oscillator.type = val;
       this.selectedWaveform = val;
     },
-    changedSliderValue({ val, type }) {
-      if (type === "bpm") {
+    changedSliderValue({ val, name }) {
+      if (name === "bpm") {
         this.bpm = val;
         Tone.Transport.bpm.value = val;
       }
-      if (type === "reverb") {
+      if (name === "reverb") {
         reverb.wet.value = val;
       }
     },
@@ -180,12 +178,12 @@ export default {
       return require(`./assets/waves/${wave}.svg`);
     },
     openModal() {
-      this.modalOpen = true;
+      this.$store.dispatch("modalIsOpen", true);
     },
 
     changeTheme(styling) {
       this.styling = styling;
-      this.modalOpen = false;
+      this.$store.dispatch("modalIsOpen", false);
     },
 
     createNewArpeggios() {
@@ -198,12 +196,12 @@ export default {
     },
 
     closeOverlay() {
-      this.modalOpen = false;
+      this.$store.dispatch("modalIsOpen", false);
     },
     modalEventHandler(payload) {
       switch (payload) {
         case "closeModal":
-          this.modalOpen = false;
+          this.$store.dispatch("modalIsOpen", false);
           break;
         case "createAllArs":
           this.createNewArpeggios();
@@ -215,8 +213,9 @@ export default {
         Tone.Transport.cancel();
         this.$store.dispatch("changeIsPlayingState", false);
         this.$store.dispatch("setPlayingDiv", null);
-        midiOutput.send([0x80, this.lastPlayedMidiNote, 0x7f]);
-        console.log("last#", this.lastPlayedMidiNote);
+        /*         this.midiOutput.send([0x80, this.lastPlayedMidiNote, 0x7f]);
+         */ this.midiStop(this.midiOutput);
+
         return;
       }
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
@@ -230,7 +229,7 @@ export default {
       Tone.Transport.scheduleRepeat(this.repeat, "16n");
       Tone.Transport.bpm.value = this.bpm;
       Tone.Transport.start();
-      midiOutput.send([0x80, 0x3c, 0x74]);
+      this.midiOutput.send([0x80, 0x3c, 0x74]);
     },
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
@@ -251,12 +250,11 @@ export default {
         let note = this.allArpeggios[x - 1][y - 1];
 
         synth.triggerAttackRelease(note, "8n", time);
-        console.log("note", note);
         let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
         if (this.lastPlayedMidiNote) {
-          midiOutput.send([0x80, midiNote, 0x74]);
+          this.midiStop(this.midiOutput);
         }
-        midiOutput.send([0x90, midiNote, 0x74]);
+        this.midiPlay(this.midiOutput, midiNote);
         this.lastPlayedMidiNote = midiNote;
 
         let nextCoordinates = this.nextCoordinateBasedOnDirection(
@@ -280,6 +278,7 @@ export default {
       } else {
         Tone.Transport.cancel();
         this.$store.commit("changeIsPlayingState", false);
+        this.midiStop(this.midiOutput);
       }
     },
     getRefFromCoordinates(x, y) {
@@ -302,19 +301,37 @@ export default {
       }
 
       return { x, y, direction };
-    }
+    },
+    async checkLocalStorage() {
+      let { midiOutput } = localStorage;
+      if (midiOutput) {
+        let storedMidiOutput = await getMidiOutputFromLocalStorage();
+        if (storedMidiOutput) {
+          this.$store.dispatch("addMidiOutput", storedMidiOutput[0]);
+        }
+      }
+    },
+    midiPlay,
+    midiStop,
+    getMidiOutputFromLocalStorage
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying", "allArpeggios", "angle"]),
+    ...mapState([
+      "playingDiv",
+      "isPlaying",
+      "allArpeggios",
+      "angle",
+      "modalIsOpen"
+    ]),
     midiOutput() {
-      let output = this.$store.getters.getMidiOutputs;
-      return output ? output[0] : null;
+      let output = this.$store.getters.getMidiOutput;
+      return output ? output : null;
     },
     gridSize() {
       return this.$store.getters.getGridSize;
     },
     overlayVisible() {
-      return this.modalOpen;
+      return this.modalIsOpen;
     },
     arpeggio() {
       return this.$store.getters.getArpeggio;
