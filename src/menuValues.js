@@ -124,8 +124,17 @@ const menuValues = {
     },
     {
         name: "Midi out",
-        type: "component",
-        component: "MidiOut"
+        type: "text",
+        
+        values: [
+            { name: "Midi out:",
+              type: "toggle",
+              action: "toggleMidiOutActive"},
+            { name: "Midi outputs",
+              type: "component",
+              component: "MidiOutputs",
+             }
+        ]
     }
       
   ]

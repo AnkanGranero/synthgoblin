@@ -1,18 +1,25 @@
 <template>
-  <div class="menu" :class="{ 'menu-black': menuStep.length }">
-    <ul v-if="!menuOptionComponent" class="menu__options">
+  <div class="menu" :class="{ 'menu-black': menuStep.length || componentData }">
+    <ul v-if="!componentData" class="menu__options">
       <li
         v-for="(value, index) in currentMenuValues.values"
         :key="index"
-        @click="setMenuStep(value, index)"
+        @click="handleClick(value, index)"
         class="menu__option"
-      >{{ value.name }}</li>
+      >
+        {{ value.name }}
+        <span
+          v-if="value.type ==='toggle'"
+          class="menu__toggle"
+          :class="{'active': midiOutActive}"
+        >{{toggleValue(value.name)}}</span>
+      </li>
     </ul>
     <component
       v-else
-      :is="menuOptionComponent.component"
+      :is="componentData.component"
       @changedValue="changedValue"
-      v-bind="menuOptionComponent"
+      v-bind="componentData"
     />
     <div class="menu__option" @click="back()">back</div>
   </div>
@@ -21,7 +28,7 @@
 <script>
 import { menuValues } from "../../menuValues";
 import SliderContainer from "../Slider/SliderContainer";
-import MidiOut from "../menu/MidiOut";
+import MidiOutputs from "../menu/MidiOutputs";
 /* import InputOptions from "./InputOptions";
  */
 /* const arpeggios = ["major7", "minor7", "custom"];
@@ -32,24 +39,41 @@ export default {
 
   data() {
     return {
-      menuStep: []
+      menuStep: [],
+      componentData: null
     };
   },
   components: {
     SliderContainer,
-    MidiOut
+    MidiOutputs
   },
   methods: {
-    setMenuStep(value, index) {
-      if (value.type === "text" || value.type === "component") {
-        this.menuStep.push(index);
+    handleClick(value, index) {
+      if (value.type === "text") {
+        this.setMenuStep(value, index);
         return;
-      } else {
-        this.menuChoice(value);
       }
+      if (value.type === "component") {
+        this.componentData = value;
+        return;
+      }
+      if (value.type === "toggle") {
+        this.$store.dispatch(value.action);
+        return;
+      }
+      this.menuChoice(value);
+    },
+    setComponentData() {},
+    setMenuStep(value, index) {
+      this.menuStep.push(index);
+      return;
     },
     back() {
       const { menuStep } = this;
+      if (this.componentData) {
+        this.componentData = null;
+        return;
+      }
       if (menuStep.length) {
         menuStep.splice(-1, 1);
         return;
@@ -62,11 +86,7 @@ export default {
     },
     changedValue({ val, name }) {
       this.$store.dispatch("setPlayingDiv", false);
-      /*       let newArpeggios = createAllArpeggios(
-        this.arpeggio,
-        this.gridSize,
-        this.angle
-      ); */
+
       if (name === "x" || name === "y") {
         // change grid size sen create All arpeggios
         let newGridSize = this.gridSize;
@@ -75,11 +95,20 @@ export default {
           this.$store.dispatch("setGridSize", newGridSize);
         this.$store.dispatch("createAllArpeggios");
       }
+    },
+    toggleValue(name) {
+      switch (name) {
+        case "Midi out:":
+          return this.midiOutActive ? "ON" : "OFF";
+      }
     }
   },
 
   computed: {
     //hur gör jag nu för flera steg i detta menyträd?
+    midiOutActive() {
+      return this.$store.getters.midiOutActive;
+    },
     gridSize() {
       return this.$store.getters.getGridSize;
     },
@@ -92,12 +121,12 @@ export default {
           return menuValues[menuStep[0]].values[menuStep[1]];
       }
       return menuValues;
-    },
-    menuOptionComponent() {
+    }
+    /*     menuOptionComponent() {
       return this.currentMenuValues.type === "component"
         ? this.currentMenuValues
         : false;
-    }
+    } */
   }
 };
 </script>
@@ -119,7 +148,7 @@ export default {
   @media only screen and (min-width: 375px) {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-between;
   }
   &__input-wrapper {
     display: flex;
@@ -130,13 +159,11 @@ export default {
     margin-left: 5%;
   }
   &__options {
+    margin-top: 70px;
     list-style: none;
     padding: 0;
   }
   &__option {
-    /*     display: flex;
- */
-    /* font-size: 2rem; */
     font-size: 30px;
     margin-bottom: 2rem;
     cursor: pointer;
@@ -148,6 +175,12 @@ export default {
   &__triangle {
     margin-right: 2rem;
   }
+  &__toggle {
+    color: red;
+  }
+}
+.active {
+  color: $hagrid-green;
 }
 .grid-size {
   display: flex;

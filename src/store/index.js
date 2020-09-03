@@ -23,6 +23,7 @@ export default new Vuex.Store({
     isMobile: false,
     angle: "symetric",
     midiOutput: null,
+    midiOutActive: false,
     modalIsOpen: false
   },
   mutations: {
@@ -83,6 +84,9 @@ export default new Vuex.Store({
       },
       setModal(state, payload) {
         state.modalIsOpen = payload;
+      },
+      toggleMidiOutActive(state) {
+        state.midiOutActive = !state.midiOutActive
       }
 
   },
@@ -142,6 +146,9 @@ export default new Vuex.Store({
     addMidiOutput({commit}, payload) {
       commit("setMidiOutput", payload)
     },
+    toggleMidiOutActive({commit}) {
+      commit("toggleMidiOutActive")
+    }
 
   
   },
@@ -169,6 +176,9 @@ export default new Vuex.Store({
     },
     getMidiOutput: state => {
       return state.midiOutput
+    },
+    midiOutActive: state => {
+      return state.midiOutActive
     }
   },
   modules: {}

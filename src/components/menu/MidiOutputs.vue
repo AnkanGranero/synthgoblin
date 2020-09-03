@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <p @click="setMidiOutputs()">MIDI</p>
-    <ul>
+  <div class="midi-out">
+    <ul class="midi-out__options">
       <li
         v-for="(output, index) in midiOutputs"
         :key="index"
+        class="midi-out__option"
         @click="setMidiOutput(output)"
       >{{ output.name}}</li>
     </ul>
@@ -20,9 +20,12 @@ export default {
       midiOutputs: []
     };
   },
+  mounted() {
+    this.getMidiOutputs();
+  },
   methods: {
     requestMIDIAccess,
-    setMidiOutputs() {
+    getMidiOutputs() {
       this.requestMIDIAccess().then(resp => (this.midiOutputs = resp));
     },
     setMidiOutput(payload) {
@@ -30,9 +33,38 @@ export default {
       localStorage.setItem("midiOutput", payload.name);
       this.$store.dispatch("modalIsOpen", false);
     }
+  },
+  computed: {
+    midiOutOnOff() {
+      return this.midiOut ? "on" : "off";
+    }
   }
 };
 </script>
 
 <style lang="scss">
+.midi-out {
+  &__toggle {
+    color: red;
+  }
+  &__on {
+    color: $hagrid-green;
+  }
+
+  &__options {
+    list-style: none;
+    padding: 0;
+    margin-top: 70px;
+  }
+  &__option {
+    font-size: 20px;
+    margin-bottom: 2rem;
+    cursor: pointer;
+    text-align: center;
+    @media only screen and (min-width: 1200px) {
+      font-size: 40px;
+    }
+  }
+}
 </style>
+
