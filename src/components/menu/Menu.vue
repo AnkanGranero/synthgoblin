@@ -44,10 +44,11 @@ export default {
       menuOptions: {
         themes: ["classic", "80s"],
         arpeggio: arpeggios,
-        angle: ["diatonic", "symetric"]
+        angle: ["diatonic", "symetric"],
+        midi: ["toggle internal synth", "devices"]
       },
       menuTree: [],
-      pickedMenuOption: ["gridsize", "arpeggio", "angle"],
+      pickedMenuOption: ["gridsize", "arpeggio", "angle", "midi"],
       chooseGridSize: false,
       inputOption: ""
     };
@@ -85,12 +86,21 @@ export default {
       if (option == "minor7" || option == "major7") {
         this.changeArpeggio(arpeggioNotes[option]);
       }
+
+      if (option == "toggle internal synth") {
+        this.toggleInternalSynth();
+      }
+
       this.menuTree.push(this.pickedMenuOption);
       this.pickedMenuOption = this.menuOptions[option];
     },
     changeArpeggio(newArpeggio) {
       this.$store.dispatch("changeArpeggio", newArpeggio);
       this.eventEmitter("createAllArs");
+      this.eventEmitter("closeModal");
+    },
+    toggleInternalSynth() {
+      this.eventEmitter("toggleInternalSynth");
       this.eventEmitter("closeModal");
     }
   },
