@@ -79,6 +79,12 @@ import IconPlay from "./components/IconPlay";
 import * as Tone from "tone";
 import { mapState } from "vuex";
 import {
+  playThang,
+  changeBpm,
+  changeReverb,
+  stopPlaying
+} from "./playStuff/playStuff";
+import {
   midiPlay,
   midiStop,
   getMidiOutputFromLocalStorage
@@ -163,11 +169,11 @@ export default {
     },
     changedSliderValue({ val, name }) {
       if (name === "bpm") {
-        this.bpm = val;
-        Tone.Transport.bpm.value = val;
+        changeBpm(val);
       }
       if (name === "reverb") {
-        reverb.wet.value = val;
+        //DENNA FUNKAR INTE ÄNNU
+        changeReverb(val);
       }
     },
     changeGridSize(gridSize) {
@@ -208,14 +214,15 @@ export default {
           break;
       }
     },
+    stop() {
+      stopPlaying();
+      this.$store.dispatch("changeIsPlayingState", false);
+      this.$store.dispatch("setPlayingDiv", null);
+      this.midiStop(this.midiOutput);
+    },
     async play() {
       if (this.isPlaying) {
-        Tone.Transport.cancel();
-        this.$store.dispatch("changeIsPlayingState", false);
-        this.$store.dispatch("setPlayingDiv", null);
-        /*         this.midiOutput.send([0x80, this.lastPlayedMidiNote, 0x7f]);
-         */ this.midiStop(this.midiOutput);
-
+        this.stop();
         return;
       }
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
@@ -223,13 +230,12 @@ export default {
         return;
       }
       this.$store.dispatch("setPlayingDiv", firstArrowRef);
-
       this.$store.commit("changeIsPlayingState", true);
-
-      Tone.Transport.scheduleRepeat(this.repeat, "16n");
+      playThang(this.repeat, this.bpm);
+      /* Tone.Transport.scheduleRepeat(this.repeat, "16n");
       Tone.Transport.bpm.value = this.bpm;
       Tone.Transport.start();
-      this.midiOutput.send([0x80, 0x3c, 0x74]);
+      this.midiOutput.send([0x80, 0x3c, 0x74]); */
     },
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
@@ -239,7 +245,6 @@ export default {
 
       if (ref) {
         ref[0].classList.remove("highlight");
-        this.noteOn = true;
 
         let isArrow = this.$store.getters.findArrowRef(refName);
         if (isArrow) {
