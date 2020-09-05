@@ -15,10 +15,10 @@
       <div class="slider__track"></div>
       <div class="slider__knob" :style="knobPosition"></div>
     </div>
-    <span class="slider-wrapper__type">
-      {{ type }}
+    <div class="slider-wrapper__type" :class="{'large-text': largeText}">
+      {{ name }}
       <span class="slider-wrapper__value">{{ customSlideValue }}</span>
-    </span>
+    </div>
   </div>
 </template>
 <script>
@@ -31,7 +31,7 @@ export default {
     };
   },
   props: {
-    type: {
+    name: {
       type: String,
       default: ""
     },
@@ -50,6 +50,10 @@ export default {
     integer: {
       type: Boolean,
       default: false
+    },
+    largeText: {
+      type: Boolean,
+      default: true
     }
   },
   created: function() {
@@ -84,7 +88,7 @@ export default {
 
         this.$emit("changedValue", {
           val: this.customSlideValue,
-          type: this.type
+          name: this.name
         });
       }
     },
@@ -145,9 +149,24 @@ $yellow: #d9d283;
     text-transform: uppercase;
     color: $yellow;
     position: absolute;
+    width: 100%;
+    /*     @media screen and (min-width: 600px) {
+      font-size: 15px;
+    } */
+    font-size: 30px;
+    @media screen and (min-width: $ipad) {
+      font-size: 15px;
+    }
+    @media screen and (min-width: $desktop-large) {
+      font-size: 30px;
+    }
     /*     white-space: pre-wrap; */
   }
 }
+.large-text {
+  font-size: 30px;
+}
+
 .slider {
   height: 100%;
   width: 100%;
@@ -160,6 +179,7 @@ $yellow: #d9d283;
   &__track {
     background: $hagridGreen;
     width: 5%;
+    max-width: 5px;
   }
 
   &__knob {
@@ -167,8 +187,12 @@ $yellow: #d9d283;
 
     height: 4%;
     width: 75%;
+    max-width: 60px;
     position: absolute;
     border-radius: 10px;
   }
+  /*   &__value {
+    width: 100%;
+  } */
 }
 </style>

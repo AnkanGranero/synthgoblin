@@ -21,7 +21,10 @@ export default new Vuex.Store({
     arpeggio: [4, 3, 4, 1],
     allArpeggios: [],
     isMobile: false,
-    angle: "symetric"
+    angle: "symetric",
+    midiOutput: null,
+    midiOutActive: false,
+    modalIsOpen: false
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -59,7 +62,7 @@ export default new Vuex.Store({
       state.isPlaying = false;
       state.gridSize.coordinates = payload
     },
-        setArpeggio(state, payload) {
+    setArpeggio(state, payload) {
         
       state.arpeggio = payload
       
@@ -75,10 +78,24 @@ export default new Vuex.Store({
       },
       setAngle(state, payload) {
         state.angle = payload
+      },
+      setMidiOutput(state, payload) {
+        state.midiOutput = payload
+      },
+      setModal(state, payload) {
+        state.modalIsOpen = payload;
+      },
+      toggleMidiOutActive(state) {
+        state.midiOutActive = !state.midiOutActive
       }
 
   },
   actions: {
+    modalIsOpen({ commit }, payload) {
+
+      commit("setModal", payload);
+
+    },
     changeIsPlayingState({ commit }, payload) {
       commit("changeIsPlayingState", payload);
     },
@@ -113,7 +130,7 @@ export default new Vuex.Store({
       commit("changeIsPlayingState",false);
       commit("setGridSize", payload);
     },
-        changeArpeggio({commit}, payload) {
+    changeArpeggio({commit}, payload) {
       
       commit("setArpeggio", payload)
     },
@@ -125,7 +142,14 @@ export default new Vuex.Store({
     },
     changeAngle({commit}, payload) {
       commit("setAngle", payload)
+    },
+    addMidiOutput({commit}, payload) {
+      commit("setMidiOutput", payload)
+    },
+    toggleMidiOutActive({commit}) {
+      commit("toggleMidiOutActive")
     }
+
   
   },
   getters: {
@@ -149,6 +173,12 @@ export default new Vuex.Store({
     },
     getArpeggio: state => {
       return state.arpeggio
+    },
+    getMidiOutput: state => {
+      return state.midiOutput
+    },
+    midiOutActive: state => {
+      return state.midiOutActive
     }
   },
   modules: {}

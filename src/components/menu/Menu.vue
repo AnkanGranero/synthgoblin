@@ -1,128 +1,146 @@
 <template>
-  <div>
-    <div class="menu">
-      <InputOptions
-        v-if="inputOption"
-        :inputOption="inputOption"
-        :initialValues="fields[inputOption]"
-        v-bind="fields"
-        @back="inputOption=false"
-        :inputType="inputType"
-        @changeArpeggio="changeArpeggio"
-      />
-      <div
-        v-for="(option, index) in pickedMenuOption"
+  <div class="menu" :class="{ 'menu-black': menuStep.length || componentData }">
+    <ul v-if="!componentData" class="menu__options">
+      <li
+        v-for="(value, index) in currentMenuValues.values"
         :key="index"
+        @click="handleClick(value, index)"
         class="menu__option"
-        @click="choosenMenuOption(option)"
-      >{{ option }}</div>
-      <div class="menu__option" @click="choosenMenuOption('back')">back</div>
-    </div>
+      >
+        {{ value.name }}
+        <span
+          v-if="value.type ==='toggle'"
+          class="menu__toggle"
+          :class="{'active': midiOutActive}"
+        >{{toggleValue(value.name)}}</span>
+      </li>
+    </ul>
+    <component
+      v-else
+      :is="componentData.component"
+      @changedValue="changedValue"
+      v-bind="componentData"
+    />
+    <div class="menu__option" @click="back()">back</div>
   </div>
 </template>
 
 <script>
-import InputOptions from "./InputOptions";
-
-const arpeggios = ["major7", "minor7", "custom"];
-const arpeggioNotes = { major7: [4, 3, 4, 1], minor7: [3, 4, 3, 2] };
+import { menuValues } from "../../menuValues";
+import SliderContainer from "../Slider/SliderContainer";
+import MidiOutputs from "../menu/MidiOutputs";
 
 export default {
   name: "Menu",
 
   data() {
     return {
-      fields: {
-        gridsize: {
-          x: "",
-          y: ""
-        },
-        custom: {
-          arpeggio: ""
-        }
-      },
-      menuOptions: {
-        themes: ["classic", "80s"],
-        arpeggio: arpeggios,
-        angle: ["diatonic", "symetric"]
-      },
-      menuTree: [],
-      pickedMenuOption: ["gridsize", "arpeggio", "angle"],
-      chooseGridSize: false,
-      inputOption: ""
+      menuStep: [],
+      componentData: null
     };
   },
-  mounted: function() {
-    this.fields.gridsize = this.$store.getters.getGridSize;
-  },
   components: {
-    InputOptions
+    SliderContainer,
+    MidiOutputs
   },
   methods: {
-    eventEmitter(message) {
-      this.$emit("menuEmit", message);
-    },
-    choosenMenuOption(option) {
-      if (option == "back") {
-        this.chooseGridSize = false;
-        this.menuTree.length
-          ? (this.pickedMenuOption = this.menuTree.pop())
-          : this.eventEmitter("closeModal");
-
+    handleClick(value, index) {
+      if (value.type === "text") {
+        this.menuStep.push(index);
         return;
       }
-      if (option === "gridsize" || option === "custom") {
-        this.inputOption = option;
+      if (value.type === "component") {
+        this.componentData = value;
         return;
       }
-
-      if (option === "diatonic" || option === "symetric") {
-        this.eventEmitter("closeModal");
-        this.$store.dispatch("changeAngle", option);
-        this.eventEmitter("createAllArs");
+      if (value.type === "toggle") {
+        this.$store.dispatch(value.action);
+        return;
       }
-
-      if (option == "minor7" || option == "major7") {
-        this.changeArpeggio(arpeggioNotes[option]);
-      }
-      this.menuTree.push(this.pickedMenuOption);
-      this.pickedMenuOption = this.menuOptions[option];
+      this.menuChoice(value);
     },
-    changeArpeggio(newArpeggio) {
-      this.$store.dispatch("changeArpeggio", newArpeggio);
-      this.eventEmitter("createAllArs");
-      this.eventEmitter("closeModal");
+
+    back() {
+      const { menuStep } = this;
+      if (this.componentData) {
+        this.componentData = null;
+        return;
+      }
+      if (menuStep.length) {
+        menuStep.splice(-1, 1);
+        return;
+      }
+      this.$emit("menuEmit", "closeModal");
+    },
+    menuChoice(value) {
+      this.$store.dispatch(value.action, value.payload);
+      this.$emit("menuEmit", "closeModal");
+    },
+    changedValue({ val, name }) {
+      this.$store.dispatch("setPlayingDiv", false);
+
+      if (name === "x" || name === "y") {
+        // change grid size sen create All arpeggios
+        let newGridSize = this.gridSize;
+
+        (newGridSize[name] = val),
+          this.$store.dispatch("setGridSize", newGridSize);
+        this.$store.dispatch("createAllArpeggios");
+      }
+    },
+    toggleValue(name) {
+      switch (name) {
+        case "Midi out:":
+          return this.midiOutActive ? "ON" : "OFF";
+      }
     }
   },
-  computed: {
-    inputType() {
-      let inputType;
-      switch (this.inputOption) {
-        case "gridsize": {
-          inputType = "slider";
-          break;
-        }
-        case "custom": {
-          inputType = "textInput";
-          break;
-        }
-      }
 
-      return inputType;
+  computed: {
+    //hur gör jag nu för flera steg i detta menyträd?
+    midiOutActive() {
+      return this.$store.getters.midiOutActive;
+    },
+    gridSize() {
+      return this.$store.getters.getGridSize;
+    },
+    currentMenuValues() {
+      const { menuStep } = this;
+      switch (menuStep.length) {
+        case 1:
+          return menuValues.values[menuStep[0]];
+        case 2:
+          return menuValues[menuStep[0]].values[menuStep[1]];
+      }
+      return menuValues;
     }
+    /*     menuOptionComponent() {
+      return this.currentMenuValues.type === "component"
+        ? this.currentMenuValues
+        : false;
+    } */
   }
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .menu {
+  &-black {
+    background: black;
+  }
+  width: 100%;
+  height: 100%;
   color: white;
   display: flex;
   flex-direction: column;
   align-content: center;
+  font-size: 30px;
+  margin-bottom: 2rem;
 
   @media only screen and (min-width: 375px) {
-    display: unset;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   &__input-wrapper {
     display: flex;
@@ -132,22 +150,28 @@ export default {
     width: 15%;
     margin-left: 5%;
   }
+  &__options {
+    margin-top: 70px;
+    list-style: none;
+    padding: 0;
+  }
   &__option {
-    /*     display: flex;
- */
-    font-size: 2rem;
+    font-size: 30px;
     margin-bottom: 2rem;
     cursor: pointer;
     text-align: center;
-    @media only screen and (min-width: 375px) {
+    @media only screen and (min-width: 1200px) {
+      font-size: 40px;
     }
   }
   &__triangle {
     margin-right: 2rem;
   }
+  &__toggle {
+    color: red;
+  }
 }
-.grid-size {
-  display: flex;
-  flex-direction: column;
+.active {
+  color: $hagrid-green;
 }
 </style>
