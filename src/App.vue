@@ -67,7 +67,6 @@ import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
 
 import * as Tone from "tone";
-import WebMidi from "webmidi";
 import { mapState } from "vuex";
 
 const reverb = new Tone.Reverb({
@@ -93,24 +92,12 @@ const synth = new Tone.Synth({
   }
 });
 
-
 let midiOutput = null;
 
-//window.navigator.requestMIDIAccess().then(function(midiAccess) {
-//  const outputs = Array.from(midiAccess.outputs.values());
-//  console.log("outputs", outputs);
-//  midiOutput = outputs[0];
-//});
-
-WebMidi.enable(function(err) {
-  if (err) {
-    console.error("WebMidi could not be enabled: " + err);
-    return;
-  }
-  const outputs = WebMidi.outputs;
+window.navigator.requestMIDIAccess().then(function(midiAccess) {
+  const outputs = Array.from(midiAccess.outputs.values());
   console.log("outputs", outputs);
-  midiOutput = outputs[0]; //TODO give user a menu to select which output device(s)?
-  console.log(midiOutput);
+  midiOutput = outputs[0];
 });
 
 export default {
@@ -140,8 +127,7 @@ export default {
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
       selectedWaveform: "sawtooth",
-      lastPlayedMidiNote: null,
-      useInternalSynth: true
+      lastPlayedMidiNote: null
     };
   },
   mounted() {
@@ -162,11 +148,7 @@ export default {
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0
       let note = this.allArpeggios[x - 1][y - 1];
-      if (this.useInternalSynth) {
-        synth.triggerAttackRelease(note, "8n");
-      }
-      let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
-      midiOutput.playNote(midiNote, "all", { duration : 300});
+      synth.triggerAttackRelease(note, "8n");
     },
     changeWave(val) {
       synth.oscillator.type = val;
@@ -217,9 +199,6 @@ export default {
         case "createAllArs":
           this.createNewArpeggios();
           break;
-        case "toggleInternalSynth":
-          this.useInternalSynth = !this.useInternalSynth;
-          break;
       }
     },
     async play() {
@@ -227,8 +206,7 @@ export default {
         Tone.Transport.cancel();
         this.$store.dispatch("changeIsPlayingState", false);
         this.$store.dispatch("setPlayingDiv", null);
-        //midiOutput.send([0x80, this.lastPlayedMidiNote, 0x7f]);
-        midiOutput.stopNote(this.lastPlayedMidiNote);
+        midiOutput.send([0x80, this.lastPlayedMidiNote, 0x7f]);
         console.log("last#", this.lastPlayedMidiNote);
         /*       this.lastPlayedMidiNote = null; */
         return;
@@ -244,8 +222,7 @@ export default {
       Tone.Transport.scheduleRepeat(this.repeat, "16n");
       Tone.Transport.bpm.value = this.bpm;
       Tone.Transport.start();
-      //midiOutput.send([0x80, 0x3c, 0x74]);
-      midiOutput.stopNote(60); //TODO not sure what this noteoff was for but I left it in
+      midiOutput.send([0x80, 0x3c, 0x74]);
     },
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
@@ -265,18 +242,13 @@ export default {
         //and the allArpeggios arr start at index 0
         let note = this.allArpeggios[x - 1][y - 1];
 
-        if (this.useInternalSynth) {
-          synth.triggerAttackRelease(note, "8n", time);
-        }
-          if(!time)console.log(time)
-        //console.log("note", note);
+        synth.triggerAttackRelease(note, "8n", time);
+        console.log("note", note);
         let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
         if (this.lastPlayedMidiNote) {
-          //midiOutput.send([0x80, midiNote, 0x74]);
-          midiOutput.stopNote(this.lastPlayedMidiNote);
+          midiOutput.send([0x80, midiNote, 0x74]);
         }
-        //midiOutput.send([0x90, midiNote, 0x74]);
-        midiOutput.playNote(midiNote);
+        midiOutput.send([0x90, midiNote, 0x74]);
         this.lastPlayedMidiNote = midiNote;
 
         let nextCoordinates = this.nextCoordinateBasedOnDirection(
