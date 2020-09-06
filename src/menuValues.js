@@ -54,7 +54,7 @@
 const menuValues = {
     type: "text",
     values:[
-    
+
     {   type: "component",
     component: "SliderContainer",
         name: "Grid size",
@@ -104,7 +104,7 @@ const menuValues = {
         ]
     },
     {
-        
+
         name: "Angle",
         type: "text",
         values: [
@@ -117,26 +117,39 @@ const menuValues = {
             name: "diatonic",
             action: "changeAngle",
             payload: "diatonic"
-       
+
            },
     ]
-        
+
     },
     {
         name: "Midi out",
         type: "text",
-        
+
         values: [
-            { name: "Midi out:",
+            {
+              name: "Midi out:",
               type: "toggle",
-              action: "toggleMidiOutActive"},
-            { name: "Midi outputs",
+              action: "toggleMidiOutActive"
+            },
+            {
+              name: "Midi outputs",
               type: "component",
               component: "MidiOutputs",
-             }
+            },
+            {
+              name: "Midi channels",
+              type: "component",
+              component: "MidiChannels",
+            },
+            {
+              name: "Midi note properties",
+              type: "component",
+              component: "MidiNoteProperties",
+            }
         ]
     }
-      
+
   ]
 }
 export {menuValues}
