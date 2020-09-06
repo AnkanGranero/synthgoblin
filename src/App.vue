@@ -88,7 +88,7 @@ import {
   midiPlay,
   midiStop,
   changeMidiBpm,
-//  changeMidiNoteLength,
+  //  changeMidiNoteLength,
   setOutputDevice,
   getMidiOutputFromLocalStorage
 } from "./midi-service/midiService";
@@ -180,7 +180,7 @@ export default {
         changeMidiBpm(val);
       }
       if (name === "reverb") {
-        //DENNA FUNKAR INTE ÄNNU
+        //TODO this one does not work after refactoring
         changeReverb(val);
       }
     },
@@ -440,32 +440,13 @@ body {
       margin-bottom: 13%;
     }
 
-    /*    position: absolute;
-    left: 33%;
-    width: 33%; */
-
-    /*  margin: 0 0 6% 0; */
-
     &__h1 {
       color: #d9d283;
       margin: 0;
-      /* font-size: 200px; */
-      /*     font-size: 13rem; */
-
       letter-spacing: -0.4rem;
       line-height: 0.8;
       font-size: 12.5vw;
       font-size: 12.9rem;
-      /*       font-size: 4.4rem;
-      @media only screen and (min-width: 375px) {
-        font-size: 5.1rem;
-      }
-      @media only screen and (min-width: 425px) {
-        font-size: 5.7rem;
-      }
-      @media only screen and (min-width: $medium) {
-        font-size: 12.5vw;
-      } */
     }
     &__sub {
       margin: 0;
@@ -474,18 +455,6 @@ body {
       left: 13px;
       margin-left: 2%;
       font-size: 1.7vw;
-      /*       font-size: 0.58rem;
-      @media only screen and (min-width: 375px) {
-        font-size: 0.7rem;
-      }
-      @media only screen and (min-width: 425px) {
-        font-size: 0.84rem;
-      }
-
-      @media only screen and (min-width: $medium) {
-       
-        font-size: 1.7vw;
-      } */
     }
     &__leaf {
       display: none;
@@ -500,14 +469,8 @@ body {
       @media only screen and (min-width: 1024px) {
         right: 0;
       }
-
-      /*     position: absolute;
-
-    bottom: -49%;
-    right: -39%; */
     }
     &__middle {
-      /*  flex-grow: 4; */
       width: 50%;
     }
     &__left,
@@ -526,8 +489,6 @@ body {
   min-height: 100%;
 
   justify-content: space-between;
-  /*   height: 100%;
-  min-height: 46%; */
   height: 100%;
   flex-direction: column;
   position: absolute;
@@ -542,17 +503,6 @@ body {
     width: 100%;
     flex-direction: row;
   }
-
-  /*   &__small-button-wrapper {
-    position: absolute;
-    bottom: -10%;
-    left: 0;
-  }
-
-  &__small-button {
-    color: white;
-  } */
-
   &__top-mobile {
     display: flex;
     justify-content: space-evenly;
@@ -583,7 +533,6 @@ body {
       flex-grow: 1;
       flex-direction: column;
     }
-    /*   min-width: 271px; */
   }
   &__right {
     display: none;
@@ -596,7 +545,7 @@ body {
       flex-grow: 1;
       flex-direction: column;
     }
-    /*  min-width: 271px; */
+
     .sliderContainer {
       display: none;
       @media only screen and (min-width: $medium) {
@@ -614,12 +563,10 @@ body {
     border-radius: 100%;
   }
   &__middle {
-    /*    flex-grow: 4; */
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
-    /* max-width: 606px; */
     min-height: 50%;
     min-width: 100%;
     padding: 5%;
@@ -632,9 +579,6 @@ body {
       min-height: unset;
       min-width: unset;
     }
-    /*     padding: 10px;
-    border: 2px solid rgb(133, 130, 130); */
-    /*  min-width: 490px; */
   }
 
   &__buttons {
@@ -658,10 +602,6 @@ body {
   &__signature {
     margin: 0.5%;
     font-size: 0.8rem;
-    /*     font-size: 0.6rem;
-    @media only screen and (min-width: $medium) {
-      font-size: 0.8rem;
-    } */
   }
 }
 </style>
