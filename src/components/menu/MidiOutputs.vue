@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { requestMIDIAccess } from "../../midi-service/midiService";
+import { midiOutputs, setOutputDevice } from "../../midi-service/midiService";
 export default {
   name: "MidiOut",
   data() {
@@ -20,16 +20,12 @@ export default {
       midiOutputs: []
     };
   },
-  mounted() {
-    this.getMidiOutputs();
+  async mounted() {
+    this.midiOutputs = await midiOutputs;
   },
-  methods: {
-    requestMIDIAccess,
-    getMidiOutputs() {
-      this.requestMIDIAccess().then(resp => (this.midiOutputs = resp));
-    },
-    setMidiOutput(payload) {
+  methods: { setMidiOutput(payload) {
       this.$store.dispatch("addMidiOutput", payload);
+      setOutputDevice(payload);
       localStorage.setItem("midiOutput", payload.name);
       this.$store.dispatch("modalIsOpen", false);
     }

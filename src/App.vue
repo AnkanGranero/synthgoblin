@@ -87,6 +87,9 @@ import {
 import {
   midiPlay,
   midiStop,
+  changeMidiBpm,
+//  changeMidiNoteLength,
+  setOutputDevice,
   getMidiOutputFromLocalStorage
 } from "./midi-service/midiService";
 
@@ -139,7 +142,8 @@ export default {
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
       selectedWaveform: "sawtooth",
-      lastPlayedMidiNote: null
+      useInternalSynth: true, //TODO add menu setting for useInternalSynth
+      midiNoteLength: 0.8 //TODO add menu setting? this property probably won't be used in this script
     };
   },
   mounted() {
@@ -161,7 +165,10 @@ export default {
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0
       let note = this.allArpeggios[x - 1][y - 1];
-      synth.triggerAttackRelease(note, "8n");
+      if (this.useInternalSynth) {
+        synth.triggerAttackRelease(note, "8n");
+      }
+      this.midiPlay(note);
     },
     changeWave(val) {
       synth.oscillator.type = val;
@@ -170,6 +177,7 @@ export default {
     changedSliderValue({ val, name }) {
       if (name === "bpm") {
         changeBpm(val);
+        changeMidiBpm(val);
       }
       if (name === "reverb") {
         //DENNA FUNKAR INTE ÄNNU
@@ -218,7 +226,7 @@ export default {
       stopPlaying();
       this.$store.dispatch("changeIsPlayingState", false);
       this.$store.dispatch("setPlayingDiv", null);
-      this.midiStop(this.midiOutput);
+      this.midiStop();
     },
     async play() {
       if (this.isPlaying) {
@@ -254,13 +262,10 @@ export default {
         //and the allArpeggios arr start at index 0
         let note = this.allArpeggios[x - 1][y - 1];
 
-        synth.triggerAttackRelease(note, "8n", time);
-        let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
-        if (this.lastPlayedMidiNote) {
-          this.midiStop(this.midiOutput);
+        if (this.useInternalSynth) {
+          synth.triggerAttackRelease(note, "8n", time);
         }
-        this.midiPlay(this.midiOutput, midiNote);
-        this.lastPlayedMidiNote = midiNote;
+        this.midiPlay(note);
 
         let nextCoordinates = this.nextCoordinateBasedOnDirection(
           x,
@@ -283,7 +288,7 @@ export default {
       } else {
         Tone.Transport.cancel();
         this.$store.commit("changeIsPlayingState", false);
-        this.midiStop(this.midiOutput);
+        this.midiStop();
       }
     },
     getRefFromCoordinates(x, y) {
@@ -318,6 +323,7 @@ export default {
     },
     midiPlay,
     midiStop,
+    setOutputDevice,
     getMidiOutputFromLocalStorage
   },
   computed: {
@@ -328,10 +334,6 @@ export default {
       "angle",
       "modalIsOpen"
     ]),
-    midiOutput() {
-      let output = this.$store.getters.getMidiOutput;
-      return output ? output : null;
-    },
     gridSize() {
       return this.$store.getters.getGridSize;
     },

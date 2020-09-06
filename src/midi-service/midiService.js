@@ -1,33 +1,70 @@
-    let lastMidiNote = "";
-    let noteOn = 0x90
-    let noteOff = 0x80
-    const midiPlay = (midiOutput, midiNote) => {
+import WebMidi from "webmidi";
 
-            midiStop(midiOutput);
+let bpm = 150;
+let noteLength = 0.8;
 
-            midiOutput.send([noteOn, midiNote, 0x74])
-            lastMidiNote = midiNote
-  
-    }
-    const midiStop = (midiOutput)  => {
-        if(lastMidiNote) {
-            midiOutput.send([noteOff, lastMidiNote, 0x74 ])
+let noteDuration = noteLength * 60000 / bpm;
 
-        }
-    }
-    const requestMIDIAccess = () => {
-      return window.navigator.requestMIDIAccess().then(function(midiAccess) {
-        return Array.from(midiAccess.outputs.values());
-      });
-    }
-    const  getMidiOutputFromLocalStorage = async function() {
+let midiOutput = null;
 
-      return await requestMIDIAccess()
-        .then( resp => resp.filter(output => output.name === localStorage.midiOutput))
-        .catch(() => {
-        console.log("no matching midiOutput in localStorage");
-        })
-    
-    }
+let midiOutputs = new Promise((resolve, reject) => {
+  WebMidi.enable((err) => {
+    if(err) return reject(err);
 
-    export { midiPlay, midiStop, requestMIDIAccess, getMidiOutputFromLocalStorage}
+    resolve(WebMidi.outputs);
+  });
+});
+
+function updateNoteDuration() {
+  noteDuration = noteLength * 60000 / bpm;
+}
+
+const changeMidiBpm = (newBpm) => {
+  bpm = newBpm;
+  updateNoteDuration();
+}
+
+const changeMidiNoteLength = (newNoteLength) => {
+  noteLength = newNoteLength;
+  updateNoteDuration();
+}
+
+const setOutputDevice = (newOutputDevice) => {
+  midiOutput = newOutputDevice;
+}
+
+const midiPlay = (note) => {
+  if(!midiOutput) return;
+
+  let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
+
+  midiOutput.playNote(midiNote, "all", { duration : noteDuration });
+}
+
+const midiStop = () => {
+  if(!midiOutput) return;
+
+  midiOutput.stopNote("all");
+}
+
+const getMidiOutputFromLocalStorage = async function() {
+  let outputs = await midiOutputs;
+  let matches = outputs.filter(output => output.name === localStorage.midiOutput)
+
+  if(!matches[0]){
+    console.log("no matching midiOutput in localStorage");
+  }
+
+  return matches[0];
+}
+
+export {
+    changeMidiBpm,
+    changeMidiNoteLength,
+    setOutputDevice,
+    midiPlay,
+    midiStop,
+    midiOutputs,
+    getMidiOutputFromLocalStorage
+};
+
