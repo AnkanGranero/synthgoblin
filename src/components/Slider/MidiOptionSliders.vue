@@ -1,13 +1,19 @@
 <template>
-  <div class="slider-container">
+  <div class="midi-sliders">
     <div class="slot-container">
-      <Slider v-for="(slide, index) in values" :key="index" v-bind="slide" />
+      <Slider
+        v-for="(slide, index) in values"
+        :key="index"
+        v-bind="slide"
+        @changedValue="handleChange"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import Slider from "../Slider/Slider";
+import { changeMidiValue } from "../../midi-service/midiService";
 
 export default {
   name: "SliderContainer",
@@ -19,13 +25,18 @@ export default {
   },
   components: {
     Slider
+  },
+  methods: {
+    handleChange(payload) {
+      changeMidiValue(payload);
+    }
   }
 };
 </script>
 <style lang="scss">
 $medium: 768px;
 
-.slider-container {
+.midi-sliders {
   display: flex;
   height: 60%;
   margin-top: 10%;

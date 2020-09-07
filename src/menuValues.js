@@ -1,56 +1,4 @@
- /* const menuValuesOld = {
-    Gridsize: {
 
-        name: "Grid size",
-        x: {
-            name:"X",
-            type: "Slider",
-            max:25,
-            min:1,
-        },
-        y: {
-            name:"Y",
-            type: "Slider",
-            max:25,
-            min:1,
-        }
-    },
-    Arpeggio: {
-        name: "Arpeggio",
-
-        minor: {
-            name:"minor",
-            type: "text"
-        },
-        major: {
-            name:"major",
-            type: "text"
-        },
-        custom: {
-            name:"custom",
-            type: "inputField"
-        }
-    },
-    Angle: {
-        name: "Angle",
-        symetric: {
-            name: "symetric",
-            type: "text"
-        },
-        diatonic: {
-            name: "diatonic",
-            type: "text"
-        }
-    },
-    MidiOut: {
-        name: "Midi out",
-        devices: {
-            name:"devices",
-            type:"midiOptions"
-        },
-
-    }
-} */
 const menuValues = {
     type: "text",
     values:[
@@ -146,6 +94,33 @@ const menuValues = {
               name: "Midi note properties",
               type: "component",
               component: "MidiNoteProperties",
+            },
+            {
+                name: "Midi note properties sliders",
+                type: "component",
+                component: "MidiOptionSliders",
+                values: [
+            {
+            name:"velocity",
+            type: "component",
+            component: "Slider",
+            maxValue:1,
+            minValue:0,
+            initialValue: 0.5,
+            integer: false
+
+        },
+         {
+            name:"noteLength",
+            type: "component",
+            component: "Slider",
+            maxValue:100,
+            minValue:0,
+            initialValue: 30,
+            integer: false
+
+        }
+        ]
             }
         ]
     }

@@ -30,7 +30,7 @@ import { menuValues } from "../../menuValues";
 import SliderContainer from "../Slider/SliderContainer";
 import MidiOutputs from "../menu/MidiOutputs";
 import MidiChannels from "../menu/MidiChannels";
-import MidiNoteProperties from "../menu/MidiNoteProperties";
+import MidiOptionSliders from "../Slider/MidiOptionSliders";
 
 export default {
   name: "Menu",
@@ -45,7 +45,7 @@ export default {
     SliderContainer,
     MidiOutputs,
     MidiChannels,
-    MidiNoteProperties
+    MidiOptionSliders
   },
   methods: {
     handleClick(value, index) {
