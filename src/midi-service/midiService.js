@@ -1,7 +1,8 @@
 import WebMidi from "webmidi";
 
 let bpm = 150;
-let noteLength = 0.8;
+
+  /* let noteLength = 0.2; */
 
 
 /* let velocity = 0.9; */
@@ -11,10 +12,11 @@ let midiOutput = null;
 
 let midiValues = {
   velocity : 0.9,
-  noteLength: 0.8
+  noteLength: 0.2
 }
 
-let duration = midiValues[noteLength] * 60000 / bpm;
+let duration = midiValues["noteLength"] * 60000 / bpm;
+
 
 let midiOutputs = new Promise((resolve, reject) => {
   WebMidi.enable((err) => {
@@ -25,7 +27,7 @@ let midiOutputs = new Promise((resolve, reject) => {
 });
 
 function updateNoteDuration() {
-  duration = noteLength * 60000 / bpm;
+  duration = midiValues["noteLength"] * 60000 / bpm;
 }
 
 const changeMidiBpm = (newBpm) => {
@@ -37,10 +39,11 @@ const changeMidiValue = (payload) => {
   const { name, val} = payload;
 midiValues[name] = val;
 updateNoteDuration();
+console.log("VELOCITY", midiValues["velocity"]);
 }
 
 const changeMidiNoteLength = (newNoteLength) => {
-  noteLength = newNoteLength;
+  midiValues['noteLength'] = newNoteLength;
   updateNoteDuration();
 }
 
@@ -60,7 +63,7 @@ const midiPlay = (note) => {
   if(!midiOutput) return;
 
   let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
-  const { velocity } = midiValues;
+  let { velocity } = midiValues;
   midiOutput.playNote(midiNote, outputChannel, { duration, velocity });
 }
 

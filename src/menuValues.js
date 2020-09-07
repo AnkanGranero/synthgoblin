@@ -106,7 +106,7 @@ const menuValues = {
             component: "Slider",
             maxValue:1,
             minValue:0,
-            initialValue: 0.5,
+            initialValue: 0,
             integer: false
 
         },
@@ -114,9 +114,9 @@ const menuValues = {
             name:"noteLength",
             type: "component",
             component: "Slider",
-            maxValue:100,
+            maxValue:1,
             minValue:0,
-            initialValue: 30,
+            initialValue: 0,
             integer: false
 
         }
