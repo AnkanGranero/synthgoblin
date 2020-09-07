@@ -90,13 +90,9 @@ const menuValues = {
               type: "component",
               component: "MidiChannels",
             },
+
             {
-              name: "Midi note properties",
-              type: "component",
-              component: "MidiNoteProperties",
-            },
-            {
-                name: "Midi note properties sliders",
+                name: "Midi note properties",
                 type: "component",
                 component: "MidiOptionSliders",
                 values: [

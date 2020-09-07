@@ -139,7 +139,6 @@ export default {
   flex-direction: column;
   align-content: center;
   font-size: 30px;
-  margin-bottom: 2rem;
 
   @media only screen and (min-width: 375px) {
     display: flex;
