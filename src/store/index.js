@@ -153,13 +153,13 @@ export default new Vuex.Store({
       dispatch("setMidiOutputFromCache");
     },
     async setMidiOutputFromCache() {
-      let chachedMidiOutput = await getMidiOutputFromLocalStorage()
+      let cachedMidiOutput = await getMidiOutputFromLocalStorage()
       
-      if(chachedMidiOutput) {
+      if(cachedMidiOutput) {
         //maybe this isnt nessasary to keep in state
-/*         commit("setMidiOutput", chachedMidiOutput); */
+/*         commit("setMidiOutput", cachedMidiOutput); */
 
-        setOutputDevice(chachedMidiOutput);
+        setOutputDevice(cachedMidiOutput);
       }
     }
     

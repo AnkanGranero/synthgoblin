@@ -39,7 +39,6 @@ const changeMidiValue = (payload) => {
   const { name, val} = payload;
 midiValues[name] = val;
 updateNoteDuration();
-console.log("VELOCITY", midiValues["velocity"]);
 }
 
 const changeMidiNoteLength = (newNoteLength) => {

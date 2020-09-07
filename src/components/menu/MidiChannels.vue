@@ -1,17 +1,15 @@
 <template>
-  <div class="midi-channels">
-    <input
-      v-model.number="midiChannel"
-      type="number"
-      min="1"
-      max="16"
-      class="midi_channels__input"
-    />
+  <div class="midi-channel">
+    <span>Midi channel</span>
+    <input v-model.number="midiChannel" type="number" min="1" max="16" class="midi_channel__input" />
   </div>
 </template>
 
 <script>
-import { outputChannel, setOutputChannel } from "../../midi-service/midiService";
+import {
+  outputChannel,
+  setOutputChannel
+} from "../../midi-service/midiService";
 export default {
   name: "MidiOut",
   data() {
@@ -22,8 +20,8 @@ export default {
   mounted() {
     this.midiChannel = outputChannel; // Get current midi output channel
   },
-  watch : {
-    midiChannel : function(channel) {
+  watch: {
+    midiChannel: function(channel) {
       setOutputChannel(channel);
       localStorage.setItem("midiChannel", channel);
     }
@@ -33,22 +31,12 @@ export default {
 
 <style lang="scss">
 .midi-channel {
-  height: 70%;
-  width: 70%;
-  color: white;
-  background: black;
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
 
   &__option {
-    font-size: 20px;
-    margin-bottom: 2rem;
-    cursor: pointer;
-    text-align: center;
-    @media only screen and (min-width: 1200px) {
-      font-size: 40px;
-    }
+    margin-left: 15px;
   }
 }
 </style>
