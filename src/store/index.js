@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { getMidiOutputFromLocalStorage, setOutputDevice } from "../midi-service/midiService"
 
 Vue.use(Vuex);
 
@@ -22,7 +23,7 @@ export default new Vuex.Store({
     allArpeggios: [],
     isMobile: false,
     angle: "symetric",
-    midiOutput: null,
+/*     midiOutput: null, */
     midiOutActive: false,
     modalIsOpen: false
   },
@@ -79,14 +80,15 @@ export default new Vuex.Store({
       setAngle(state, payload) {
         state.angle = payload
       },
-      setMidiOutput(state, payload) {
+/*       setMidiOutput(state, payload) {
         state.midiOutput = payload
-      },
+      }, */
       setModal(state, payload) {
         state.modalIsOpen = payload;
       },
       toggleMidiOutActive(state) {
-        state.midiOutActive = !state.midiOutActive
+        state.midiOutActive = !state.midiOutActive;
+
       }
 
   },
@@ -146,9 +148,21 @@ export default new Vuex.Store({
     addMidiOutput({commit}, payload) {
       commit("setMidiOutput", payload)
     },
-    toggleMidiOutActive({commit}) {
-      commit("toggleMidiOutActive")
+    toggleMidiOutActive({commit, dispatch}) {
+      commit("toggleMidiOutActive");
+      dispatch("setMidiOutputFromCache");
+    },
+    async setMidiOutputFromCache() {
+      let chachedMidiOutput = await getMidiOutputFromLocalStorage()
+      
+      if(chachedMidiOutput) {
+        //maybe this isnt nessasary to keep in state
+/*         commit("setMidiOutput", chachedMidiOutput); */
+
+        setOutputDevice(chachedMidiOutput);
+      }
     }
+    
 
   
   },
@@ -174,9 +188,9 @@ export default new Vuex.Store({
     getArpeggio: state => {
       return state.arpeggio
     },
-    getMidiOutput: state => {
+/*     getMidiOutput: state => {
       return state.midiOutput
-    },
+    }, */
     midiOutActive: state => {
       return state.midiOutActive
     }

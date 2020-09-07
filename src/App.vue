@@ -89,8 +89,8 @@ import {
   midiStop,
   changeMidiBpm,
   //  changeMidiNoteLength,
-  setOutputDevice,
-  getMidiOutputFromLocalStorage
+  setOutputDevice
+  /*   getMidiOutputFromLocalStorage */
 } from "./midi-service/midiService";
 
 const reverb = new Tone.Reverb({
@@ -153,7 +153,7 @@ export default {
       synth.connect(filter);
     }
     prepare();
-    this.checkLocalStorage();
+    /*  this.checkLocalStorage(); */
   },
   methods: {
     playNote(payload) {
@@ -164,7 +164,9 @@ export default {
       //and the allArpeggios arr start at index 0
       let note = this.allArpeggios[x - 1][y - 1];
 
-      this.midiOutActive ? this.midiPlay(note) : synth.triggerAttackRelease(note, "8n");
+      this.midiOutActive
+        ? this.midiPlay(note)
+        : synth.triggerAttackRelease(note, "8n");
     },
     changeWave(val) {
       synth.oscillator.type = val;
@@ -258,7 +260,9 @@ export default {
         //and the allArpeggios arr start at index 0
         let note = this.allArpeggios[x - 1][y - 1];
 
-        this.midiOutActive ? this.midiPlay(note) : synth.triggerAttackRelease(note, "8n", time);
+        this.midiOutActive
+          ? this.midiPlay(note)
+          : synth.triggerAttackRelease(note, "8n", time);
 
         let nextCoordinates = this.nextCoordinateBasedOnDirection(
           x,
@@ -305,7 +309,7 @@ export default {
 
       return { x, y, direction };
     },
-    async checkLocalStorage() {
+    /*     async checkLocalStorage() {
       let { midiOutput } = localStorage;
       if (midiOutput) {
         let storedMidiOutput = await getMidiOutputFromLocalStorage();
@@ -313,11 +317,11 @@ export default {
           this.$store.dispatch("addMidiOutput", storedMidiOutput[0]);
         }
       }
-    },
+    }, */
     midiPlay,
     midiStop,
-    setOutputDevice,
-    getMidiOutputFromLocalStorage
+    setOutputDevice
+    /*    getMidiOutputFromLocalStorage */
   },
   computed: {
     ...mapState([
