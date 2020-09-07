@@ -3,8 +3,10 @@ import WebMidi from "webmidi";
 let bpm = 150;
 let noteLength = 0.8;
 
-let noteDuration = noteLength * 60000 / bpm;
+let duration = noteLength * 60000 / bpm;
+let velocity = 0.9;
 
+let outputChannel = 1;
 let midiOutput = null;
 
 let midiOutputs = new Promise((resolve, reject) => {
@@ -16,7 +18,7 @@ let midiOutputs = new Promise((resolve, reject) => {
 });
 
 function updateNoteDuration() {
-  noteDuration = noteLength * 60000 / bpm;
+  duration = noteLength * 60000 / bpm;
 }
 
 const changeMidiBpm = (newBpm) => {
@@ -29,8 +31,16 @@ const changeMidiNoteLength = (newNoteLength) => {
   updateNoteDuration();
 }
 
+const changeMidiVelocity = (newVelocity) => {
+  velocity = newVelocity;
+}
+
 const setOutputDevice = (newOutputDevice) => {
   midiOutput = newOutputDevice;
+}
+
+const setOutputChannel = (newOutputChannel) => {
+  outputChannel = newOutputChannel;
 }
 
 const midiPlay = (note) => {
@@ -38,7 +48,7 @@ const midiPlay = (note) => {
 
   let midiNote = (Math.log(note / 440.0) / Math.log(2)) * 12 + 69;
 
-  midiOutput.playNote(midiNote, "all", { duration : noteDuration });
+  midiOutput.playNote(midiNote, outputChannel, { duration, velocity });
 }
 
 const midiStop = () => {
@@ -51,20 +61,25 @@ const getMidiOutputFromLocalStorage = async function() {
   let outputs = await midiOutputs;
   let matches = outputs.filter(output => output.name === localStorage.midiOutput)
 
-  if(!matches[0]){
-    console.log("no matching midiOutput in localStorage");
-  }
+  // if(!matches[0]){
+  //   console.log("no matching midiOutput in localStorage");
+  // }
 
   return matches[0];
 }
 
 export {
+    velocity,
+    noteLength,
     changeMidiBpm,
+    changeMidiVelocity,
     changeMidiNoteLength,
     setOutputDevice,
+    setOutputChannel,
     midiPlay,
     midiStop,
     midiOutputs,
+    outputChannel,
     getMidiOutputFromLocalStorage
 };
 

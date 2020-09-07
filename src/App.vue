@@ -141,9 +141,7 @@ export default {
       intervals: "",
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
-      selectedWaveform: "sawtooth",
-      useInternalSynth: true, //TODO add menu setting for useInternalSynth
-      midiNoteLength: 0.8 //TODO add menu setting? this property probably won't be used in this script
+      selectedWaveform: "sawtooth"
     };
   },
   mounted() {
@@ -165,10 +163,8 @@ export default {
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0
       let note = this.allArpeggios[x - 1][y - 1];
-      if (this.useInternalSynth) {
-        synth.triggerAttackRelease(note, "8n");
-      }
-      this.midiPlay(note);
+
+      this.midiOutActive ? this.midiPlay(note) : synth.triggerAttackRelease(note, "8n");
     },
     changeWave(val) {
       synth.oscillator.type = val;
@@ -262,10 +258,7 @@ export default {
         //and the allArpeggios arr start at index 0
         let note = this.allArpeggios[x - 1][y - 1];
 
-        if (this.useInternalSynth) {
-          synth.triggerAttackRelease(note, "8n", time);
-        }
-        this.midiPlay(note);
+        this.midiOutActive ? this.midiPlay(note) : synth.triggerAttackRelease(note, "8n", time);
 
         let nextCoordinates = this.nextCoordinateBasedOnDirection(
           x,
@@ -342,6 +335,9 @@ export default {
     },
     arpeggio() {
       return this.$store.getters.getArpeggio;
+    },
+    midiOutActive() {
+      return this.$store.getters.midiOutActive;
     },
     backgroundColors() {
       if (this.$store.state.isPlaying) {

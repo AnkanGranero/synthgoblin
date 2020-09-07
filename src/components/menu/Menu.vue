@@ -29,6 +29,8 @@
 import { menuValues } from "../../menuValues";
 import SliderContainer from "../Slider/SliderContainer";
 import MidiOutputs from "../menu/MidiOutputs";
+import MidiChannels from "../menu/MidiChannels";
+import MidiNoteProperties from "../menu/MidiNoteProperties";
 
 export default {
   name: "Menu",
@@ -41,7 +43,9 @@ export default {
   },
   components: {
     SliderContainer,
-    MidiOutputs
+    MidiOutputs,
+    MidiChannels,
+    MidiNoteProperties
   },
   methods: {
     handleClick(value, index) {
