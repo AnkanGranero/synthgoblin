@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { getMidiOutputFromLocalStorage, setOutputDevice } from "../midi-service/midiService"
+import { getMidiOutputFromLocalStorage, setOutputDevice, setOutputChannel } from "../midi-service/midiService"
 import { createAllArpeggios } from "../utils/pitchCalculations";
 import { changeBpm, changeReverb } from "../playStuff/playStuff"
 
@@ -156,6 +156,11 @@ export default new Vuex.Store({
     },
     changeMidi() {
       console.log("changeMide");
+    },
+    setMidiOutputChannel({ rootstate},val) {
+      console.log(rootstate, val);
+      setOutputChannel(val)
+
     },
     changeTone({rootstate},payload) {
       console.log("rootstate", rootstate);

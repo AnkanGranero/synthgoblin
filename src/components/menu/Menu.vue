@@ -20,6 +20,7 @@
       :is="componentData.component"
       @changedValue="changedValue"
       v-bind="componentData"
+      @back="back()"
     />
     <div class="menu__option" @click="back()">back</div>
   </div>
@@ -30,6 +31,7 @@ import { menuValues } from "../../menuValues";
 import SliderContainer from "../Slider/SliderContainer";
 import MidiOutputs from "../menu/MidiOutputs";
 import MidiChannels from "../menu/MidiChannels";
+import inputField from "../menu/inputField";
 import MidiOptionSliders from "../Slider/MidiOptionSliders";
 
 export default {
@@ -45,6 +47,7 @@ export default {
     SliderContainer,
     MidiOutputs,
     MidiChannels,
+    inputField,
     MidiOptionSliders
   },
   methods: {

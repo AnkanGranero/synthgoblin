@@ -48,7 +48,10 @@ const menuValues = {
         }, {
             name:"custom",
             type: "component",
-            component: "inputField"
+            component: "inputField",
+            action: "changeArpeggio",
+            message: "Write intervals in semitones",
+            closeAfterChoice: true
         }
 
         ]
@@ -88,9 +91,14 @@ const menuValues = {
               component: "MidiOutputs",
             },
             {
-              name: "Midi channels",
+              name: "Midi channel",
               type: "component",
-              component: "MidiChannels",
+              component: "inputField",
+              message: "Choose input channel",
+              action: "setMidiOutputChannel",
+              singleInteger: true,
+              min:1,
+              max: 16
             },
 
             {
