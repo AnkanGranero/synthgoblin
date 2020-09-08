@@ -89,7 +89,6 @@ export default {
 
         (newGridSize[name] = val),
           this.$store.dispatch("setGridSize", newGridSize);
-        this.$store.dispatch("createAllArpeggios");
       }
     },
     toggleValue(name) {

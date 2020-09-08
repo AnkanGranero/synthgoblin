@@ -46,7 +46,8 @@ $hagridGreen: #54bb5a;
   @media only screen and (min-width: 1024px) {
     width: 33%;
     left: 33%;
-    height: 50%;
+    top: 20%;
+    height: 60%;
   }
 }
 </style>

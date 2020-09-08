@@ -43,15 +43,17 @@
               @changedValue="changedSliderValue"
               :largeText="false"
               name="bpm"
-              :maxValue="250"
-              :minValue="50"
+              :max-value="250"
+              :min-value="50"
+              value-type="Tone"
             />
             <Slider
               @changedValue="changedSliderValue"
               :largeText="false"
               name="reverb"
-              :maxValue="1"
-              :minValue="0"
+              :max-value="1"
+              :min-value="0"
+              value-type="Tone"
             />
           </div>
         </div>
@@ -73,7 +75,6 @@ import {
   WaveComponent,
   SecretModal
 } from "./components/index.js";
-import { createAllArpeggios } from "./utils/pitchCalculations";
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
 import * as Tone from "tone";
@@ -199,12 +200,7 @@ export default {
     },
 
     createNewArpeggios() {
-      let newArpeggios = createAllArpeggios(
-        this.arpeggio,
-        this.gridSize,
-        this.angle
-      );
-      this.$store.dispatch("createAllArpeggios", newArpeggios);
+      this.$store.dispatch("setAllArpeggios");
     },
 
     closeOverlay() {
@@ -259,7 +255,6 @@ export default {
         //we need to subtract one since the coordinates starts on 1
         //and the allArpeggios arr start at index 0
         let note = this.allArpeggios[x - 1][y - 1];
-
         this.midiOutActive
           ? this.midiPlay(note)
           : synth.triggerAttackRelease(note, "8n", time);
@@ -516,6 +511,7 @@ body {
     @media only screen and (min-width: $medium) {
       width: 50%;
       margin-bottom: 19%;
+      cursor: pointer;
     }
   }
   &__btn-wrapper {

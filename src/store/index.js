@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import { getMidiOutputFromLocalStorage, setOutputDevice } from "../midi-service/midiService"
+import { createAllArpeggios } from "../utils/pitchCalculations";
+import { changeBpm, changeReverb } from "../playStuff/playStuff"
 
 Vue.use(Vuex);
 
@@ -12,12 +14,8 @@ export default new Vuex.Store({
     arrowRefs: [],
     direction: "",
     gridSize: {
-      coordinates: { 
         x: 15,
         y: 15
-      },
-      maxValue: 25
-    
     },
     arpeggio: [4, 3, 4, 1],
     allArpeggios: [],
@@ -59,9 +57,10 @@ export default new Vuex.Store({
       state.direction = payload;
     },
     setGridSize(state, payload) {
-      
+      let { name, val} = payload;
       state.isPlaying = false;
-      state.gridSize.coordinates = payload
+      state.gridSize[name] = val;
+
     },
     setArpeggio(state, payload) {
         
@@ -71,13 +70,12 @@ export default new Vuex.Store({
       isMobile(state) {
       state.isMobile = true;
       },
-      setGridMaxValue(state, payload) {
-      state.gridSize.maxValue = payload
-      },
+
       setAllArpeggios(state,payload) {
         state.allArpeggios = payload
       },
       setAngle(state, payload) {
+        console.log("set angle");
         state.angle = payload
       },
 /*       setMidiOutput(state, payload) {
@@ -128,9 +126,11 @@ export default new Vuex.Store({
     setDirection({ commit }, payload) {
       commit("setDirection", payload);
     },
-    changeGridSize({commit}, payload) {
+    changeGridSize({commit, dispatch}, payload) {
       commit("changeIsPlayingState",false);
       commit("setGridSize", payload);
+      dispatch("setAllArpeggios");
+
     },
     changeArpeggio({commit}, payload) {
       
@@ -139,8 +139,10 @@ export default new Vuex.Store({
     changeGridMaxValue({commit}, payload) {
         commit("setGridMaxValue", Number(payload))
     },
-    createAllArpeggios({commit}, payload) {
-      commit("setAllArpeggios", payload)
+    setAllArpeggios({commit, state}) {
+      console.log("what is it ", createAllArpeggios);
+      let newArpeggios = createAllArpeggios(state.arpeggio, state.gridSize, state.angle);
+      commit("setAllArpeggios", newArpeggios)
     },
     changeAngle({commit}, payload) {
       commit("setAngle", payload)
@@ -151,6 +153,23 @@ export default new Vuex.Store({
     toggleMidiOutActive({commit, dispatch}) {
       commit("toggleMidiOutActive");
       dispatch("setMidiOutputFromCache");
+    },
+    changeMidi() {
+      console.log("changeMide");
+    },
+    changeTone({rootstate},payload) {
+      console.log("rootstate", rootstate);
+      let { name, val} = payload;
+      switch(name) {
+        case "reverb": {
+          changeReverb(val)
+          break;
+        }
+        case "bpm": {
+          changeBpm(val)
+          break;
+        }
+      }
     },
     async setMidiOutputFromCache() {
       let cachedMidiOutput = await getMidiOutputFromLocalStorage()
@@ -183,7 +202,7 @@ export default new Vuex.Store({
       return state.playingDiv;
     },
     getGridSize: state => {
-      return state.gridSize.coordinates;
+      return state.gridSize;
     },
     getArpeggio: state => {
       return state.arpeggio

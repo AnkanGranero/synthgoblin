@@ -66,12 +66,7 @@ export default {
     changedSliderValue({ val, type }) {
       this.values[type] = val;
       this.$store.dispatch("setPlayingDiv", false);
-      let newArpeggios = createAllArpeggios(
-        this.arpeggio,
-        this.gridSize,
-        this.angle
-      );
-      this.$store.dispatch("createAllArpeggios", newArpeggios);
+      this.$store.dispatch("createAllArpeggios");
     },
     changeArpeggio() {
       let newArpeggio = this.values.arpeggio.split("").map(i => Number(i));

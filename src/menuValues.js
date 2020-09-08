@@ -8,9 +8,10 @@ const menuValues = {
         name: "Grid size",
         values: [
             {
-            name:"X",
+            name:"x",
             type: "component",
             component: "Slider",
+            valueType:"GridSize",
             maxValue:25,
             minValue:1,
             initialValue: 15,
@@ -18,8 +19,9 @@ const menuValues = {
 
         },
          {
-            name:"Y",
+            name:"y",
             type: "component",
+            valueType:"GridSize",
             component: "Slider",
             maxValue:25,
             minValue:1,
@@ -59,7 +61,7 @@ const menuValues = {
            {
             name: "symetric",
             action: "changeAngle",
-            payload: "symetric"
+            payload: "symetric",
            },
            {
             name: "diatonic",
@@ -100,6 +102,7 @@ const menuValues = {
             name:"velocity",
             type: "component",
             component: "Slider",
+            valueType:"Midi",
             maxValue:1,
             minValue:0,
             initialValue: 0,
@@ -110,6 +113,7 @@ const menuValues = {
             name:"noteLength",
             type: "component",
             component: "Slider",
+            valueType:"Midi",
             maxValue:1,
             minValue:0,
             initialValue: 0,

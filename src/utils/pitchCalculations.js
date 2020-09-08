@@ -1,10 +1,10 @@
 const createAllArpeggios = function(arpeggio ,gridSize, angle) {
+
       let allArrs = [];
       let startKey = 0;
         if(!gridSize) {
             return
         }
-  
       for (let i = 0; i <= gridSize.x; i++) {
         let arr = createPitchArr(startKey, arpeggio, gridSize,angle, i);
         allArrs.push(arr);
@@ -12,7 +12,6 @@ const createAllArpeggios = function(arpeggio ,gridSize, angle) {
         startKey += interval;
       }
    
-
 
 
       return allArrs

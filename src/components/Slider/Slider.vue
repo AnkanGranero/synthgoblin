@@ -54,6 +54,10 @@ export default {
     largeText: {
       type: Boolean,
       default: true
+    },
+    valueType: {
+      type: String,
+      required: true
     }
   },
   created: function() {
@@ -86,11 +90,18 @@ export default {
         }
         this.slideValue = mousePercentage;
 
-        this.$emit("changedValue", {
+        /*       this.$emit("changedValue", {
           val: this.customSlideValue,
           name: this.name
-        });
+        }); */
+        this.handleChange();
       }
+    },
+    handleChange() {
+      this.$store.dispatch(`change${this.valueType}`, {
+        name: this.name,
+        val: this.customSlideValue
+      });
     },
     valueToSlide(value) {
       let totalRange = this.maxValue;
