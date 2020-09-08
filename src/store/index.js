@@ -132,15 +132,15 @@ export default new Vuex.Store({
       dispatch("setAllArpeggios");
 
     },
-    changeArpeggio({commit}, payload) {
-      
-      commit("setArpeggio", payload)
+    changeArpeggio({commit,dispatch}, payload) {
+      commit("setArpeggio", payload);
+      dispatch("setAllArpeggios");
+
     },
     changeGridMaxValue({commit}, payload) {
         commit("setGridMaxValue", Number(payload))
     },
     setAllArpeggios({commit, state}) {
-      console.log("what is it ", createAllArpeggios);
       let newArpeggios = createAllArpeggios(state.arpeggio, state.gridSize, state.angle);
       commit("setAllArpeggios", newArpeggios)
     },
