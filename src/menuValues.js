@@ -15,7 +15,8 @@ const menuValues = {
             maxValue:25,
             minValue:1,
             initialValue: 15,
-            integer: true
+            integer: true,
+            action: "changeGridSize"
 
         },
          {
@@ -26,7 +27,8 @@ const menuValues = {
             maxValue:25,
             minValue:1,
             initialValue: 15,
-            integer: true
+            integer: true,
+            action: "changeGridSize"
 
         }
         ]

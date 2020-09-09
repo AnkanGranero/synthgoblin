@@ -245,7 +245,7 @@ export default {
       let gridRefs = this.$refs.gridLayout.$refs;
       let ref = gridRefs[refName];
 
-      if (ref) {
+      if (ref && ref.length) {
         ref[0].classList.remove("highlight");
 
         let isArrow = this.$store.getters.findArrowRef(refName);
@@ -274,7 +274,7 @@ export default {
           refName: nextPlayingDivRef
         });
         let nextPlayingDiv = gridRefs[nextPlayingDivRef];
-        if (nextPlayingDiv) {
+        if (nextPlayingDiv && nextPlayingDiv.length) {
           nextPlayingDiv[0].classList.add("highlight");
         }
       } else {
