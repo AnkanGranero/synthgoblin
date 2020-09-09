@@ -40,6 +40,9 @@ export default new Vuex.Store({
     addArrowRef(state, payload) {
       state.arrowRefs.push(payload);
     },
+    updateArrowRefsAfterGridSizeChange(state, payload) {
+      state.arrowRefs = payload
+    },
     removeArrowRef(state, payload) {
       
       let index = this.getters.findArrowRefIndex(payload);
@@ -107,6 +110,7 @@ export default new Vuex.Store({
     setBackgroundColors({ commit }, payload) {
       commit("changeBackgroundColors", payload);
     },
+
     addArrowRef({ commit, getters }, payload) {
       let { x, y, direction, refName } = payload;
 
@@ -132,12 +136,18 @@ export default new Vuex.Store({
       commit("changeIsPlayingState",false);
       commit("setGridSize", payload);
       dispatch("setAllArpeggios");
+      dispatch("updateArrowRefsAfterGridSizeChange");
 
     },
     changeArpeggio({commit,dispatch}, payload) {
       commit("setArpeggio", payload);
       dispatch("setAllArpeggios");
 
+    },
+    updateArrowRefsAfterGridSizeChange({commit, state}) {
+      let { x, y } = state.gridSize;
+      let availableArrowRefs = state.arrowRefs.filter( arrowRef => arrowRef.x <= x && arrowRef.y <= y );
+      commit("updateArrowRefsAfterGridSizeChange",availableArrowRefs );
     },
     changeGridMaxValue({commit}, payload) {
         commit("setGridMaxValue", Number(payload))
@@ -154,11 +164,7 @@ export default new Vuex.Store({
       commit("toggleMidiOutActive");
       dispatch("setMidiOutputFromCache");
     },
- /*    changeMidi({rootstate}, payload) {
-      console.log("window",rootstate, payload);
-     eval("changeMidi"+ payload.name+"()")
 
-    }, */
 
     changeTone({rootstate},payload) {
       console.log("rootstate", rootstate);
