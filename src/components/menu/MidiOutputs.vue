@@ -23,8 +23,8 @@ export default {
   async mounted() {
     this.midiOutputs = await midiOutputs;
   },
-  methods: { setMidiOutput(payload) {
-      this.$store.dispatch("addMidiOutput", payload);
+  methods: {
+    setMidiOutput(payload) {
       setOutputDevice(payload);
       localStorage.setItem("midiOutput", payload.name);
       this.$store.dispatch("modalIsOpen", false);

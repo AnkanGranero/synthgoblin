@@ -304,19 +304,10 @@ export default {
 
       return { x, y, direction };
     },
-    /*     async checkLocalStorage() {
-      let { midiOutput } = localStorage;
-      if (midiOutput) {
-        let storedMidiOutput = await getMidiOutputFromLocalStorage();
-        if (storedMidiOutput) {
-          this.$store.dispatch("addMidiOutput", storedMidiOutput[0]);
-        }
-      }
-    }, */
+
     midiPlay,
     midiStop,
     setOutputDevice
-    /*    getMidiOutputFromLocalStorage */
   },
   computed: {
     ...mapState([

@@ -94,11 +94,12 @@ const menuValues = {
               name: "Midi channel",
               type: "component",
               component: "inputField",
-              message: "Choose input channel",
+              message: "Select midi output channel",
               action: "setMidiOutputChannel",
               singleInteger: true,
               min:1,
-              max: 16
+              max: 16,
+              method: "setOutputChannel"
             },
 
             {
@@ -107,7 +108,7 @@ const menuValues = {
                 component: "MidiOptionSliders",
                 values: [
             {
-            name:"velocity",
+            name:"Velocity",
             type: "component",
             component: "Slider",
             valueType:"Midi",
@@ -118,7 +119,7 @@ const menuValues = {
 
         },
          {
-            name:"noteLength",
+            name:"NoteLength",
             type: "component",
             component: "Slider",
             valueType:"Midi",

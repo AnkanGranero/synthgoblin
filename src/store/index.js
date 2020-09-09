@@ -1,10 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { getMidiOutputFromLocalStorage, setOutputDevice, setOutputChannel } from "../midi-service/midiService"
+import { getMidiOutputFromLocalStorage, setOutputDevice } from "../midi-service/midiService"
 import { createAllArpeggios } from "../utils/pitchCalculations";
 import { changeBpm, changeReverb } from "../playStuff/playStuff"
 
 Vue.use(Vuex);
+
+
 
 export default new Vuex.Store({
   state: {
@@ -147,21 +149,17 @@ export default new Vuex.Store({
     changeAngle({commit}, payload) {
       commit("setAngle", payload)
     },
-    addMidiOutput({commit}, payload) {
-      commit("setMidiOutput", payload)
-    },
+
     toggleMidiOutActive({commit, dispatch}) {
       commit("toggleMidiOutActive");
       dispatch("setMidiOutputFromCache");
     },
-    changeMidi() {
-      console.log("changeMide");
-    },
-    setMidiOutputChannel({ rootstate},val) {
-      console.log(rootstate, val);
-      setOutputChannel(val)
+ /*    changeMidi({rootstate}, payload) {
+      console.log("window",rootstate, payload);
+     eval("changeMidi"+ payload.name+"()")
 
-    },
+    }, */
+
     changeTone({rootstate},payload) {
       console.log("rootstate", rootstate);
       let { name, val} = payload;
@@ -180,15 +178,9 @@ export default new Vuex.Store({
       let cachedMidiOutput = await getMidiOutputFromLocalStorage()
       
       if(cachedMidiOutput) {
-        //maybe this isnt nessasary to keep in state
-/*         commit("setMidiOutput", cachedMidiOutput); */
-
         setOutputDevice(cachedMidiOutput);
       }
     }
-    
-
-  
   },
   getters: {
     findArrowRefIndex: state => refName => {
@@ -212,9 +204,6 @@ export default new Vuex.Store({
     getArpeggio: state => {
       return state.arpeggio
     },
-/*     getMidiOutput: state => {
-      return state.midiOutput
-    }, */
     midiOutActive: state => {
       return state.midiOutActive
     }

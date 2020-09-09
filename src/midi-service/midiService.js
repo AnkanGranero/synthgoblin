@@ -46,9 +46,9 @@ const changeMidiNoteLength = (newNoteLength) => {
   updateNoteDuration();
 }
 
-/* const changeMidiVelocity = (newVelocity) => {
-  velocity = newVelocity;
-} */
+const changeMidiVelocity = (newVelocity) => {
+  midiValues['velocity'] = newVelocity;
+}
 
 const setOutputDevice = (newOutputDevice) => {
   midiOutput = newOutputDevice;
@@ -86,7 +86,7 @@ const getMidiOutputFromLocalStorage = async function() {
 export {
 
     changeMidiBpm,
-/*     changeMidiVelocity, */
+    changeMidiVelocity,
     changeMidiNoteLength,
     setOutputDevice,
     setOutputChannel,

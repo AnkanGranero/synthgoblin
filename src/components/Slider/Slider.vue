@@ -22,6 +22,11 @@
   </div>
 </template>
 <script>
+import {
+  changeMidiNoteLength,
+  changeMidiVelocity
+} from "../../midi-service/midiService";
+
 export default {
   name: "sliders",
   data() {
@@ -58,6 +63,10 @@ export default {
     valueType: {
       type: String,
       required: true
+    },
+    action: {
+      type: String,
+      default: ""
     }
   },
   created: function() {
@@ -66,6 +75,8 @@ export default {
     }
   },
   methods: {
+    changeMidiNoteLength,
+    changeMidiVelocity,
     mouseHandler(event) {
       if (event.type === "mousedown") {
         this.clicked = true;
@@ -98,10 +109,14 @@ export default {
       }
     },
     handleChange() {
-      this.$store.dispatch(`change${this.valueType}`, {
-        name: this.name,
-        val: this.customSlideValue
-      });
+      if (this.action) {
+        this.$store.dispatch(`change${this.valueType}`, {
+          name: this.name,
+          val: this.customSlideValue
+        });
+      } else if (this.valueType === "Midi") {
+        this[`changeMidi${this.name}`](this.customSlideValue);
+      }
     },
     valueToSlide(value) {
       let totalRange = this.maxValue;

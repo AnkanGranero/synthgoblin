@@ -30,7 +30,6 @@
 import { menuValues } from "../../menuValues";
 import SliderContainer from "../Slider/SliderContainer";
 import MidiOutputs from "../menu/MidiOutputs";
-import MidiChannels from "../menu/MidiChannels";
 import inputField from "../menu/inputField";
 import MidiOptionSliders from "../Slider/MidiOptionSliders";
 
@@ -46,7 +45,6 @@ export default {
   components: {
     SliderContainer,
     MidiOutputs,
-    MidiChannels,
     inputField,
     MidiOptionSliders
   },

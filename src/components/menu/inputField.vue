@@ -47,13 +47,17 @@ export default {
     max: {
       type: Number,
       default: 100
+    },
+    method: {
+      type: String,
+      default: ""
     }
   },
 
   methods: {
     confirm() {
-      if (this.val) {
-        this.$store.dispatch(this.action, this.val);
+      if (this.val && this.method) {
+        this[this.method](this.val);
         this.$store.dispatch("modalIsOpen", false);
       }
     },
