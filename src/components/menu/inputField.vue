@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { setOutputChannel } from "../../midi-service/midiService";
 export default {
   name: "MidiOut",
   data() {
@@ -55,9 +56,13 @@ export default {
   },
 
   methods: {
+    setOutputChannel,
     confirm() {
-      if (this.val && this.method) {
-        this[this.method](this.val);
+      console.log("this valery", this.val, this.method);
+      if (this.val && this.action) {
+        this.$store.dispatch(this.action, this.val);
+        console.log("this.method", this.method);
+
         this.$store.dispatch("modalIsOpen", false);
       }
     },
@@ -67,7 +72,7 @@ export default {
         event.preventDefault();
       }
       if (!this.closeAfterChoice) {
-        this.$store.dispatch(this.action, this.val);
+        this[this.method](this.val);
       }
     }
   }

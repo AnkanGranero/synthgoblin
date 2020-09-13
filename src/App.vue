@@ -89,9 +89,7 @@ import {
   midiPlay,
   midiStop,
   changeMidiBpm,
-  //  changeMidiNoteLength,
   setOutputDevice
-  /*   getMidiOutputFromLocalStorage */
 } from "./midi-service/midiService";
 
 const reverb = new Tone.Reverb({
