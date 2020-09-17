@@ -117,7 +117,8 @@ const menuValues = {
             maxValue:1,
             minValue:0,
             initialValue: 0,
-            integer: false
+            integer: false,
+            method: "changeMidiNoteVelocity"
 
         },
          {
@@ -128,7 +129,8 @@ const menuValues = {
             maxValue:1,
             minValue:0,
             initialValue: 0,
-            integer: false
+            integer: false,
+            method: "changeMidiNoteLength"
 
         }
         ]

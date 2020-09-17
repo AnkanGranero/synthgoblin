@@ -32,13 +32,13 @@ const synth = new Tone.Synth({
   }
 });
 
-    async function prepare() {
+    async function preparePlayStuff() {
       await reverb.generate();
 
       synth.connect(reverb);
       synth.connect(filter);
     }
-prepare()
+/* prepare() */
 const playThang = function(repeat) {
 
     Tone.Transport.bpm.value = bpm;
@@ -59,9 +59,13 @@ const changeReverb = function(val) {
 reverb.wet.value = val;
 }
 
+  const changeWave = function(val) {
+      synth.oscillator.type = val;
+      this.selectedWaveform = val;
+    }
 
 /* const stop = function() {
     store.actions
 } */
 
-export {playThang, changeBpm, changeReverb, stopPlaying}
+export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth}

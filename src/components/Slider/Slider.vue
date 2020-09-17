@@ -24,8 +24,9 @@
 <script>
 import {
   changeMidiNoteLength,
-  changeMidiVelocity
+  changeMidiNoteVelocity
 } from "../../midi-service/midiService";
+import { changeBpm, changeReverb } from "../../playStuff/playStuff";
 
 export default {
   name: "sliders",
@@ -64,9 +65,12 @@ export default {
       type: String,
       required: true
     },
-    action: {
+    method: {
       type: String,
       default: ""
+    },
+    action: {
+      type: String
     }
   },
   created: function() {
@@ -76,7 +80,9 @@ export default {
   },
   methods: {
     changeMidiNoteLength,
-    changeMidiVelocity,
+    changeMidiNoteVelocity,
+    changeBpm,
+    changeReverb,
     mouseHandler(event) {
       if (event.type === "mousedown") {
         this.clicked = true;
@@ -109,13 +115,12 @@ export default {
       }
     },
     handleChange() {
-      if (this.action) {
-        this.$store.dispatch(`change${this.valueType}`, {
-          name: this.name,
-          val: this.customSlideValue
-        });
-      } else if (this.valueType === "Midi") {
-        this[`changeMidi${this.name}`](this.customSlideValue);
+      if (this.method) {
+        this[this.method](this.customSlideValue);
+      } else if (this.action) {
+        const actionValues = {};
+        actionValues[this.name] = this.customSlideValue;
+        this.$store.dispatch(this.action, actionValues);
       }
     },
     valueToSlide(value) {

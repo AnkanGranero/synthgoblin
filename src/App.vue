@@ -34,26 +34,31 @@
           </div>
         </div>
         <div class="tv__middle">
-          <GridLayout :styling="styling" ref="gridLayout" @clickedSquare="playNote" />
+          <GridLayout
+            v-if="tvFinishedLoaded"
+            :styling="styling"
+            ref="gridLayout"
+            @clickedSquare="playNote"
+          />
         </div>
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
           <div class="sliderContainer">
             <Slider
-              @changedValue="changedSliderValue"
               :largeText="false"
               name="bpm"
               :max-value="250"
               :min-value="50"
               value-type="Tone"
+              method="changeBpm"
             />
             <Slider
-              @changedValue="changedSliderValue"
               :largeText="false"
               name="reverb"
               :max-value="1"
               :min-value="0"
               value-type="Tone"
+              method="changeReverb"
             />
           </div>
         </div>
@@ -81,18 +86,15 @@ import * as Tone from "tone";
 import { mapState } from "vuex";
 import {
   playThang,
-  changeBpm,
-  changeReverb,
-  stopPlaying
+  stopPlaying,
+  preparePlayStuff,
+  changeWave,
+  synth
 } from "./playStuff/playStuff";
-import {
-  midiPlay,
-  midiStop,
-  changeMidiBpm,
-  setOutputDevice
-} from "./midi-service/midiService";
+import { midiPlay, midiStop } from "./midi-service/midiService";
+import { getAllCachedInfo } from "./utils/cacheMethods";
 
-const reverb = new Tone.Reverb({
+/* const reverb = new Tone.Reverb({
   decay: 5,
   wet: 0.3,
   preDelay: 0.2
@@ -113,7 +115,7 @@ const synth = new Tone.Synth({
     sustain: 0.2,
     release: 0.2
   }
-});
+}); */
 
 export default {
   name: "App",
@@ -140,21 +142,38 @@ export default {
       intervals: "",
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
-      selectedWaveform: "sawtooth"
+      selectedWaveform: "sawtooth",
+      tvFinishedLoaded: false
     };
+  },
+  async beforeCreate() {
+    /*     let cachedArrowRefs = await JSON.parse(localStorage.getItem("arrowRefs")); */
+    /*     let cachedGridSizeX = await JSON.parse(localStorage.getItem("gridSize-x"));
+    let cachedGridSizeY = await JSON.parse(localStorage.getItem("gridSize-y")); */
   },
   mounted() {
     this.createNewArpeggios();
-    async function prepare() {
-      await reverb.generate();
+    this.setupCachedInfo();
 
-      synth.connect(reverb);
-      synth.connect(filter);
-    }
-    prepare();
+    preparePlayStuff();
     /*  this.checkLocalStorage(); */
   },
   methods: {
+    changeWave,
+    setupCachedInfo() {
+      const cachedInfo = getAllCachedInfo();
+      let { arrowRefs, gridSize } = cachedInfo;
+      console.log("cachedInfo", cachedInfo);
+      if (arrowRefs) {
+        this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
+      }
+      if (gridSize) {
+        console.log("gridSize", gridSize);
+        this.$store.dispatch("changeGridSize", gridSize);
+      }
+
+      this.tvFinishedLoaded = true;
+    },
     playNote(payload) {
       if (this.isPlaying) return;
       let { x, y } = payload;
@@ -167,20 +186,7 @@ export default {
         ? this.midiPlay(note)
         : synth.triggerAttackRelease(note, "8n");
     },
-    changeWave(val) {
-      synth.oscillator.type = val;
-      this.selectedWaveform = val;
-    },
-    changedSliderValue({ val, name }) {
-      if (name === "bpm") {
-        changeBpm(val);
-        changeMidiBpm(val);
-      }
-      if (name === "reverb") {
-        //TODO this one does not work after refactoring
-        changeReverb(val);
-      }
-    },
+
     changeGridSize(gridSize) {
       this.$store.dispatch("changeGridSize", gridSize);
       this.createNewArpeggios();
@@ -243,7 +249,7 @@ export default {
       let gridRefs = this.$refs.gridLayout.$refs;
       let ref = gridRefs[refName];
 
-      if (ref && ref.length) {
+      if (ref && ref.length && this.isPlaying) {
         ref[0].classList.remove("highlight");
 
         let isArrow = this.$store.getters.findArrowRef(refName);
@@ -304,8 +310,8 @@ export default {
     },
 
     midiPlay,
-    midiStop,
-    setOutputDevice
+    midiStop
+    /* setOutputDevice */
   },
   computed: {
     ...mapState([

@@ -3,9 +3,9 @@ import Vuex from "vuex";
 import { getMidiOutputFromLocalStorage, setOutputDevice } from "../midi-service/midiService"
 import { createAllArpeggios } from "../utils/pitchCalculations";
 import { changeBpm, changeReverb } from "../playStuff/playStuff"
+import { setInCache } from "../utils/cacheMethods"
 
 Vue.use(Vuex);
-
 
 
 export default new Vuex.Store({
@@ -39,9 +39,17 @@ export default new Vuex.Store({
     },
     addArrowRef(state, payload) {
       state.arrowRefs.push(payload);
+      setInCache(state.arrowRefs, 'arrowRefs');
     },
     updateArrowRefsAfterGridSizeChange(state, payload) {
-      state.arrowRefs = payload
+      state.arrowRefs = payload;
+      setInCache(state.arrowRefs, 'arrowRefs');
+
+
+    },
+    bulkAddArrowRefs( state, payload){
+      state.arrowRefs = payload;
+      setInCache(state.arrowRefs, 'arrowRefs');
     },
     removeArrowRef(state, payload) {
       
@@ -49,27 +57,35 @@ export default new Vuex.Store({
 
       if (index !== -1) {
         state.arrowRefs.splice(index, 1);
+        setInCache(state.arrowRefs, 'arrowRefs');
       }
     },
     clearAllArrowRefs(state) {
-      state.arrowRefs = []
+      state.arrowRefs = [];
+      setInCache(state.arrowRefs, 'arrowRefs');
     },
     changeDirectionOnArrowRef(state, payload) {
       let { index, direction } = payload;
       state.arrowRefs[index].direction = direction;
+      setInCache(state.arrowRefs, 'arrowRefs');
     },
-    setDirection(state, payload) {
+/*     setDirection(state, payload) {
       state.direction = payload;
-    },
+    }, */
     setGridSize(state, payload) {
-      let { name, val} = payload;
-      state.isPlaying = false;
-      state.gridSize[name] = val;
+     let newGridSize = {}
+     let { x, y } = payload;
+     newGridSize.x = x? x : state.gridSize.x;
+     newGridSize.y = y? y : state.gridSize.y;
+     state.isPlaying = false;
+     state.gridSize = newGridSize
+     setInCache(state.gridSize, 'gridSize');
 
     },
     setArpeggio(state, payload) {
         
-      state.arpeggio = payload
+      state.arpeggio = payload,
+      setInCache(state.arpeggio, 'arpeggio');
       
     },
       isMobile(state) {
@@ -96,6 +112,12 @@ export default new Vuex.Store({
 
   },
   actions: {
+/*     addArrowRefsInCache(payload) {
+      let parsedArrowRefs = payload.stringify()
+      console.log(parsedArrowRefs);
+      localStorage.setItem(parsedArrowRefs)
+
+    }, */
     modalIsOpen({ commit }, payload) {
 
       commit("setModal", payload);
@@ -129,9 +151,9 @@ export default new Vuex.Store({
      
       commit("removeArrowRef", payload);
     },
-    setDirection({ commit }, payload) {
+/*     setDirection({ commit }, payload) {
       commit("setDirection", payload);
-    },
+    }, */
     changeGridSize({commit, dispatch}, payload) {
       commit("changeIsPlayingState",false);
       commit("setGridSize", payload);
@@ -143,6 +165,11 @@ export default new Vuex.Store({
       commit("setArpeggio", payload);
       dispatch("setAllArpeggios");
 
+    },
+    bulkAddArrowRefs({commit, dispatch}, payload) {
+      commit("bulkAddArrowRefs", payload);
+
+      dispatch("updateArrowRefsAfterGridSizeChange");
     },
     updateArrowRefsAfterGridSizeChange({commit, state}) {
       let { x, y } = state.gridSize;

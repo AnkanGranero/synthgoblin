@@ -35,7 +35,19 @@ export default {
       direction: ""
     };
   },
+  created() {
+    this.hasCachedDirection();
+  },
   methods: {
+    hasCachedDirection() {
+      let arrowRef = this.$store.getters.findArrowRef(
+        this.refForSquare.refName
+      );
+      if (arrowRef) {
+        this.direction = arrowRef.direction;
+      }
+    },
+
     handleClick() {
       this.openDirectionPicker();
       return;
@@ -70,6 +82,7 @@ export default {
       this.$store.dispatch("removeArrowRef", refName);
     }
   },
+
   computed: {
     whatDirection() {
       let { direction } = this;

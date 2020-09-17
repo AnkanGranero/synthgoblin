@@ -8,7 +8,7 @@
         :style="colorStyling(x, y)"
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
-        @click="$emit( 'clickedSquare', {x,y} )"
+        @click="$emit('clicked-square', {x,y} )"
       >
         <square
           @openDirectionPicker="openDirectionPicker"
