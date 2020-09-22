@@ -121,7 +121,8 @@ export default {
       bpm: 150,
       selectedWaveform: "sawtooth",
       tvFinishedLoaded: false,
-      manualDirection: ""
+      manualDirection: "",
+      eraseKeyDown: false
     };
   },
 
@@ -130,14 +131,11 @@ export default {
     this.setupCachedInfo();
 
     preparePlayStuff();
+    window.addEventListener("keyup", e => {
+      this.handleKeyUpCommands(e);
+    });
     window.addEventListener("keydown", e => {
-      if (e.keyCode > 36 && e.keyCode < 41) {
-        let direction = e.key.replace("Arrow", "").toLowerCase();
-        this.manualDirection = direction;
-      }
-      if (e.keyCode === 32) {
-        this.play();
-      }
+      this.handleKeyDownCommands(e);
     });
     /*  this.checkLocalStorage(); */
   },
@@ -151,7 +149,6 @@ export default {
         this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
       }
       if (gridSize) {
-        console.log("gridSize", gridSize);
         this.$store.dispatch("changeGridSize", gridSize);
       }
 
@@ -221,10 +218,6 @@ export default {
       this.$store.dispatch("setPlayingDiv", firstArrowRef);
       this.$store.commit("changeIsPlayingState", true);
       playThang(this.repeat, this.bpm);
-      /* Tone.Transport.scheduleRepeat(this.repeat, "16n");
-      Tone.Transport.bpm.value = this.bpm;
-      Tone.Transport.start();
-      this.midiOutput.send([0x80, 0x3c, 0x74]); */
     },
     repeat(time) {
       let { x, y, refName, direction } = this.playingDiv;
@@ -236,10 +229,22 @@ export default {
         ref[0].classList.remove("highlight");
 
         let isArrow = this.$store.getters.findArrowRef(refName);
-        if (isArrow) {
+        if (this.eraseKeyDown) {
+          this.$store.dispatch("removeArrowRef", refName);
+        } else if (
+          this.writeKeyDown &&
+          this.manualDirection &&
+          this.manualDirection !== direction
+        ) {
+          let newPlayingDiv = this.playingDiv;
+          newPlayingDiv.direction = this.manualDirection;
+
+          this.$store.dispatch("addArrowRef", this.playingDiv);
+        } else if (isArrow) {
           direction = isArrow.direction;
           this.manualDirection = "";
         }
+
         if (this.manualDirection) {
           direction = this.manualDirection;
         }
@@ -295,10 +300,35 @@ export default {
 
       return { x, y, direction };
     },
+    handleKeyDownCommands(e) {
+      console.log(e.keyCode);
+      if (e.keyCode > 36 && e.keyCode < 41) {
+        let direction = e.key.replace("Arrow", "").toLowerCase();
+        this.manualDirection = direction;
+        e.preventDefault();
+      }
+      if (e.keyCode === 32) {
+        this.play();
+      }
+      if (e.keyCode === 87) {
+        this.writeKeyDown = true;
+      }
+      if (e.keyCode === 69) {
+        this.eraseKeyDown = true;
+        e.preventDefault();
+      }
+    },
+    handleKeyUpCommands(e) {
+      if (e.keyCode === 69) {
+        this.eraseKeyDown = false;
+      }
+      if (e.keyCode === 87) {
+        this.writeKeyDown = false;
+      }
+    },
 
     midiPlay,
     midiStop
-    /* setOutputDevice */
   },
   computed: {
     ...mapState([

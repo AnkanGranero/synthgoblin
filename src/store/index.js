@@ -112,12 +112,7 @@ export default new Vuex.Store({
 
   },
   actions: {
-/*     addArrowRefsInCache(payload) {
-      let parsedArrowRefs = payload.stringify()
-      console.log(parsedArrowRefs);
-      localStorage.setItem(parsedArrowRefs)
 
-    }, */
     modalIsOpen({ commit }, payload) {
 
       commit("setModal", payload);
@@ -224,6 +219,10 @@ export default new Vuex.Store({
     findArrowRef: state => refName => {
       let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
       return arrowRef[0];
+    },
+    getArrowRefDirection: state => refName => {
+      let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
+      return arrowRef[0]? arrowRef[0].direction: null;
     },
     getArrowRefs: state => {
       return state.arrowRefs;

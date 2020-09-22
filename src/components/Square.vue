@@ -30,23 +30,23 @@ export default {
   components: {
     DirectionPicker
   },
-  data() {
+  /*   data() {
     return {
       direction: ""
     };
-  },
-  created() {
+  }, */
+  /*   created() {
     this.hasCachedDirection();
-  },
+  }, */
   methods: {
-    hasCachedDirection() {
+    /*     hasCachedDirection() {
       let arrowRef = this.$store.getters.findArrowRef(
         this.refForSquare.refName
       );
       if (arrowRef) {
         this.direction = arrowRef.direction;
       }
-    },
+    }, */
 
     handleClick() {
       this.openDirectionPicker();
@@ -67,7 +67,7 @@ export default {
 
       this.$store.dispatch("addArrowRef", payloadForStore);
 
-      this.direction = payload;
+      /*       this.direction = payload; */
     },
 
     closeDirectionPicker() {
@@ -78,12 +78,17 @@ export default {
     },
     removeArrowDiv() {
       let { refName } = this.refForSquare;
-      this.direction = "";
+      /*       this.direction = ""; */
       this.$store.dispatch("removeArrowRef", refName);
     }
   },
 
   computed: {
+    direction() {
+      return this.$store.getters.getArrowRefDirection(
+        this.refForSquare.refName
+      );
+    },
     whatDirection() {
       let { direction } = this;
 
