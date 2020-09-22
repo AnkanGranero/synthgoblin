@@ -94,29 +94,6 @@ import {
 import { midiPlay, midiStop } from "./midi-service/midiService";
 import { getAllCachedInfo } from "./utils/cacheMethods";
 
-/* const reverb = new Tone.Reverb({
-  decay: 5,
-  wet: 0.3,
-  preDelay: 0.2
-}).toMaster();
-var filter = new Tone.Filter({
-  type: "bandpass",
-  Q: 120
-}).toMaster();
-const synth = new Tone.Synth({
-  oscillator: {
-    type: "sawtooth",
-    modulationFrequency: 0.2
-  },
-
-  envelope: {
-    attack: 0.02,
-    decay: 0.1,
-    sustain: 0.2,
-    release: 0.2
-  }
-}); */
-
 export default {
   name: "App",
   components: {
@@ -143,19 +120,25 @@ export default {
       waves: ["sine", "square", "sawtooth", "triangle"],
       bpm: 150,
       selectedWaveform: "sawtooth",
-      tvFinishedLoaded: false
+      tvFinishedLoaded: false,
+      manualDirection: ""
     };
   },
-  async beforeCreate() {
-    /*     let cachedArrowRefs = await JSON.parse(localStorage.getItem("arrowRefs")); */
-    /*     let cachedGridSizeX = await JSON.parse(localStorage.getItem("gridSize-x"));
-    let cachedGridSizeY = await JSON.parse(localStorage.getItem("gridSize-y")); */
-  },
+
   mounted() {
     this.createNewArpeggios();
     this.setupCachedInfo();
 
     preparePlayStuff();
+    window.addEventListener("keydown", e => {
+      if (e.keyCode > 36 && e.keyCode < 41) {
+        let direction = e.key.replace("Arrow", "").toLowerCase();
+        this.manualDirection = direction;
+      }
+      if (e.keyCode === 32) {
+        this.play();
+      }
+    });
     /*  this.checkLocalStorage(); */
   },
   methods: {
@@ -255,6 +238,10 @@ export default {
         let isArrow = this.$store.getters.findArrowRef(refName);
         if (isArrow) {
           direction = isArrow.direction;
+          this.manualDirection = "";
+        }
+        if (this.manualDirection) {
+          direction = this.manualDirection;
         }
         //we need to subtract one since the coordinates starts on 1
         //and the allArpeggios arr start at index 0
