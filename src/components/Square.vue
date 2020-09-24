@@ -5,7 +5,7 @@
         v-if="directionPickerOpen"
         @directionSet="addArrowRef"
         @removeArrowDiv="removeArrowDiv"
-        @mouse-leave="$emit('mouse-leave')"
+        @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
 
@@ -19,15 +19,16 @@
 import DirectionPicker from "./DirectionPicker";
 export default {
   name: "Square",
+  data() {
+    return {
+      directionPickerOpen: false
+    };
+  },
 
   props: {
     refForSquare: {
       default: () => {},
       type: Object
-    },
-    directionPickerOpen: {
-      default: false,
-      type: Boolean
     }
   },
   components: {
@@ -43,11 +44,10 @@ export default {
 
     openDirectionPicker() {
       if (this.directionPickerOpen) {
-        this.closeDirectionPicker();
+        this.directionPickerOpen = false;
         return;
       }
-      const { x, y } = this.refForSquare;
-      this.$emit("openDirectionPicker", { x, y });
+      this.directionPickerOpen = true;
     },
 
     addArrowRef(payload) {
@@ -55,13 +55,10 @@ export default {
       let payloadForStore = { x, y, refName, direction: payload };
 
       this.$store.dispatch("addArrowRef", payloadForStore);
-      this.closeDirectionPicker();
+      this.directionPickerOpen = false;
       /*       this.direction = payload; */
     },
 
-    closeDirectionPicker() {
-      this.$emit("closeDirectionPicker");
-    },
     clickedOnArrow() {
       this.$emit("closeDirectionPicker");
     },

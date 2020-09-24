@@ -71,7 +71,6 @@ export default {
     },
     handleMouseUp() {
       this.mouseDown = false;
-      console.log("preliminary", this.preliminaryDirection);
       if (this.preliminaryDirection) {
         this.setDirection(this.preliminaryDirection);
       }
@@ -82,6 +81,8 @@ export default {
     handleMouseLeave() {
       if (this.mouseDown) {
         this.setDirection(this.preliminaryDirection);
+      } else {
+        this.$emit("closeDirectionPicker");
       }
     }
   }

@@ -9,12 +9,7 @@
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
       >
-        <square
-          :refForSquare="refForSquare(x, y)"
-          :directionPickerOpen="isdirectionPickerOpen(x, y)"
-          @closeDirectionPicker="closeDirectionPicker"
-          @openDirectionPicker="openDirectionPicker"
-        ></square>
+        <square :refForSquare="refForSquare(x, y)"> </square>
       </div>
     </div>
   </div>
@@ -31,8 +26,7 @@ export default {
   },
   data() {
     return {
-      mousePos: { x: 0, y: 0 },
-      directionPickerOpen: {}
+      mousePos: { x: 0, y: 0 }
     };
   },
   props: {
@@ -78,22 +72,6 @@ export default {
           return backgroundColors;
         }
       }
-    },
-    isdirectionPickerOpen(x, y) {
-      return x == this.directionPickerOpen.x && y == this.directionPickerOpen.y;
-    },
-
-    openDirectionPicker(payload) {
-      if (this.directionPickerOpen === payload) {
-        this.closeDirectionPicker();
-        console.log("HALLÅ");
-        return;
-      }
-      this.directionPickerOpen = payload;
-      this.$emit("clicked-square", payload);
-    },
-    closeDirectionPicker() {
-      this.directionPickerOpen = {}; //ändra detta
     },
 
     mouseEventHandler(x, y) {
