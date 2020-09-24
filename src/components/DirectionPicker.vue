@@ -1,8 +1,13 @@
 <template>
-  <div class="direction-picker">
+  <div
+    class="direction-picker"
+    @mouseleave="handleMouseLeave()"
+    @mouseup="handleMouseUp()"
+  >
     <div
       class="direction-picker__wrapper direction-picker__row--1 direction-picker__column--2"
       @mousedown="setDirection('up')"
+      @mouseover="handleMouseOver('up')"
     >
       <Triangle :borderSize="'12px'" />
     </div>
@@ -10,16 +15,19 @@
     <div
       class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--1"
       @mousedown="setDirection('left')"
+      @mouseover="handleMouseOver('left')"
     >
       <Triangle :direction="'left'" :borderSize="'12px'" />
     </div>
     <div
       class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--2"
       @mousedown="removeArrowDiv"
+      @mouseover="handleMouseOver('')"
     ></div>
     <div
       class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--3"
       @mousedown="setDirection('right')"
+      @mouseover="handleMouseOver('right')"
     >
       <Triangle :direction="'right'" :borderSize="'12px'" />
     </div>
@@ -27,6 +35,7 @@
     <div
       class="direction-picker__wrapper direction-picker__row--3 direction-picker__column--2"
       @mousedown="setDirection('down')"
+      @mouseover="handleMouseOver('down')"
     >
       <Triangle :direction="'down'" :borderSize="'12px'" />
     </div>
@@ -39,13 +48,41 @@ export default {
   components: {
     Triangle
   },
+  data() {
+    return {
+      mouseDown: true,
+      preliminaryDirection: ""
+    };
+  },
   methods: {
     setDirection(dir) {
       this.$emit("directionSet", dir);
     },
-
+    handleMouseOver(direction) {
+      console.log("Handle mpouseover");
+      if (this.mouseDown) {
+        console.log("lets go");
+        this.preliminaryDirection = direction;
+      }
+    },
+    handleMouseDown() {
+      console.log("MOUSE DOWN");
+      this.mouseDown = true;
+    },
+    handleMouseUp() {
+      this.mouseDown = false;
+      console.log("preliminary", this.preliminaryDirection);
+      if (this.preliminaryDirection) {
+        this.setDirection(this.preliminaryDirection);
+      }
+    },
     removeArrowDiv() {
       this.$emit("removeArrowDiv");
+    },
+    handleMouseLeave() {
+      if (this.mouseDown) {
+        this.setDirection(this.preliminaryDirection);
+      }
     }
   }
 };

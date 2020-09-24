@@ -8,13 +8,12 @@
         :style="colorStyling(x, y)"
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
-        @click="$emit('clicked-square', {x,y} )"
       >
         <square
-          @openDirectionPicker="openDirectionPicker"
           :refForSquare="refForSquare(x, y)"
           :directionPickerOpen="isdirectionPickerOpen(x, y)"
           @closeDirectionPicker="closeDirectionPicker"
+          @openDirectionPicker="openDirectionPicker"
         ></square>
       </div>
     </div>
@@ -33,7 +32,6 @@ export default {
   data() {
     return {
       mousePos: { x: 0, y: 0 },
-
       directionPickerOpen: {}
     };
   },
@@ -86,7 +84,16 @@ export default {
     },
 
     openDirectionPicker(payload) {
+      if (this.directionPickerOpen === payload) {
+        this.closeDirectionPicker();
+        console.log("HALLÅ");
+        return;
+      }
       this.directionPickerOpen = payload;
+      this.$emit("clicked-square", payload);
+    },
+    closeDirectionPicker() {
+      this.directionPickerOpen = {}; //ändra detta
     },
 
     mouseEventHandler(x, y) {
@@ -166,9 +173,6 @@ export default {
       let red = 200 - growedSubtractorX;
       let green = 200 - growedSubtractorY;
       return "rgb(" + green + "," + red + ",250)";
-    },
-    closeDirectionPicker() {
-      this.directionPickerOpen = {}; //ändra detta
     }
   },
   computed: {

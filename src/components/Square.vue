@@ -1,13 +1,16 @@
 <template>
   <div class="square" @mousedown="handleClick">
-    <Direction-picker
-      v-if="directionPickerOpen"
-      @directionSet="addArrowRef"
-      @removeArrowDiv="removeArrowDiv"
-    />
+    <slot>
+      <Direction-picker
+        v-if="directionPickerOpen"
+        @directionSet="addArrowRef"
+        @removeArrowDiv="removeArrowDiv"
+        @mouse-leave="$emit('mouse-leave')"
+      />
+    </slot>
 
     <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
-      <div :class="[whatDirection,hidden]"></div>
+      <div :class="[whatDirection, hidden]"></div>
     </div>
   </div>
 </template>
@@ -30,28 +33,14 @@ export default {
   components: {
     DirectionPicker
   },
-  /*   data() {
-    return {
-      direction: ""
-    };
-  }, */
-  /*   created() {
-    this.hasCachedDirection();
-  }, */
-  methods: {
-    /*     hasCachedDirection() {
-      let arrowRef = this.$store.getters.findArrowRef(
-        this.refForSquare.refName
-      );
-      if (arrowRef) {
-        this.direction = arrowRef.direction;
-      }
-    }, */
 
-    handleClick() {
+  methods: {
+    handleClick(event) {
+      event.preventDefault();
       this.openDirectionPicker();
       return;
     },
+
     openDirectionPicker() {
       if (this.directionPickerOpen) {
         this.closeDirectionPicker();
@@ -66,7 +55,7 @@ export default {
       let payloadForStore = { x, y, refName, direction: payload };
 
       this.$store.dispatch("addArrowRef", payloadForStore);
-
+      this.closeDirectionPicker();
       /*       this.direction = payload; */
     },
 
@@ -74,7 +63,7 @@ export default {
       this.$emit("closeDirectionPicker");
     },
     clickedOnArrow() {
-      this.openDirectionPicker();
+      this.$emit("closeDirectionPicker");
     },
     removeArrowDiv() {
       let { refName } = this.refForSquare;

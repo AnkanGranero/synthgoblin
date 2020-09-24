@@ -21,13 +21,17 @@
           <IconInfo class="tv__large-button" @clicked="openModal" />
 
           <div class="tv__buttons">
-            <div v-for="(wave,index) in waves" :key="index" @click="changeWave(wave)">
+            <div
+              v-for="(wave, index) in waves"
+              :key="index"
+              @click="changeWave(wave)"
+            >
               <div>
                 <WaveComponent
                   @click="changeWave(wave)"
                   :waveForm="wave"
                   alt="waveform select button"
-                  :selectedWaveForm="(selectedWaveform == wave)"
+                  :selectedWaveForm="selectedWaveform == wave"
                 ></WaveComponent>
               </div>
             </div>
@@ -38,7 +42,7 @@
             v-if="tvFinishedLoaded"
             :styling="styling"
             ref="gridLayout"
-            @clickedSquare="playNote"
+            @clicked-square="playNote"
           />
         </div>
         <div class="tv__right">
@@ -155,7 +159,7 @@ export default {
       this.tvFinishedLoaded = true;
     },
     playNote(payload) {
-      if (this.isPlaying) return;
+      if (this.isPlaying || this.directionPickerOpen) return;
       let { x, y } = payload;
 
       //we need to subtract one since the coordinates starts on 1

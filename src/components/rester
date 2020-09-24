@@ -1,0 +1,56 @@
+handleMouseLeave() {
+      let direction = "";
+      /* this.mouseDown = false; */
+      const { x, y } = this.clickedSquare;
+      const { x: x2, y: y2 } = this.mousePos;
+      const difX = x - x2;
+      const difY = y - y2;
+      console.log("JAG är här", difX, difY);
+      if (difX === 0 && difY === 0) return;
+      if (
+        this.convertIntoPositiveNumber(difX) >
+        this.convertIntoPositiveNumber(difY)
+      ) {
+        switch (difX > 0) {
+          case false: {
+            direction = "right";
+            break;
+          }
+          case true: {
+            direction = "left";
+            break;
+          }
+          default: {
+            return;
+          }
+        }
+      } else {
+        switch (difY > 0) {
+          case false: {
+            direction = "down";
+            break;
+          }
+          case true: {
+            direction = "up";
+            break;
+          }
+          default: {
+            return;
+          }
+        }
+      }
+      let newArrowRef = {
+        refName: this.getRefFromCoordinates(x, y),
+        x,
+        y,
+        direction
+      };
+      this.$store.dispatch("addArrowRef", newArrowRef);
+      this.closeDirectionPicker();
+    },
+
+        convertIntoPositiveNumber(n) {
+      if (n < 0) {
+        return n * -1;
+      } else return n;
+    },

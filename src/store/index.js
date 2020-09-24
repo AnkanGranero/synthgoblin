@@ -23,9 +23,8 @@ export default new Vuex.Store({
     allArpeggios: [],
     isMobile: false,
     angle: "symetric",
-/*     midiOutput: null, */
     midiOutActive: false,
-    modalIsOpen: false
+    modalIsOpen: false,
   },
   mutations: {
     changeIsPlayingState(state, payload) {
@@ -108,7 +107,7 @@ export default new Vuex.Store({
       toggleMidiOutActive(state) {
         state.midiOutActive = !state.midiOutActive;
 
-      }
+      },
 
   },
   actions: {
@@ -208,7 +207,8 @@ export default new Vuex.Store({
       if(cachedMidiOutput) {
         setOutputDevice(cachedMidiOutput);
       }
-    }
+    },
+
   },
   getters: {
     findArrowRefIndex: state => refName => {
