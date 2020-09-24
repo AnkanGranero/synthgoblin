@@ -38,16 +38,13 @@ export default {
   methods: {
     handleClick(event) {
       event.preventDefault();
-      this.openDirectionPicker();
-      return;
-    },
-
-    openDirectionPicker() {
       if (this.directionPickerOpen) {
         this.directionPickerOpen = false;
         return;
       }
       this.directionPickerOpen = true;
+      this.$emit("clicked-on-square", this.refForSquare);
+      return;
     },
 
     addArrowRef(payload) {
@@ -55,8 +52,6 @@ export default {
       let payloadForStore = { x, y, refName, direction: payload };
 
       this.$store.dispatch("addArrowRef", payloadForStore);
-      this.directionPickerOpen = false;
-      /*       this.direction = payload; */
     },
 
     clickedOnArrow() {

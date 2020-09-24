@@ -81,6 +81,7 @@ export default {
     handleMouseLeave() {
       if (this.mouseDown) {
         this.setDirection(this.preliminaryDirection);
+        this.$emit("closeDirectionPicker");
       } else {
         this.$emit("closeDirectionPicker");
       }

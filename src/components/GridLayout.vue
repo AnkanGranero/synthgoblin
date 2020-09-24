@@ -9,7 +9,11 @@
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
       >
-        <square :refForSquare="refForSquare(x, y)"> </square>
+        <square
+          :refForSquare="refForSquare(x, y)"
+          @clicked-on-square="$emit('clicked-on-square', $event)"
+        >
+        </square>
       </div>
     </div>
   </div>

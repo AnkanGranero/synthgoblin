@@ -42,7 +42,7 @@
             v-if="tvFinishedLoaded"
             :styling="styling"
             ref="gridLayout"
-            @clicked-square="playNote"
+            @clicked-on-square="playNote"
           />
         </div>
         <div class="tv__right">
@@ -159,6 +159,7 @@ export default {
       this.tvFinishedLoaded = true;
     },
     playNote(payload) {
+      console.log("PAYLOAD", payload);
       if (this.isPlaying || this.directionPickerOpen) return;
       let { x, y } = payload;
 
