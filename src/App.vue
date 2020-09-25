@@ -20,22 +20,7 @@
         <div class="tv__left">
           <IconInfo class="tv__large-button" @clicked="openModal" />
 
-          <div class="tv__buttons">
-            <div
-              v-for="(wave, index) in waves"
-              :key="index"
-              @click="changeWave(wave)"
-            >
-              <div>
-                <WaveComponent
-                  @click="changeWave(wave)"
-                  :waveForm="wave"
-                  alt="waveform select button"
-                  :selectedWaveForm="selectedWaveform == wave"
-                ></WaveComponent>
-              </div>
-            </div>
-          </div>
+          <TvButtonsComponent class="tv__buttons" />
         </div>
         <div class="tv__middle">
           <GridLayout
@@ -81,7 +66,7 @@ import {
   Overlay,
   Slider,
   GridLayout,
-  WaveComponent,
+  TvButtonsComponent,
   SecretModal
 } from "./components/index.js";
 import IconInfo from "./components/IconInfo";
@@ -92,7 +77,6 @@ import {
   playThang,
   stopPlaying,
   preparePlayStuff,
-  changeWave,
   synth
 } from "./playStuff/playStuff";
 import { midiPlay, midiStop } from "./midi-service/midiService";
@@ -107,7 +91,7 @@ export default {
     Overlay,
     IconInfo,
     IconPlay,
-    WaveComponent,
+    TvButtonsComponent,
     SecretModal
   },
   created: function() {
@@ -121,7 +105,7 @@ export default {
     return {
       styling: "classic",
       intervals: "",
-      waves: ["sine", "square", "sawtooth", "triangle"],
+
       bpm: 150,
       selectedWaveform: "sawtooth",
       tvFinishedLoaded: false,
@@ -144,7 +128,6 @@ export default {
     /*  this.checkLocalStorage(); */
   },
   methods: {
-    changeWave,
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
       let { arrowRefs, gridSize } = cachedInfo;
@@ -175,9 +158,6 @@ export default {
     changeGridSize(gridSize) {
       this.$store.dispatch("changeGridSize", gridSize);
       this.createNewArpeggios();
-    },
-    waveImg(wave) {
-      return require(`./assets/waves/${wave}.svg`);
     },
     openModal() {
       this.$store.dispatch("modalIsOpen", true);
@@ -375,7 +355,6 @@ $hagridGreen: #54bb5a;
 $blue: rgb(141, 223, 232);
 $yellow: #d9d283;
 $leafGreen: #368a3c;
-$medium: 768px;
 
 #hagrid {
   -webkit-box-align: center;
@@ -388,7 +367,7 @@ $medium: 768px;
   width: 100%;
   height: 100%;
 
-  @media only screen and (min-width: $medium) {
+  @media only screen and (min-width: $ipad) {
     display: flex;
     height: 146%;
   }
@@ -435,14 +414,14 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  @media only screen and (min-width: $medium) {
+  @media only screen and (min-width: $ipad) {
     height: 85%;
     margin: 0 14%;
   }
 
   .header {
     display: none;
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: 1fr;
@@ -505,7 +484,7 @@ body {
   flex-direction: column;
   position: absolute;
 
-  @media only screen and (min-width: $medium) {
+  @media only screen and (min-width: $ipad) {
     position: unset;
     min-height: unset;
 
@@ -519,13 +498,13 @@ body {
     display: flex;
     justify-content: space-evenly;
     padding: 10% 0 5%;
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: none;
     }
   }
 
   &__large-button {
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       width: 50%;
       margin-bottom: 19%;
       cursor: pointer;
@@ -538,7 +517,7 @@ body {
 
   &__left {
     display: none;
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: flex;
       align-items: center;
       flex-basis: 0;
@@ -550,7 +529,7 @@ body {
   &__right {
     display: none;
 
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -561,7 +540,7 @@ body {
 
     .sliderContainer {
       display: none;
-      @media only screen and (min-width: $medium) {
+      @media only screen and (min-width: $ipad) {
         display: flex;
         height: 100%;
         justify-content: space-around;
@@ -585,7 +564,7 @@ body {
     padding: 5%;
     box-sizing: border-box;
     position: relative;
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       padding: unset;
       width: 50%;
       height: unset;
@@ -597,7 +576,7 @@ body {
   &__buttons {
     display: none;
 
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       height: 100%;
       display: flex;
       flex-direction: column;

@@ -3,7 +3,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 56.02 55.95"
     :fill="fillColor"
-    :class="{'svg' : !selectedWaveForm }"
+    :class="{ svg: !selected }"
   >
     <defs />
     <title>sine</title>
@@ -14,7 +14,10 @@
       />
     </g>
     <g id="Layer_3" data-name="Layer 3">
-      <path class="cls-2" d="M9.72,26.64s7.32-15.15,13.8,0c9.27,21.71,23.41,3.28,22.4,0" />
+      <path
+        class="cls-2"
+        d="M9.72,26.64s7.32-15.15,13.8,0c9.27,21.71,23.41,3.28,22.4,0"
+      />
     </g>
   </svg>
 </template>
@@ -24,14 +27,14 @@
 export default {
   name: "sine",
   props: {
-    selectedWaveForm: {
+    selected: {
       type: Boolean,
       default: false
     }
   },
   computed: {
     fillColor() {
-      return this.selectedWaveForm ? "#d9d283" : "#70b865";
+      return this.selected ? "#d9d283" : "#70b865";
     }
   }
 };

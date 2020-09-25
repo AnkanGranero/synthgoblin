@@ -3,11 +3,11 @@ import GridLayout from "./GridLayout";
 import Slider from "./Slider/Slider";
 import Overlay from "./Overlay";
 import Icon from "./Icon";
-import WaveComponent from "./WaveComponent";
+import TvButtonsComponent from "./TvButtonsComponent";
 import SecretModal from "./SecretModal";
 
 
 
 
 
-export { Modal, GridLayout, Slider, Overlay, Icon, WaveComponent,SecretModal}
+export { Modal, GridLayout, Slider, Overlay, Icon, TvButtonsComponent,SecretModal}

@@ -2,20 +2,20 @@
   <div class="slider-wrapper">
     <div
       class="slider"
-      @mouseleave="clicked=false"
+      @mouseleave="clicked = false"
       @mousedown="mouseHandler"
-      @mouseup="clicked=false"
+      @mouseup="clicked = false"
       @mousemove="mouseHandler"
-      @touchstart="clicked=true"
+      @touchstart="clicked = true"
       @touchmove="mouseHandler"
-      @touchend="clicked=false"
-      @touchcancel="clicked=false"
+      @touchend="clicked = false"
+      @touchcancel="clicked = false"
       ref="slider"
     >
       <div class="slider__track"></div>
       <div class="slider__knob" :style="knobPosition"></div>
     </div>
-    <div class="slider-wrapper__type" :class="{'large-text': largeText}">
+    <div class="slider-wrapper__type" :class="{ 'large-text': largeText }">
       {{ name }}
       <span class="slider-wrapper__value">{{ customSlideValue }}</span>
     </div>
@@ -84,6 +84,8 @@ export default {
     changeBpm,
     changeReverb,
     mouseHandler(event) {
+      event.preventDefault();
+
       if (event.type === "mousedown") {
         this.clicked = true;
       }

@@ -1,33 +1,24 @@
 <template>
   <div class="wave">
-    <component v-bind:is="waveForm" class="wave__btn" :selectedWaveForm="selectedWaveForm" />
+    <slot />
   </div>
 </template>
 
 <script>
-import sine from "./waves/sine.vue";
-import sawtooth from "./waves/sawtooth.vue";
-import square from "./waves/square.vue";
-import triangle from "./waves/triangle.vue";
 export default {
-  name: "WaveComponent",
+  name: "TvButtonComponent",
   props: {
-    waveForm: {
+    value: {
       type: String,
       default: "sine"
     },
-    selectedWaveForm: {
+    selected: {
       type: Boolean,
       default: false
     }
   },
 
-  components: {
-    sine,
-    sawtooth,
-    square,
-    triangle
-  }
+  components: {}
 };
 </script>
 <style lang="scss">

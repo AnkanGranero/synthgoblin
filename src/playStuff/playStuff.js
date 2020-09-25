@@ -60,6 +60,7 @@ reverb.wet.value = val;
 }
 
   const changeWave = function(val) {
+    console.log("Dags att byta waveform");
       synth.oscillator.type = val;
       this.selectedWaveform = val;
     }

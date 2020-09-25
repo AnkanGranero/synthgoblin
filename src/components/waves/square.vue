@@ -5,7 +5,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 56.02 55.95"
     :fill="fillColor"
-    :class="{'svg' : !selectedWaveForm }"
+    :class="{ svg: !selected }"
   >
     <defs />
     <title>square</title>
@@ -27,14 +27,14 @@
 export default {
   name: "square",
   props: {
-    selectedWaveForm: {
+    selected: {
       type: Boolean,
       default: false
     }
   },
   computed: {
     fillColor() {
-      return this.selectedWaveForm ? "#d9d283" : "#70b865";
+      return this.selected ? "#d9d283" : "#70b865";
     }
   }
 };
