@@ -573,16 +573,6 @@ body {
     }
   }
 
-  &__buttons {
-    display: none;
-
-    @media only screen and (min-width: $ipad) {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-  }
   &__btn {
     margin: 5%;
   }

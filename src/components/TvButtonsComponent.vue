@@ -1,6 +1,11 @@
 <template>
   <div class="tv__buttons">
-    <div v-for="wave in waves" :key="wave" @click="handleClick(wave)">
+    <div
+      v-for="wave in waves"
+      :key="wave"
+      @click="handleClick(wave)"
+      class="tv__button"
+    >
       <div>
         <TvButton :value="wave" alt="waveform select button">
           <component
@@ -14,6 +19,7 @@
       v-for="(tvButton, index) in tvButtons"
       :key="index"
       @click="clickedOnTvButton(tvButton)"
+      class="tv__button"
     >
       <TvButton>
         <component
@@ -34,6 +40,9 @@ import sawtooth from "./waves/sawtooth.vue";
 import square from "./waves/square.vue";
 import triangle from "./waves/triangle.vue";
 import deleteAllArrows from "./waves/deleteAllArrows";
+import joyStick from "./waves/joyStick";
+import portal from "./waves/portal";
+import mute from "./waves/mute";
 export default {
   name: "TvButtonsComponent",
   data() {
@@ -41,7 +50,7 @@ export default {
       waves: ["sine", "square", "sawtooth", "triangle"],
       selectedWaveform: "sawtooth",
       selectedTvButton: "",
-      tvButtons: ["deleteAllArrows"]
+      tvButtons: ["deleteAllArrows", "joyStick", "portal", "mute"]
     };
   },
   components: {
@@ -50,7 +59,10 @@ export default {
     sawtooth,
     square,
     triangle,
-    deleteAllArrows
+    deleteAllArrows,
+    joyStick,
+    portal,
+    mute
   },
   methods: {
     changeWave,
@@ -74,10 +86,16 @@ export default {
 
     @media only screen and (min-width: $ipad) {
       height: 100%;
+      width: 61%;
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      flex-direction: row;
       justify-content: space-between;
     }
+  }
+  &__button {
+    flex: 0 50%;
+    margin-bottom: 2%;
   }
 }
 </style>

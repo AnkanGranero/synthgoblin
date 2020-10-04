@@ -29,14 +29,11 @@ $yellow: #d9d283;
 .wave {
   display: flex;
   justify-content: center;
-  margin: 2%;
+  margin: 6%;
 
   &__btn {
-    height: 70px;
-    width: 70px;
-    height: 100%;
-    width: 25%;
-    background: $hagridGreen;
+    width: 100%;
+
     border-radius: 10%;
     box-sizing: border-box;
     @media only screen and (min-width: 2300px) {
