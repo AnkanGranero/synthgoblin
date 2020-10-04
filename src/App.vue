@@ -284,7 +284,7 @@ export default {
       return { x, y, direction };
     },
     handleKeyDownCommands(e) {
-      if (e.keyCode > 36 && e.keyCode < 41) {
+      if (this.joystickMode && e.keyCode > 36 && e.keyCode < 41) {
         let direction = e.key.replace("Arrow", "").toLowerCase();
         this.manualDirection = direction;
         e.preventDefault();
@@ -318,7 +318,8 @@ export default {
       "isPlaying",
       "allArpeggios",
       "angle",
-      "modalIsOpen"
+      "modalIsOpen",
+      "joystickMode"
     ]),
     gridSize() {
       return this.$store.getters.getGridSize;

@@ -25,8 +25,12 @@ export default new Vuex.Store({
     angle: "symetric",
     midiOutActive: false,
     modalIsOpen: false,
+    joystickMode: false
   },
   mutations: {
+    toggleJoystickMode(state) {
+      state.joystickMode = !state.joystickMode;
+    },
     changeIsPlayingState(state, payload) {
       state.isPlaying = payload;
     },
@@ -110,6 +114,9 @@ export default new Vuex.Store({
 
   },
   actions: {
+    toggleJoystickMode({commit}) {
+      commit('toggleJoystickMode');
+    },
     clearAllArrowRefs( { commit }) {
       commit('clearAllArrowRefs');
     },
@@ -213,6 +220,9 @@ export default new Vuex.Store({
 
   },
   getters: {
+    getJoystickMode: state => {
+      return state.joystickMode;
+    },
     findArrowRefIndex: state => refName => {
 
       let index = state.arrowRefs.findIndex(ref => ref.refName == refName);

@@ -12,7 +12,8 @@
     style="enable-background:new 0 0 57 56.9;"
     xml:space="preserve"
     :fill="fillColor"
-    :class="{ svg: !selected }"
+    :class="{ svg: !getJoystickMode }"
+    @click="toggleJoystickMode"
   >
     <g class="st0">
       <image
@@ -51,6 +52,8 @@
 
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "joyStick",
   props: {
@@ -59,9 +62,13 @@ export default {
       default: false
     }
   },
+  methods: {
+    ...mapActions(["toggleJoystickMode"])
+  },
   computed: {
+    ...mapGetters(["getJoystickMode"]),
     fillColor() {
-      return "#D0DBCE";
+      return this.getJoystickMode ? "#d9d283" : "#D0DBCE";
     }
   }
 };
