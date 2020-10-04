@@ -11,7 +11,7 @@
     style="enable-background:new 0 0 57 56.9;"
     xml:space="preserve"
     :fill="fillColor"
-    :class="{ svg: !selected }"
+    :class="{ svg: isMuted }"
     @click="toggle()"
   >
     <g class="st0">
