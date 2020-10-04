@@ -12,6 +12,7 @@
     xml:space="preserve"
     :fill="fillColor"
     :class="{ svg: !selected }"
+    @click="toggle()"
   >
     <g class="st0">
       <image
@@ -48,23 +49,34 @@
       class="st2"
       d="M43.8,40.2c0.4-0.4,5.1-4.8,4.9-12.4c-0.1-7.1-4.4-11.1-4.9-11.6"
     />
-    <path class="st2" d="M7.3,49.1C21.6,34.8,35.9,20.5,50.2,6.2" />
   </svg>
 </template>
 
 
 <script>
+import { changeMuteState } from "../../playStuff/playStuff";
 export default {
   name: "mute",
+  data() {
+    return {
+      isMuted: false
+    };
+  },
   props: {
     selected: {
       type: Boolean,
       default: false
     }
   },
+  methods: {
+    toggle() {
+      this.isMuted = !this.isMuted;
+      changeMuteState(this.isMuted);
+    }
+  },
   computed: {
     fillColor() {
-      return "#D0DBCE";
+      return this.isMuted ? "#D0DBCE" : "#d9d283";
     }
   }
 };

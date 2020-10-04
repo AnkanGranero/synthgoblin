@@ -21,9 +21,6 @@ const synth = new Tone.Synth({
     type: "sawtooth",
     modulationFrequency: 0.2
   },
-
-  
-
   envelope: {
     attack: 0.02,
     decay: 0.1,
@@ -38,7 +35,6 @@ const synth = new Tone.Synth({
       synth.connect(reverb);
       synth.connect(filter);
     }
-/* prepare() */
 const playThang = function(repeat) {
 
     Tone.Transport.bpm.value = bpm;
@@ -60,13 +56,15 @@ reverb.wet.value = val;
 }
 
   const changeWave = function(val) {
-    console.log("Dags att byta waveform");
       synth.oscillator.type = val;
       this.selectedWaveform = val;
     }
 
-/* const stop = function() {
-    store.actions
-} */
+const changeMuteState = function(bool) {
+  let value = bool? -150: 0;
+  synth.volume.value = value;
+}
 
-export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth}
+
+
+export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth, changeMuteState}
