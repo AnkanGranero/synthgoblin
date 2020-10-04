@@ -3,12 +3,12 @@
     <slot>
       <Direction-picker
         v-if="directionPickerOpen"
-        @directionSet="addArrowRef"
+        @directionSet="addingArrowRef"
         @removeArrowDiv="removeArrowDiv"
         @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
-
+    <span v-if="isItPortal" class="portal"></span>
     <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
       <div :class="[whatDirection, hidden]"></div>
     </div>
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from "vuex";
 import DirectionPicker from "./DirectionPicker";
 export default {
   name: "Square",
@@ -36,8 +37,13 @@ export default {
   },
 
   methods: {
+    ...mapActions(["addArrowRef", "createPortal"]),
     handleClick(event) {
       event.preventDefault();
+      if (this.portalOpen) {
+        this.createPortal(this.refForSquare);
+        return;
+      }
       if (this.directionPickerOpen) {
         this.directionPickerOpen = false;
         return;
@@ -47,11 +53,11 @@ export default {
       return;
     },
 
-    addArrowRef(payload) {
+    addingArrowRef(payload) {
       let { x, y, refName } = this.refForSquare;
       let payloadForStore = { x, y, refName, direction: payload };
 
-      this.$store.dispatch("addArrowRef", payloadForStore);
+      this.addArrowRef(payloadForStore);
     },
 
     clickedOnArrow() {
@@ -65,11 +71,16 @@ export default {
   },
 
   computed: {
+    ...mapState(["portalOpen"]),
+    ...mapGetters(["getArrowRefDirection", "isPortal"]),
     direction() {
-      return this.$store.getters.getArrowRefDirection(
-        this.refForSquare.refName
-      );
+      return this.getArrowRefDirection(this.refForSquare.refName);
     },
+    isItPortal() {
+      console.log("YEAH");
+      return this.isPortal(this.refForSquare.refName).length;
+    },
+
     whatDirection() {
       let { direction } = this;
 
@@ -104,6 +115,7 @@ export default {
 .hidden {
   display: none;
 }
+
 .square {
   height: 100%;
   width: 100%;
@@ -185,5 +197,15 @@ export default {
 
 .arrow {
   border: 5px solid white;
+}
+.portal {
+  height: 90%;
+  background: black;
+  width: 90%;
+  display: block;
+  position: relative;
+  border-radius: 100%;
+  top: 5%;
+  left: 5%;
 }
 </style>

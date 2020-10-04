@@ -25,7 +25,9 @@ export default new Vuex.Store({
     angle: "symetric",
     midiOutActive: false,
     modalIsOpen: false,
-    joystickMode: false
+    joystickMode: false,
+    portalOpen: false,
+    portals: []
   },
   mutations: {
     toggleJoystickMode(state) {
@@ -111,6 +113,12 @@ export default new Vuex.Store({
         state.midiOutActive = !state.midiOutActive;
 
       },
+      togglePortal(state ){
+        state.portalOpen = !state.portalOpen;
+      },
+      createPortal(state,payload) {
+        state.portals.push(payload)
+      }
 
   },
   actions: {
@@ -217,9 +225,16 @@ export default new Vuex.Store({
         setOutputDevice(cachedMidiOutput);
       }
     },
+    togglePortal({ commit }) {
+     commit("togglePortal");
+    },
+    createPortal({ commit}, payload) {
+      commit("createPortal",payload);
+    }
 
   },
   getters: {
+    getPortalOpen: state => state.portalOpen,
     getJoystickMode: state => {
       return state.joystickMode;
     },
@@ -235,6 +250,14 @@ export default new Vuex.Store({
     getArrowRefDirection: state => refName => {
       let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
       return arrowRef[0]? arrowRef[0].direction: null;
+    },
+    isPortal
+    : state => refName => {
+      if(refName === "r1-1") {
+        console.log("is portal",refName, state.portals );
+
+      }
+      return state.portals.filter(ref => ref.refName === refName);
     },
     getArrowRefs: state => {
       return state.arrowRefs;

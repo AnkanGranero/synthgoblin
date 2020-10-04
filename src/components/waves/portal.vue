@@ -11,7 +11,8 @@
     style="enable-background:new 0 0 57 56.9;"
     xml:space="preserve"
     :fill="fillColor"
-    :class="{ svg: !selected }"
+    :class="{ svg: !portalOpen }"
+    @click="togglePortal"
   >
     <g class="st0">
       <image
@@ -37,6 +38,7 @@
 
 
 <script>
+import { mapActions, mapState } from "vuex";
 export default {
   name: "portal",
   props: {
@@ -45,9 +47,13 @@ export default {
       default: false
     }
   },
+  methods: {
+    ...mapActions(["togglePortal"])
+  },
   computed: {
+    ...mapState(["portalOpen"]),
     fillColor() {
-      return "#D0DBCE";
+      return this.portalOpen ? "#d9d283" : "#D0DBCE";
     }
   }
 };
