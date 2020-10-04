@@ -95,7 +95,6 @@ export default new Vuex.Store({
         state.allArpeggios = payload
       },
       setAngle(state, payload) {
-        console.log("set angle");
         state.angle = payload
       },
 /*       setMidiOutput(state, payload) {
@@ -111,6 +110,9 @@ export default new Vuex.Store({
 
   },
   actions: {
+    clearAllArrowRefs( { commit }) {
+      commit('clearAllArrowRefs');
+    },
 
     modalIsOpen({ commit }, payload) {
 

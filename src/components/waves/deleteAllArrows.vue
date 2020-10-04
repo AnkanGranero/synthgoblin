@@ -13,6 +13,7 @@
     xml:space="preserve"
     class="svg"
     :fill="fillColor"
+    @click="clearAllArrowRefs"
   >
     <g id="knapp"></g>
     <g id="Layer_15">
@@ -45,6 +46,7 @@
 
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "deleteAllArrows",
   props: {
@@ -57,6 +59,9 @@ export default {
     fillColor() {
       return "#D0DBCE";
     }
+  },
+  methods: {
+    ...mapActions(["clearAllArrowRefs"])
   }
 };
 </script>

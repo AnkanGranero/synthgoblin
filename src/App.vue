@@ -131,7 +131,6 @@ export default {
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
       let { arrowRefs, gridSize } = cachedInfo;
-      console.log("cachedInfo", cachedInfo);
       if (arrowRefs) {
         this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
       }
@@ -142,7 +141,6 @@ export default {
       this.tvFinishedLoaded = true;
     },
     playNote(payload) {
-      console.log("PAYLOAD", payload);
       if (this.isPlaying || this.directionPickerOpen) return;
       let { x, y } = payload;
 
@@ -286,7 +284,6 @@ export default {
       return { x, y, direction };
     },
     handleKeyDownCommands(e) {
-      console.log(e.keyCode);
       if (e.keyCode > 36 && e.keyCode < 41) {
         let direction = e.key.replace("Arrow", "").toLowerCase();
         this.manualDirection = direction;

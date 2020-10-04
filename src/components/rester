@@ -5,7 +5,6 @@ handleMouseLeave() {
       const { x: x2, y: y2 } = this.mousePos;
       const difX = x - x2;
       const difY = y - y2;
-      console.log("JAG är här", difX, difY);
       if (difX === 0 && difY === 0) return;
       if (
         this.convertIntoPositiveNumber(difX) >

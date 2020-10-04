@@ -59,14 +59,11 @@ export default {
       this.$emit("directionSet", dir);
     },
     handleMouseOver(direction) {
-      console.log("Handle mpouseover");
       if (this.mouseDown) {
-        console.log("lets go");
         this.preliminaryDirection = direction;
       }
     },
     handleMouseDown() {
-      console.log("MOUSE DOWN");
       this.mouseDown = true;
     },
     handleMouseUp() {

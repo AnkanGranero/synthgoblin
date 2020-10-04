@@ -10,8 +10,19 @@
       class="input-field__input"
       @click="handleInput"
     />
-    <input v-else v-model="val" type="text" class="input-field__input" @keypress="handleInput" />
-    <span v-if="closeAfterChoice" @click="confirm()" class="input-field__confirm-button">Ok</span>
+    <input
+      v-else
+      v-model="val"
+      type="text"
+      class="input-field__input"
+      @keypress="handleInput"
+    />
+    <span
+      v-if="closeAfterChoice"
+      @click="confirm()"
+      class="input-field__confirm-button"
+      >Ok</span
+    >
   </div>
 </template>
 
@@ -58,7 +69,6 @@ export default {
   methods: {
     setOutputChannel,
     confirm() {
-      console.log("this valery", this.val, this.method);
       if (this.val && this.action) {
         this.$store.dispatch(this.action, this.val);
         console.log("this.method", this.method);

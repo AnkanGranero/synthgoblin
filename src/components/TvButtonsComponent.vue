@@ -15,12 +15,7 @@
         /></TvButton>
       </div>
     </div>
-    <div
-      v-for="(tvButton, index) in tvButtons"
-      :key="index"
-      @click="clickedOnTvButton(tvButton)"
-      class="tv__button"
-    >
+    <div v-for="(tvButton, index) in tvButtons" :key="index" class="tv__button">
       <TvButton>
         <component
           v-bind:is="tvButton"
@@ -69,11 +64,6 @@ export default {
     handleClick(wave) {
       this.selectedWaveform = wave;
       this.changeWave(wave);
-    },
-    clickedOnTvButton(tvButton) {
-      if (tvButton === "deleteAllArrows") {
-        this.$store.commit("clearAllArrowRefs");
-      }
     }
   }
 };
