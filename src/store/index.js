@@ -5,6 +5,7 @@ import { createAllArpeggios } from "../utils/pitchCalculations";
 import { changeBpm, changeReverb } from "../playStuff/playStuff"
 import { setInCache } from "../utils/cacheMethods"
 
+
 Vue.use(Vuex);
 
 
@@ -27,7 +28,10 @@ export default new Vuex.Store({
     modalIsOpen: false,
     joystickMode: false,
     portalOpen: false,
-    portals: []
+    openPortal: null,
+    portals: new Set(),
+    completedPortals: []
+
   },
   mutations: {
     toggleJoystickMode(state) {
@@ -116,11 +120,18 @@ export default new Vuex.Store({
       togglePortal(state ){
         state.portalOpen = !state.portalOpen;
       },
-      createPortal(state,payload) {
-        state.portals.push(payload)
-      }
-
-  },
+      addOpenPortal(state,payload) {
+        if(state.openPortal) {
+          const portals = [payload, state.openPortal];
+          state.completedPortals.push( { portals });
+          state.openPortal = null;
+          state.portals.add(payload.refName)
+          return
+        }
+        state.portals.keys.add(payload.refName)
+        state.openPortal = payload;
+      },
+},
   actions: {
     toggleJoystickMode({commit}) {
       commit('toggleJoystickMode');
@@ -228,8 +239,10 @@ export default new Vuex.Store({
     togglePortal({ commit }) {
      commit("togglePortal");
     },
-    createPortal({ commit}, payload) {
-      commit("createPortal",payload);
+    createPortal({ commit, state }, payload) {
+      const indexKey = state.completedPortals.length;
+      payload.indexKey = indexKey;
+      commit("addOpenPortal", payload);
     }
 
   },
@@ -253,11 +266,12 @@ export default new Vuex.Store({
     },
     isPortal
     : state => refName => {
-      if(refName === "r1-1") {
-        console.log("is portal",refName, state.portals );
+       const portal = state.completedPortals.filter((p) => {
+         let x = p.portals.filter(ref => ref.refName === refName);
+         return x.length? x : ""; 
+      });
 
-      }
-      return state.portals.filter(ref => ref.refName === refName);
+      return portal ;
     },
     getArrowRefs: state => {
       return state.arrowRefs;

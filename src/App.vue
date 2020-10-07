@@ -110,7 +110,9 @@ export default {
       selectedWaveform: "sawtooth",
       tvFinishedLoaded: false,
       manualDirection: "",
-      eraseKeyDown: false
+      eraseKeyDown: false,
+      lastPlayedDiv: "",
+      nextPlayingDiv: ""
     };
   },
 
@@ -186,6 +188,8 @@ export default {
     stop() {
       stopPlaying();
       this.$store.dispatch("changeIsPlayingState", false);
+      this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
+      this.lastPlayedDiv = "";
       this.$store.dispatch("setPlayingDiv", null);
       this.midiStop();
     },
@@ -194,6 +198,7 @@ export default {
         this.stop();
         return;
       }
+
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
       if (!firstArrowRef) {
         return;
@@ -203,63 +208,95 @@ export default {
       playThang(this.repeat, this.bpm);
     },
     repeat(time) {
+      //kolla last playing div
+      if (this.lastPlayedDiv) {
+        this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
+        this.$store.dispatch("setPlayingDiv", this.nextPlayingDiv);
+      }
+      /* if (!this.isPlaying) return; */
+
       let { x, y, refName, direction } = this.playingDiv;
+      let ref = this.gridRefs[refName];
+      this.changeHighlightClass(refName, "add");
 
-      let gridRefs = this.$refs.gridLayout.$refs;
-      let ref = gridRefs[refName];
+      this.lastPlayedDiv = this.playingDiv;
+      const isPortal = this.$store.getters.isPortal(refName);
 
-      if (ref && ref.length && this.isPlaying) {
-        ref[0].classList.remove("highlight");
+      if (isPortal.length && !this.lastPlayedDiv.portal) {
+        let nextPortal = isPortal[0].portals.filter(
+          ref => ref.refName !== refName
+        );
 
-        let isArrow = this.$store.getters.findArrowRef(refName);
-        if (this.eraseKeyDown) {
-          this.$store.dispatch("removeArrowRef", refName);
-        } else if (
-          this.writeKeyDown &&
-          this.manualDirection &&
-          this.manualDirection !== direction
-        ) {
-          let newPlayingDiv = this.playingDiv;
-          newPlayingDiv.direction = this.manualDirection;
+        this.nextPlayingDiv = {
+          ...nextPortal[0],
+          direction,
+          portal: true
+        };
 
-          this.$store.dispatch("addArrowRef", this.playingDiv);
-        } else if (isArrow) {
-          direction = isArrow.direction;
-          this.manualDirection = "";
-        }
-
-        if (this.manualDirection) {
-          direction = this.manualDirection;
-        }
-        //we need to subtract one since the coordinates starts on 1
-        //and the allArpeggios arr start at index 0
         let note = this.allArpeggios[x - 1][y - 1];
         this.midiOutActive
           ? this.midiPlay(note)
           : synth.triggerAttackRelease(note, "8n", time);
+        return;
+      }
 
-        let nextCoordinates = this.nextCoordinateBasedOnDirection(
-          x,
-          y,
-          direction
-        );
+      const isArrow = this.$store.getters.findArrowRef(refName);
+      if (this.eraseKeyDown) {
+        this.$store.dispatch("removeArrowRef", refName);
+      } else if (
+        this.writeKeyDown &&
+        this.manualDirection &&
+        this.manualDirection !== direction
+      ) {
+        let newPlayingDiv = this.playingDiv;
+        newPlayingDiv.direction = this.manualDirection;
 
-        let nextPlayingDivRef = this.getRefFromCoordinates(
-          nextCoordinates.x,
-          nextCoordinates.y
-        );
-        this.$store.dispatch("setPlayingDiv", {
-          ...nextCoordinates,
-          refName: nextPlayingDivRef
-        });
-        let nextPlayingDiv = gridRefs[nextPlayingDivRef];
-        if (nextPlayingDiv && nextPlayingDiv.length) {
-          nextPlayingDiv[0].classList.add("highlight");
-        }
-      } else {
+        this.$store.dispatch("addArrowRef", this.playingDiv);
+      } else if (isArrow) {
+        direction = isArrow.direction;
+        this.manualDirection = "";
+      }
+
+      if (this.manualDirection) {
+        direction = this.manualDirection;
+      }
+      //we need to subtract one since the coordinates starts on 1
+      //and the allArpeggios arr start at index 0
+      let note = this.allArpeggios[x - 1][y - 1];
+      this.midiOutActive
+        ? this.midiPlay(note)
+        : synth.triggerAttackRelease(note, "8n", time);
+
+      let nextCoordinates = this.nextCoordinateBasedOnDirection(
+        x,
+        y,
+        direction
+      );
+
+      let nextPlayingDivRef = this.getRefFromCoordinates(
+        nextCoordinates.x,
+        nextCoordinates.y
+      );
+      this.nextPlayingDiv = {
+        ...nextCoordinates,
+        refName: nextPlayingDivRef
+      };
+      let doesNextDivExist = this.gridRefs[nextPlayingDivRef];
+      if (!doesNextDivExist || !doesNextDivExist.length) {
         Tone.Transport.cancel();
-        this.$store.commit("changeIsPlayingState", false);
+        this.stop();
         this.midiStop();
+      }
+    },
+    changeHighlightClass(refName, action) {
+      const target = this.gridRefs[refName];
+      if (target && target[0]) {
+        if (action === "add") {
+          target[0].classList.add("highlight");
+        }
+        if (action === "remove") {
+          target[0].classList.remove("highlight");
+        }
       }
     },
     getRefFromCoordinates(x, y) {
@@ -290,6 +327,7 @@ export default {
         e.preventDefault();
       }
       if (e.keyCode === 32) {
+        e.preventDefault();
         this.play();
       }
       if (e.keyCode === 87) {
@@ -323,6 +361,9 @@ export default {
     ]),
     gridSize() {
       return this.$store.getters.getGridSize;
+    },
+    gridRefs() {
+      return this.$refs.gridLayout.$refs;
     },
     overlayVisible() {
       return this.modalIsOpen;

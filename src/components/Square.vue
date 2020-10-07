@@ -77,7 +77,6 @@ export default {
       return this.getArrowRefDirection(this.refForSquare.refName);
     },
     isItPortal() {
-      console.log("YEAH");
       return this.isPortal(this.refForSquare.refName).length;
     },
 

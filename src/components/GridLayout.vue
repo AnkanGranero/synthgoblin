@@ -158,7 +158,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying"]),
+    ...mapState(["playingDiv", "isPlaying", "portals", "arrowRefs"]),
     colorCenter() {
       return this.playingDiv
         ? this.playingDiv
@@ -208,7 +208,7 @@ $square: 6.666666666666667%;
 }
 
 .highlight {
-  /*   border: 1px solid rgb(110, 110, 160);
-  z-index: 20; */
+  border: 1px solid rgb(110, 110, 160);
+  z-index: 20;
 }
 </style>
