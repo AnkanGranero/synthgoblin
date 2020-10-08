@@ -21,7 +21,7 @@
 
 <script>
 import square from "./Square";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   name: "GridLayout",
@@ -159,6 +159,7 @@ export default {
   },
   computed: {
     ...mapState(["playingDiv", "isPlaying", "portals", "arrowRefs"]),
+    /*     ...mapGetters(["isPortal"]), */
     colorCenter() {
       return this.playingDiv
         ? this.playingDiv
@@ -208,7 +209,8 @@ $square: 6.666666666666667%;
 }
 
 .highlight {
-  border: 1px solid rgb(110, 110, 160);
+  /*   border: 1px solid rgb(110, 110, 160);
+  box-sizing: border-box; */
   z-index: 20;
 }
 </style>

@@ -11,8 +11,8 @@
     style="enable-background:new 0 0 57 56.9;"
     xml:space="preserve"
     :fill="fillColor"
-    :class="{ svg: !portalOpen }"
-    @click="togglePortal"
+    :class="{ svg: !portalCreatorActive }"
+    @click="togglePortalCreator"
   >
     <g class="st0">
       <image
@@ -48,12 +48,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["togglePortal"])
+    ...mapActions(["togglePortalCreator"])
   },
   computed: {
-    ...mapState(["portalOpen"]),
+    ...mapState(["portalCreatorActive"]),
     fillColor() {
-      return this.portalOpen ? "#d9d283" : "#D0DBCE";
+      return this.portalCreatorActive ? "#d9d283" : "#D0DBCE";
     }
   }
 };

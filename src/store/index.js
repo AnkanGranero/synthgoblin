@@ -27,13 +27,18 @@ export default new Vuex.Store({
     midiOutActive: false,
     modalIsOpen: false,
     joystickMode: false,
-    portalOpen: false,
+    portalCreatorActive: false,
     openPortal: null,
     portals: new Set(),
-    completedPortals: []
+    completedPortals: [],
+    portalsHashObject: {}
 
   },
   mutations: {
+    clickedOnPortal(state, refName) {
+      state.portalsHashObject[refName];
+      state.portalsHashObject
+    },
     toggleJoystickMode(state) {
       state.joystickMode = !state.joystickMode;
     },
@@ -59,6 +64,13 @@ export default new Vuex.Store({
     bulkAddArrowRefs( state, payload){
       state.arrowRefs = payload;
       setInCache(state.arrowRefs, 'arrowRefs');
+    },
+    removePortal(state, refName) {
+      let connection = state.portalsHashObject[refName].connectsTo;
+      delete state.portalsHashObject[refName];
+      delete state.portalsHashObject[connection];
+      state.portals.delete(refName);
+      state.portals.delete(connection);
     },
     removeArrowRef(state, payload) {
       
@@ -117,22 +129,27 @@ export default new Vuex.Store({
         state.midiOutActive = !state.midiOutActive;
 
       },
-      togglePortal(state ){
-        state.portalOpen = !state.portalOpen;
+      togglePortalCreator(state ){
+        state.portalCreatorActive = !state.portalCreatorActive;
       },
       addOpenPortal(state,payload) {
         if(state.openPortal) {
-          const portals = [payload, state.openPortal];
-          state.completedPortals.push( { portals });
+          let { openPortal } = state;
+
+    
+          state.portalsHashObject[payload.refName] = {...payload, connectsTo: openPortal.refName};
+          state.portalsHashObject[openPortal.refName] = { ...openPortal, connectsTo: payload.refName};
           state.openPortal = null;
-          state.portals.add(payload.refName)
           return
         }
-        state.portals.keys.add(payload.refName)
+        state.portalsHashObject[payload.refName] = payload;
         state.openPortal = payload;
       },
 },
   actions: {
+   removePortal({commit}, refName) {
+    commit("removePortal", refName)
+   },
     toggleJoystickMode({commit}) {
       commit('toggleJoystickMode');
     },
@@ -216,7 +233,6 @@ export default new Vuex.Store({
 
 
     changeTone({rootstate},payload) {
-      console.log("rootstate", rootstate);
       let { name, val} = payload;
       switch(name) {
         case "reverb": {
@@ -236,18 +252,17 @@ export default new Vuex.Store({
         setOutputDevice(cachedMidiOutput);
       }
     },
-    togglePortal({ commit }) {
-     commit("togglePortal");
+    togglePortalCreator({ commit }) {
+     commit("togglePortalCreator");
     },
-    createPortal({ commit, state }, payload) {
-      const indexKey = state.completedPortals.length;
-      payload.indexKey = indexKey;
+    createPortal({ commit }, payload) {
+
       commit("addOpenPortal", payload);
     }
 
   },
   getters: {
-    getPortalOpen: state => state.portalOpen,
+    getPortalCreatorActive: state => state.portalCreatorActive,
     getJoystickMode: state => {
       return state.joystickMode;
     },
@@ -266,12 +281,23 @@ export default new Vuex.Store({
     },
     isPortal
     : state => refName => {
-       const portal = state.completedPortals.filter((p) => {
-         let x = p.portals.filter(ref => ref.refName === refName);
-         return x.length? x : ""; 
-      });
+      return state.portalsHashObject[refName];
+      /* return state.portals.has(refName); */
+    },
+    getPortalConnection: state => refName => {
+      let connectedPortal = state.portalsHashObject[refName];
 
-      return portal ;
+      return connectedPortal? state.portalsHashObject[connectedPortal.connectsTo] : "";
+    },
+    getPortalNumber: state => refName => {
+    
+      if(!state.portalsHashObject[refName] || !state.portalsHashObject[refName].connectsTo) return;
+    let keys = Object.keys(state.portalsHashObject);
+    let index = keys.indexOf(refName);
+    
+
+    let portalNumber = Math.round((index+1)/2);
+    return portalNumber;
     },
     getArrowRefs: state => {
       return state.arrowRefs;

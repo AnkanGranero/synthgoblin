@@ -8,7 +8,17 @@
         @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
-    <span v-if="isItPortal" class="portal"></span>
+    <div v-if="isItPortal" class="portal">
+      <span
+        v-if="portalClicked"
+        class="portal__invisible-overlay"
+        @mouseleave="portalClicked = false"
+        @click="portalClicked = false"
+      ></span>
+      <span class="portal__number" @click="handleClickOnPortal">{{
+        portalNumber()
+      }}</span>
+    </div>
     <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
       <div :class="[whatDirection, hidden]"></div>
     </div>
@@ -22,7 +32,8 @@ export default {
   name: "Square",
   data() {
     return {
-      directionPickerOpen: false
+      directionPickerOpen: false,
+      portalClicked: false
     };
   },
 
@@ -37,10 +48,21 @@ export default {
   },
 
   methods: {
-    ...mapActions(["addArrowRef", "createPortal"]),
+    ...mapActions(["addArrowRef", "createPortal", "removePortal"]),
+
+    handleClickOnPortal() {
+      if (this.portalClicked) {
+        this.removePortal(this.refForSquare.refName);
+        return;
+      }
+      this.portalClicked = true;
+    },
     handleClick(event) {
       event.preventDefault();
-      if (this.portalOpen) {
+      if (this.isItPortal) {
+        return;
+      }
+      if (!this.direction && this.portalCreatorActive) {
         this.createPortal(this.refForSquare);
         return;
       }
@@ -67,17 +89,21 @@ export default {
       let { refName } = this.refForSquare;
       /*       this.direction = ""; */
       this.$store.dispatch("removeArrowRef", refName);
+    },
+    portalNumber() {
+      let { refName } = this.refForSquare;
+      return this.getPortalNumber(refName);
     }
   },
 
   computed: {
-    ...mapState(["portalOpen"]),
-    ...mapGetters(["getArrowRefDirection", "isPortal"]),
+    ...mapState(["portalCreatorActive"]),
+    ...mapGetters(["getArrowRefDirection", "isPortal", "getPortalNumber"]),
     direction() {
       return this.getArrowRefDirection(this.refForSquare.refName);
     },
     isItPortal() {
-      return this.isPortal(this.refForSquare.refName).length;
+      return this.isPortal(this.refForSquare.refName);
     },
 
     whatDirection() {
@@ -201,10 +227,24 @@ export default {
   height: 90%;
   background: black;
   width: 90%;
-  display: block;
+  display: flex;
   position: relative;
   border-radius: 100%;
   top: 5%;
   left: 5%;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: white;
+
+  &__number {
+    z-index: 2;
+  }
+
+  &__invisible-overlay {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+  }
 }
 </style>

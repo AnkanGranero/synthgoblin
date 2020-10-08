@@ -79,8 +79,10 @@ import {
   preparePlayStuff,
   synth
 } from "./playStuff/playStuff";
+import { mapGetters } from "vuex";
 import { midiPlay, midiStop } from "./midi-service/midiService";
 import { getAllCachedInfo } from "./utils/cacheMethods";
+import { getCoordinatesFromRefName } from "./utils/squareRefHelpers";
 
 export default {
   name: "App",
@@ -222,13 +224,11 @@ export default {
       this.lastPlayedDiv = this.playingDiv;
       const isPortal = this.$store.getters.isPortal(refName);
 
-      if (isPortal.length && !this.lastPlayedDiv.portal) {
-        let nextPortal = isPortal[0].portals.filter(
-          ref => ref.refName !== refName
-        );
-
+      if (isPortal && !this.lastPlayedDiv.portal) {
+        let nextPortal = this.getPortalConnection(refName);
+        if (!nextPortal) this.stop();
         this.nextPlayingDiv = {
-          ...nextPortal[0],
+          ...nextPortal,
           direction,
           portal: true
         };
@@ -359,6 +359,7 @@ export default {
       "modalIsOpen",
       "joystickMode"
     ]),
+    ...mapGetters(["isPortal", "getPortalConnection"]),
     gridSize() {
       return this.$store.getters.getGridSize;
     },
