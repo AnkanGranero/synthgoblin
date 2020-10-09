@@ -282,7 +282,6 @@ export default new Vuex.Store({
     isPortal
     : state => refName => {
       return state.portalsHashObject[refName];
-      /* return state.portals.has(refName); */
     },
     getPortalConnection: state => refName => {
       let connectedPortal = state.portalsHashObject[refName];

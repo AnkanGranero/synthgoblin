@@ -8,7 +8,7 @@
         @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
-    <div v-if="isItPortal" class="portal">
+    <div v-if="portal" class="portal">
       <span
         v-if="portalClicked"
         class="portal__invisible-overlay"
@@ -33,7 +33,8 @@ export default {
   data() {
     return {
       directionPickerOpen: false,
-      portalClicked: false
+      portalClicked: false,
+      portal: false
     };
   },
 
@@ -41,15 +42,22 @@ export default {
     refForSquare: {
       default: () => {},
       type: Object
+    },
+    refreshIndex: {
+      type: Number
     }
   },
   components: {
     DirectionPicker
   },
-
+  mounted() {
+    this.getPortal();
+  },
   methods: {
     ...mapActions(["addArrowRef", "createPortal", "removePortal"]),
-
+    getPortal() {
+      return (this.portal = this.portalsHashObject[this.refForSquare.refName]);
+    },
     handleClickOnPortal() {
       if (this.portalClicked) {
         this.removePortal(this.refForSquare.refName);
@@ -59,11 +67,13 @@ export default {
     },
     handleClick(event) {
       event.preventDefault();
-      if (this.isItPortal) {
+      if (this.portal) {
+        this.portalClicked = true;
         return;
       }
       if (!this.direction && this.portalCreatorActive) {
         this.createPortal(this.refForSquare);
+        this.getPortal();
         return;
       }
       if (this.directionPickerOpen) {
@@ -87,7 +97,6 @@ export default {
     },
     removeArrowDiv() {
       let { refName } = this.refForSquare;
-      /*       this.direction = ""; */
       this.$store.dispatch("removeArrowRef", refName);
     },
     portalNumber() {
@@ -97,13 +106,10 @@ export default {
   },
 
   computed: {
-    ...mapState(["portalCreatorActive"]),
-    ...mapGetters(["getArrowRefDirection", "isPortal", "getPortalNumber"]),
+    ...mapState(["portalCreatorActive", "portalsHashObject"]),
+    ...mapGetters(["getArrowRefDirection", "getPortalNumber"]),
     direction() {
       return this.getArrowRefDirection(this.refForSquare.refName);
-    },
-    isItPortal() {
-      return this.isPortal(this.refForSquare.refName);
     },
 
     whatDirection() {
