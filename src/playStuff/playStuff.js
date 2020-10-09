@@ -59,7 +59,12 @@ reverb.wet.value = val;
       synth.oscillator.type = val;
       this.selectedWaveform = val;
     }
-
+const changeVolume = function(val) {
+  console.log("val", val);
+  let transformedValue = -20 + (val * 2);
+  console.log("transformedVal" ,transformedValue);
+  synth.volume.value = transformedValue;
+}
 const changeMuteState = function(bool) {
   let value = bool? -150: 0;
   synth.volume.value = value;
@@ -67,4 +72,4 @@ const changeMuteState = function(bool) {
 
 
 
-export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth, changeMuteState}
+export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth, changeMuteState, changeVolume}

@@ -26,7 +26,11 @@ import {
   changeMidiNoteLength,
   changeMidiNoteVelocity
 } from "../../midi-service/midiService";
-import { changeBpm, changeReverb } from "../../playStuff/playStuff";
+import {
+  changeBpm,
+  changeReverb,
+  changeVolume
+} from "../../playStuff/playStuff";
 
 export default {
   name: "sliders",
@@ -89,6 +93,7 @@ export default {
     changeMidiNoteVelocity,
     changeBpm,
     changeReverb,
+    changeVolume,
     mouseHandler(event) {
       event.preventDefault();
 

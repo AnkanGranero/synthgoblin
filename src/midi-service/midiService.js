@@ -46,7 +46,7 @@ const changeMidiNoteLength = (newNoteLength) => {
   updateNoteDuration();
 }
 
-const changeNoteMidiVelocity = (newVelocity) => {
+const changeMidiNoteVelocity = (newVelocity) => {
   midiValues['velocity'] = newVelocity;
 }
 
@@ -71,7 +71,7 @@ const midiStop = () => {
 
   midiOutput.stopNote("all");
 }
-
+//kanske byta till något i state
 const getMidiOutputFromLocalStorage = async function() {
   let outputs = await midiOutputs;
   let matches = outputs.filter(output => output.name === localStorage.midiOutput)
@@ -84,7 +84,7 @@ const getMidiOutputFromLocalStorage = async function() {
 export {
 
     changeMidiBpm,
-    changeNoteMidiVelocity,
+    changeMidiNoteVelocity,
     changeMidiNoteLength,
     setOutputDevice,
     setOutputChannel,

@@ -43,11 +43,20 @@
             />
             <Slider
               :largeText="false"
-              name="reverb"
+              name="Rev"
               :max-value="1"
               :min-value="0"
               value-type="Tone"
               method="changeReverb"
+            />
+            <Slider
+              :largeText="false"
+              name="Vol"
+              :max-value="10"
+              :min-value="0"
+              value-type="Tone"
+              initialValue="7"
+              method="changeVolume"
             />
           </div>
         </div>
