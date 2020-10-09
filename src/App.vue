@@ -1,6 +1,6 @@
 <template>
   <div id="hagrid">
-    <Modal v-if="modalOpen" @modalEmit="modalEventHandler" />
+    <Modal v-if="modalIsOpen" @modalEmit="modalEventHandler" />
 
     <SecretModal @changeGridSize="changeGridSize" />
     <div class="tv-wrapper">
@@ -20,28 +20,35 @@
         <div class="tv__left">
           <IconInfo class="tv__large-button" @clicked="openModal" />
 
-          <div class="tv__buttons">
-            <div v-for="(wave,index) in waves" :key="index" @click="changeWave(wave)">
-              <div>
-                <WaveComponent
-                  @click="changeWave(wave)"
-                  :waveForm="wave"
-                  alt="waveform select button"
-                  :selectedWaveForm="(selectedWaveform == wave)"
-                ></WaveComponent>
-              </div>
-            </div>
-          </div>
-          <button class="tv__clear" @click="clearAllArrows" />
+          <TvButtonsComponent class="tv__buttons" />
         </div>
         <div class="tv__middle">
-          <GridLayout :styling="styling" ref="gridLayout" @clicked-square="playNote" />
+          <GridLayout
+            v-if="tvFinishedLoaded"
+            :styling="styling"
+            ref="gridLayout"
+            @clicked-on-square="playNote"
+          />
         </div>
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
           <div class="sliderContainer">
-            <Slider @changedValue="changedSliderValue" type="bpm" :maxValue="250" :minValue="50" />
-            <Slider @changedValue="changedSliderValue" type="reverb" :maxValue="1" :minValue="0" />
+            <Slider
+              :largeText="false"
+              name="bpm"
+              :max-value="250"
+              :min-value="50"
+              value-type="Tone"
+              method="changeBpm"
+            />
+            <Slider
+              :largeText="false"
+              name="reverb"
+              :max-value="1"
+              :min-value="0"
+              value-type="Tone"
+              method="changeReverb"
+            />
           </div>
         </div>
         <Overlay v-if="overlayVisible" @closeOverlay="closeOverlay" />
@@ -59,39 +66,23 @@ import {
   Overlay,
   Slider,
   GridLayout,
-  WaveComponent,
+  TvButtonsComponent,
   SecretModal
 } from "./components/index.js";
-import { createAllArpeggios } from "./utils/pitchCalculations";
-
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
-
 import * as Tone from "tone";
 import { mapState } from "vuex";
-
-const reverb = new Tone.Reverb({
-  decay: 5,
-  wet: 0.3,
-  preDelay: 0.2
-}).toMaster();
-var filter = new Tone.Filter({
-  type: "bandpass",
-  Q: 120
-}).toMaster();
-const synth = new Tone.Synth({
-  oscillator: {
-    type: "sawtooth",
-    modulationFrequency: 0.2
-  },
-
-  envelope: {
-    attack: 0.02,
-    decay: 0.1,
-    sustain: 0.2,
-    release: 0.2
-  }
-});
+import {
+  playThang,
+  stopPlaying,
+  preparePlayStuff,
+  synth
+} from "./playStuff/playStuff";
+import { mapGetters } from "vuex";
+import { midiPlay, midiStop } from "./midi-service/midiService";
+import { getAllCachedInfo } from "./utils/cacheMethods";
+import { getCoordinatesFromRefName } from "./utils/squareRefHelpers";
 
 export default {
   name: "App",
@@ -102,7 +93,7 @@ export default {
     Overlay,
     IconInfo,
     IconPlay,
-    WaveComponent,
+    TvButtonsComponent,
     SecretModal
   },
   created: function() {
@@ -116,141 +107,196 @@ export default {
     return {
       styling: "classic",
       intervals: "",
-      modalOpen: false,
-      waves: ["sine", "square", "sawtooth", "triangle"],
+
       bpm: 150,
-      selectedWaveform: "sawtooth"
+      selectedWaveform: "sawtooth",
+      tvFinishedLoaded: false,
+      manualDirection: "",
+      eraseKeyDown: false,
+      lastPlayedDiv: "",
+      nextPlayingDiv: ""
     };
   },
+
   mounted() {
     this.createNewArpeggios();
-    async function prepare() {
-      await reverb.generate();
+    this.setupCachedInfo();
 
-      synth.connect(reverb);
-      synth.connect(filter);
-    }
-    prepare();
+    preparePlayStuff();
+    window.addEventListener("keyup", e => {
+      this.handleKeyUpCommands(e);
+    });
+    window.addEventListener("keydown", e => {
+      this.handleKeyDownCommands(e);
+    });
+    /*  this.checkLocalStorage(); */
   },
   methods: {
+    setupCachedInfo() {
+      const cachedInfo = getAllCachedInfo();
+      let { arrowRefs, gridSize } = cachedInfo;
+      if (arrowRefs) {
+        this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
+      }
+      if (gridSize) {
+        this.$store.dispatch("changeGridSize", gridSize);
+      }
+
+      this.tvFinishedLoaded = true;
+    },
     playNote(payload) {
-      if (this.isPlaying) return;
+      if (this.isPlaying || this.directionPickerOpen) return;
       let { x, y } = payload;
+
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0
       let note = this.allArpeggios[x - 1][y - 1];
-      synth.triggerAttackRelease(note, "8n");
+
+      this.midiOutActive
+        ? this.midiPlay(note)
+        : synth.triggerAttackRelease(note, "8n");
     },
-    changeWave(val) {
-      synth.oscillator.type = val;
-      this.selectedWaveform = val;
-    },
-    changedSliderValue({ val, type }) {
-      if (type === "bpm") {
-        this.bpm = val;
-        Tone.Transport.bpm.value = val;
-      }
-      if (type === "reverb") {
-        reverb.wet.value = val;
-      }
-    },
+
     changeGridSize(gridSize) {
       this.$store.dispatch("changeGridSize", gridSize);
       this.createNewArpeggios();
     },
-    waveImg(wave) {
-      return require(`./assets/waves/${wave}.svg`);
-    },
     openModal() {
-      this.modalOpen = true;
+      this.$store.dispatch("modalIsOpen", true);
     },
 
     changeTheme(styling) {
       this.styling = styling;
-      this.modalOpen = false;
+      this.$store.dispatch("modalIsOpen", false);
     },
 
     createNewArpeggios() {
-      let newArpeggios = createAllArpeggios(
-        this.arpeggio,
-        this.gridSize,
-        this.angle
-      );
-      this.$store.dispatch("createAllArpeggios", newArpeggios);
+      this.$store.dispatch("setAllArpeggios");
     },
 
     closeOverlay() {
-      this.modalOpen = false;
+      this.$store.dispatch("modalIsOpen", false);
     },
     modalEventHandler(payload) {
       switch (payload) {
         case "closeModal":
-          this.modalOpen = false;
+          this.$store.dispatch("modalIsOpen", false);
           break;
         case "createAllArs":
           this.createNewArpeggios();
           break;
       }
     },
+    stop() {
+      stopPlaying();
+      this.$store.dispatch("changeIsPlayingState", false);
+      this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
+      this.lastPlayedDiv = "";
+      this.$store.dispatch("setPlayingDiv", null);
+      this.midiStop();
+    },
     async play() {
       if (this.isPlaying) {
-        Tone.Transport.cancel();
-        this.$store.dispatch("changeIsPlayingState", false);
-        this.$store.dispatch("setPlayingDiv", null);
+        this.stop();
         return;
       }
+
       let firstArrowRef = await this.$store.getters.getArrowRefs[0];
       if (!firstArrowRef) {
         return;
       }
       this.$store.dispatch("setPlayingDiv", firstArrowRef);
-
       this.$store.commit("changeIsPlayingState", true);
-
-      Tone.Transport.scheduleRepeat(this.repeat, "16n");
-      Tone.Transport.bpm.value = this.bpm;
-      Tone.Transport.start();
+      playThang(this.repeat, this.bpm);
     },
     repeat(time) {
+      //kolla last playing div
+      if (this.lastPlayedDiv) {
+        this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
+        this.$store.dispatch("setPlayingDiv", this.nextPlayingDiv);
+      }
+      /* if (!this.isPlaying) return; */
+
       let { x, y, refName, direction } = this.playingDiv;
+      let ref = this.gridRefs[refName];
+      this.changeHighlightClass(refName, "add");
 
-      let gridRefs = this.$refs.gridLayout.$refs;
-      let ref = gridRefs[refName];
+      this.lastPlayedDiv = this.playingDiv;
+      const isPortal = this.$store.getters.isPortal(refName);
 
-      if (ref) {
-        ref[0].classList.remove("highlight");
+      if (isPortal && !this.lastPlayedDiv.portal) {
+        let nextPortal = this.getPortalConnection(refName);
+        if (!nextPortal) this.stop();
+        this.nextPlayingDiv = {
+          ...nextPortal,
+          direction,
+          portal: true
+        };
 
-        let isArrow = this.$store.getters.findArrowRef(refName);
-        if (isArrow) {
-          direction = isArrow.direction;
-        }
-        //we need to subtract one since the coordinates starts on 1
-        //and the allArpeggios arr start at index 0
         let note = this.allArpeggios[x - 1][y - 1];
+        this.midiOutActive
+          ? this.midiPlay(note)
+          : synth.triggerAttackRelease(note, "8n", time);
+        return;
+      }
 
-        synth.triggerAttackRelease(note, "8n", time);
+      const isArrow = this.$store.getters.findArrowRef(refName);
+      if (this.eraseKeyDown) {
+        this.$store.dispatch("removeArrowRef", refName);
+      } else if (
+        this.writeKeyDown &&
+        this.manualDirection &&
+        this.manualDirection !== direction
+      ) {
+        let newPlayingDiv = this.playingDiv;
+        newPlayingDiv.direction = this.manualDirection;
 
-        let nextCoordinates = this.nextCoordinateBasedOnDirection(
-          x,
-          y,
-          direction
-        );
+        this.$store.dispatch("addArrowRef", this.playingDiv);
+      } else if (isArrow) {
+        direction = isArrow.direction;
+        this.manualDirection = "";
+      }
 
-        let nextPlayingDivRef = this.getRefFromCoordinates(
-          nextCoordinates.x,
-          nextCoordinates.y
-        );
-        this.$store.dispatch("setPlayingDiv", {
-          ...nextCoordinates,
-          refName: nextPlayingDivRef
-        });
-        let nextPlayingDiv = gridRefs[nextPlayingDivRef];
-        if (nextPlayingDiv) {
-          nextPlayingDiv[0].classList.add("highlight");
-        }
-      } else {
+      if (this.manualDirection) {
+        direction = this.manualDirection;
+      }
+      //we need to subtract one since the coordinates starts on 1
+      //and the allArpeggios arr start at index 0
+      let note = this.allArpeggios[x - 1][y - 1];
+      this.midiOutActive
+        ? this.midiPlay(note)
+        : synth.triggerAttackRelease(note, "8n", time);
+
+      let nextCoordinates = this.nextCoordinateBasedOnDirection(
+        x,
+        y,
+        direction
+      );
+
+      let nextPlayingDivRef = this.getRefFromCoordinates(
+        nextCoordinates.x,
+        nextCoordinates.y
+      );
+      this.nextPlayingDiv = {
+        ...nextCoordinates,
+        refName: nextPlayingDivRef
+      };
+      let doesNextDivExist = this.gridRefs[nextPlayingDivRef];
+      if (!doesNextDivExist || !doesNextDivExist.length) {
         Tone.Transport.cancel();
-        this.$store.commit("changeIsPlayingState", false);
+        this.stop();
+        this.midiStop();
+      }
+    },
+    changeHighlightClass(refName, action) {
+      const target = this.gridRefs[refName];
+      if (target && target[0]) {
+        if (action === "add") {
+          target[0].classList.add("highlight");
+        }
+        if (action === "remove") {
+          target[0].classList.remove("highlight");
+        }
       }
     },
     getRefFromCoordinates(x, y) {
@@ -274,20 +320,60 @@ export default {
 
       return { x, y, direction };
     },
-    clearAllArrows() {
-      this.$store.dispatch("removeAllArrowRefs");
-    }
+    handleKeyDownCommands(e) {
+      if (this.joystickMode && e.keyCode > 36 && e.keyCode < 41) {
+        let direction = e.key.replace("Arrow", "").toLowerCase();
+        this.manualDirection = direction;
+        e.preventDefault();
+      }
+      if (e.keyCode === 32) {
+        e.preventDefault();
+        this.play();
+      }
+      if (e.keyCode === 87) {
+        this.writeKeyDown = true;
+      }
+      if (e.keyCode === 69) {
+        this.eraseKeyDown = true;
+        e.preventDefault();
+      }
+    },
+    handleKeyUpCommands(e) {
+      if (e.keyCode === 69) {
+        this.eraseKeyDown = false;
+      }
+      if (e.keyCode === 87) {
+        this.writeKeyDown = false;
+      }
+    },
+
+    midiPlay,
+    midiStop
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying", "allArpeggios", "angle"]),
+    ...mapState([
+      "playingDiv",
+      "isPlaying",
+      "allArpeggios",
+      "angle",
+      "modalIsOpen",
+      "joystickMode"
+    ]),
+    ...mapGetters(["isPortal", "getPortalConnection"]),
     gridSize() {
       return this.$store.getters.getGridSize;
     },
+    gridRefs() {
+      return this.$refs.gridLayout.$refs;
+    },
     overlayVisible() {
-      return this.modalOpen;
+      return this.modalIsOpen;
     },
     arpeggio() {
       return this.$store.getters.getArpeggio;
+    },
+    midiOutActive() {
+      return this.$store.getters.midiOutActive;
     },
     backgroundColors() {
       if (this.$store.state.isPlaying) {
@@ -309,7 +395,6 @@ $hagridGreen: #54bb5a;
 $blue: rgb(141, 223, 232);
 $yellow: #d9d283;
 $leafGreen: #368a3c;
-$medium: 768px;
 
 #hagrid {
   -webkit-box-align: center;
@@ -322,7 +407,7 @@ $medium: 768px;
   width: 100%;
   height: 100%;
 
-  @media only screen and (min-width: $medium) {
+  @media only screen and (min-width: $ipad) {
     display: flex;
     height: 146%;
   }
@@ -369,14 +454,14 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  @media only screen and (min-width: $medium) {
+  @media only screen and (min-width: $ipad) {
     height: 85%;
     margin: 0 14%;
   }
 
   .header {
     display: none;
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: 1fr;
@@ -386,32 +471,13 @@ body {
       margin-bottom: 13%;
     }
 
-    /*    position: absolute;
-    left: 33%;
-    width: 33%; */
-
-    /*  margin: 0 0 6% 0; */
-
     &__h1 {
       color: #d9d283;
       margin: 0;
-      /* font-size: 200px; */
-      /*     font-size: 13rem; */
-
       letter-spacing: -0.4rem;
       line-height: 0.8;
       font-size: 12.5vw;
       font-size: 12.9rem;
-      /*       font-size: 4.4rem;
-      @media only screen and (min-width: 375px) {
-        font-size: 5.1rem;
-      }
-      @media only screen and (min-width: 425px) {
-        font-size: 5.7rem;
-      }
-      @media only screen and (min-width: $medium) {
-        font-size: 12.5vw;
-      } */
     }
     &__sub {
       margin: 0;
@@ -454,13 +520,11 @@ body {
   min-height: 100%;
 
   justify-content: space-between;
-  /*   height: 100%;
-  min-height: 46%; */
   height: 100%;
   flex-direction: column;
   position: absolute;
 
-  @media only screen and (min-width: $medium) {
+  @media only screen and (min-width: $ipad) {
     position: unset;
     min-height: unset;
 
@@ -470,20 +534,20 @@ body {
     width: 100%;
     flex-direction: row;
   }
-
   &__top-mobile {
     display: flex;
     justify-content: space-evenly;
     padding: 10% 0 5%;
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: none;
     }
   }
 
   &__large-button {
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       width: 50%;
       margin-bottom: 19%;
+      cursor: pointer;
     }
   }
   &__btn-wrapper {
@@ -493,8 +557,7 @@ body {
 
   &__left {
     display: none;
-    position: relative;
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: flex;
       align-items: center;
       flex-basis: 0;
@@ -502,12 +565,11 @@ body {
       flex-grow: 1;
       flex-direction: column;
     }
-    /*   min-width: 271px; */
   }
   &__right {
     display: none;
 
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -517,7 +579,7 @@ body {
     }
     .sliderContainer {
       display: none;
-      @media only screen and (min-width: $medium) {
+      @media only screen and (min-width: $ipad) {
         display: flex;
         height: 100%;
         justify-content: space-around;
@@ -542,8 +604,7 @@ body {
     padding: 5%;
     box-sizing: border-box;
     position: relative;
-
-    @media only screen and (min-width: $medium) {
+    @media only screen and (min-width: $ipad) {
       padding: unset;
       width: 50%;
       height: unset;
@@ -552,16 +613,6 @@ body {
     }
   }
 
-  &__buttons {
-    display: none;
-
-    @media only screen and (min-width: $medium) {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-  }
   &__btn {
     margin: 5%;
   }

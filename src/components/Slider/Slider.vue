@@ -2,26 +2,32 @@
   <div class="slider-wrapper">
     <div
       class="slider"
-      @mouseleave="clicked=false"
+      @mouseleave="clicked = false"
       @mousedown="mouseHandler"
-      @mouseup="clicked=false"
+      @mouseup="clicked = false"
       @mousemove="mouseHandler"
-      @touchstart="clicked=true"
+      @touchstart="clicked = true"
       @touchmove="mouseHandler"
-      @touchend="clicked=false"
-      @touchcancel="clicked=false"
+      @touchend="clicked = false"
+      @touchcancel="clicked = false"
       ref="slider"
     >
       <div class="slider__track"></div>
       <div class="slider__knob" :style="knobPosition"></div>
     </div>
-    <span class="slider-wrapper__type">
-      {{ type }}
+    <div class="slider-wrapper__type" :class="{ 'large-text': largeText }">
+      {{ name }}
       <span class="slider-wrapper__value">{{ customSlideValue }}</span>
-    </span>
+    </div>
   </div>
 </template>
 <script>
+import {
+  changeMidiNoteLength,
+  changeMidiNoteVelocity
+} from "../../midi-service/midiService";
+import { changeBpm, changeReverb } from "../../playStuff/playStuff";
+
 export default {
   name: "sliders",
   data() {
@@ -31,7 +37,7 @@ export default {
     };
   },
   props: {
-    type: {
+    name: {
       type: String,
       default: ""
     },
@@ -50,6 +56,21 @@ export default {
     integer: {
       type: Boolean,
       default: false
+    },
+    largeText: {
+      type: Boolean,
+      default: true
+    },
+    valueType: {
+      type: String,
+      required: true
+    },
+    method: {
+      type: String,
+      default: ""
+    },
+    action: {
+      type: String
     }
   },
   created: function() {
@@ -58,7 +79,13 @@ export default {
     }
   },
   methods: {
+    changeMidiNoteLength,
+    changeMidiNoteVelocity,
+    changeBpm,
+    changeReverb,
     mouseHandler(event) {
+      event.preventDefault();
+
       if (event.type === "mousedown") {
         this.clicked = true;
       }
@@ -82,10 +109,20 @@ export default {
         }
         this.slideValue = mousePercentage;
 
-        this.$emit("changedValue", {
+        /*       this.$emit("changedValue", {
           val: this.customSlideValue,
-          type: this.type
-        });
+          name: this.name
+        }); */
+        this.handleChange();
+      }
+    },
+    handleChange() {
+      if (this.method) {
+        this[this.method](this.customSlideValue);
+      } else if (this.action) {
+        const actionValues = {};
+        actionValues[this.name] = this.customSlideValue;
+        this.$store.dispatch(this.action, actionValues);
       }
     },
     valueToSlide(value) {
@@ -145,9 +182,24 @@ $yellow: #d9d283;
     text-transform: uppercase;
     color: $yellow;
     position: absolute;
+    width: 100%;
+    /*     @media screen and (min-width: 600px) {
+      font-size: 15px;
+    } */
+    font-size: 30px;
+    @media screen and (min-width: $ipad) {
+      font-size: 15px;
+    }
+    @media screen and (min-width: $desktop-large) {
+      font-size: 30px;
+    }
     /*     white-space: pre-wrap; */
   }
 }
+.large-text {
+  font-size: 30px;
+}
+
 .slider {
   height: 100%;
   width: 100%;
@@ -160,6 +212,7 @@ $yellow: #d9d283;
   &__track {
     background: $hagridGreen;
     width: 5%;
+    max-width: 5px;
   }
 
   &__knob {
@@ -167,8 +220,12 @@ $yellow: #d9d283;
 
     height: 4%;
     width: 75%;
+    max-width: 60px;
     position: absolute;
     border-radius: 10px;
   }
+  /*   &__value {
+    width: 100%;
+  } */
 }
 </style>

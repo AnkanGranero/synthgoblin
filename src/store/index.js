@@ -1,7 +1,13 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { getMidiOutputFromLocalStorage, setOutputDevice } from "../midi-service/midiService"
+import { createAllArpeggios } from "../utils/pitchCalculations";
+import { changeBpm, changeReverb } from "../playStuff/playStuff"
+import { setInCache } from "../utils/cacheMethods"
+
 
 Vue.use(Vuex);
+
 
 export default new Vuex.Store({
   state: {
@@ -10,19 +16,31 @@ export default new Vuex.Store({
     backgroundColors: "",
     arrowRefs: [],
     gridSize: {
-      coordinates: { 
         x: 15,
         y: 15
-      },
-      maxValue: 25
-    
     },
     arpeggio: [4, 3, 4, 1],
     allArpeggios: [],
     isMobile: false,
-    angle: "symetric"
+    angle: "symetric",
+    midiOutActive: false,
+    modalIsOpen: false,
+    joystickMode: false,
+    portalCreatorActive: false,
+    openPortal: null,
+    portals: new Set(),
+    completedPortals: [],
+    portalsHashObject: {}
+
   },
   mutations: {
+    clickedOnPortal(state, refName) {
+      state.portalsHashObject[refName];
+      state.portalsHashObject
+    },
+    toggleJoystickMode(state) {
+      state.joystickMode = !state.joystickMode;
+    },
     changeIsPlayingState(state, payload) {
       state.isPlaying = payload;
     },
@@ -34,6 +52,24 @@ export default new Vuex.Store({
     },
     addArrowRef(state, payload) {
       state.arrowRefs.push(payload);
+      setInCache(state.arrowRefs, 'arrowRefs');
+    },
+    updateArrowRefsAfterGridSizeChange(state, payload) {
+      state.arrowRefs = payload;
+      setInCache(state.arrowRefs, 'arrowRefs');
+
+
+    },
+    bulkAddArrowRefs( state, payload){
+      state.arrowRefs = payload;
+      setInCache(state.arrowRefs, 'arrowRefs');
+    },
+    removePortal(state, refName) {
+      let connection = state.portalsHashObject[refName].connectsTo;
+      delete state.portalsHashObject[refName];
+      delete state.portalsHashObject[connection];
+      state.portals.delete(refName);
+      state.portals.delete(connection);
     },
     removeArrowRef(state, payload) {
       
@@ -41,41 +77,90 @@ export default new Vuex.Store({
 
       if (index !== -1) {
         state.arrowRefs.splice(index, 1);
+        setInCache(state.arrowRefs, 'arrowRefs');
       }
     },
     clearAllArrowRefs(state) {
-      state.arrowRefs = []
+      state.arrowRefs = [];
+      setInCache(state.arrowRefs, 'arrowRefs');
     },
     changeDirectionOnArrowRef(state, payload) {
       let { index, direction } = payload;
       state.arrowRefs[index].direction = direction;
+      setInCache(state.arrowRefs, 'arrowRefs');
     },
- 
+/*     setDirection(state, payload) {
+      state.direction = payload;
+    }, */
     setGridSize(state, payload) {
-      
-      state.isPlaying = false;
-      state.gridSize.coordinates = payload
+     let newGridSize = {}
+     let { x, y } = payload;
+     newGridSize.x = x? x : state.gridSize.x;
+     newGridSize.y = y? y : state.gridSize.y;
+     state.isPlaying = false;
+     state.gridSize = newGridSize
+     setInCache(state.gridSize, 'gridSize');
+
     },
-        setArpeggio(state, payload) {
+    setArpeggio(state, payload) {
         
-      state.arpeggio = payload
+      state.arpeggio = payload,
+      setInCache(state.arpeggio, 'arpeggio');
       
     },
       isMobile(state) {
       state.isMobile = true;
       },
-      setGridMaxValue(state, payload) {
-      state.gridSize.maxValue = payload
-      },
+
       setAllArpeggios(state,payload) {
         state.allArpeggios = payload
       },
       setAngle(state, payload) {
         state.angle = payload
-      }
+      },
+/*       setMidiOutput(state, payload) {
+        state.midiOutput = payload
+      }, */
+      setModal(state, payload) {
+        state.modalIsOpen = payload;
+      },
+      toggleMidiOutActive(state) {
+        state.midiOutActive = !state.midiOutActive;
 
-  },
+      },
+      togglePortalCreator(state ){
+        state.portalCreatorActive = !state.portalCreatorActive;
+      },
+      addOpenPortal(state,payload) {
+        if(state.openPortal) {
+          let { openPortal } = state;
+
+    
+          state.portalsHashObject[payload.refName] = {...payload, connectsTo: openPortal.refName};
+          state.portalsHashObject[openPortal.refName] = { ...openPortal, connectsTo: payload.refName};
+          state.openPortal = null;
+          return
+        }
+        state.portalsHashObject[payload.refName] = payload;
+        state.openPortal = payload;
+      },
+},
   actions: {
+   removePortal({commit}, refName) {
+    commit("removePortal", refName)
+   },
+    toggleJoystickMode({commit}) {
+      commit('toggleJoystickMode');
+    },
+    clearAllArrowRefs( { commit }) {
+      commit('clearAllArrowRefs');
+    },
+
+    modalIsOpen({ commit }, payload) {
+
+      commit("setModal", payload);
+
+    },
     changeIsPlayingState({ commit }, payload) {
       commit("changeIsPlayingState", payload);
     },
@@ -85,6 +170,7 @@ export default new Vuex.Store({
     setBackgroundColors({ commit }, payload) {
       commit("changeBackgroundColors", payload);
     },
+
     addArrowRef({ commit, getters }, payload) {
       let { x, y, direction, refName } = payload;
 
@@ -103,30 +189,82 @@ export default new Vuex.Store({
      
       commit("removeArrowRef", payload);
     },
-    removeAllArrowRefs( {commit }) {
-      console.log("clearrr");
-      commit("clearAllArrowRefs")
-    },
-    changeGridSize({commit}, payload) {
+/*     setDirection({ commit }, payload) {
+      commit("setDirection", payload);
+    }, */
+    changeGridSize({commit, dispatch}, payload) {
       commit("changeIsPlayingState",false);
       commit("setGridSize", payload);
+      dispatch("setAllArpeggios");
+      dispatch("updateArrowRefsAfterGridSizeChange");
+
     },
-        changeArpeggio({commit}, payload) {
-      
-      commit("setArpeggio", payload)
+    changeArpeggio({commit,dispatch}, payload) {
+      commit("setArpeggio", payload);
+      dispatch("setAllArpeggios");
+
+    },
+    bulkAddArrowRefs({commit, dispatch}, payload) {
+      commit("bulkAddArrowRefs", payload);
+
+      dispatch("updateArrowRefsAfterGridSizeChange");
+    },
+    updateArrowRefsAfterGridSizeChange({commit, state}) {
+      let { x, y } = state.gridSize;
+      let availableArrowRefs = state.arrowRefs.filter( arrowRef => arrowRef.x <= x && arrowRef.y <= y );
+      commit("updateArrowRefsAfterGridSizeChange",availableArrowRefs );
     },
     changeGridMaxValue({commit}, payload) {
         commit("setGridMaxValue", Number(payload))
     },
-    createAllArpeggios({commit}, payload) {
-      commit("setAllArpeggios", payload)
+    setAllArpeggios({commit, state}) {
+      let newArpeggios = createAllArpeggios(state.arpeggio, state.gridSize, state.angle);
+      commit("setAllArpeggios", newArpeggios)
     },
     changeAngle({commit}, payload) {
       commit("setAngle", payload)
+    },
+
+    toggleMidiOutActive({commit, dispatch}) {
+      commit("toggleMidiOutActive");
+      dispatch("setMidiOutputFromCache");
+    },
+
+
+    changeTone({rootstate},payload) {
+      let { name, val} = payload;
+      switch(name) {
+        case "reverb": {
+          changeReverb(val)
+          break;
+        }
+        case "bpm": {
+          changeBpm(val)
+          break;
+        }
+      }
+    },
+    async setMidiOutputFromCache() {
+      let cachedMidiOutput = await getMidiOutputFromLocalStorage()
+      
+      if(cachedMidiOutput) {
+        setOutputDevice(cachedMidiOutput);
+      }
+    },
+    togglePortalCreator({ commit }) {
+     commit("togglePortalCreator");
+    },
+    createPortal({ commit }, payload) {
+
+      commit("addOpenPortal", payload);
     }
-  
+
   },
   getters: {
+    getPortalCreatorActive: state => state.portalCreatorActive,
+    getJoystickMode: state => {
+      return state.joystickMode;
+    },
     findArrowRefIndex: state => refName => {
 
       let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
@@ -136,6 +274,30 @@ export default new Vuex.Store({
       let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
       return arrowRef[0];
     },
+    getArrowRefDirection: state => refName => {
+      let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
+      return arrowRef[0]? arrowRef[0].direction: null;
+    },
+    isPortal
+    : state => refName => {
+      return state.portalsHashObject[refName];
+      /* return state.portals.has(refName); */
+    },
+    getPortalConnection: state => refName => {
+      let connectedPortal = state.portalsHashObject[refName];
+
+      return connectedPortal? state.portalsHashObject[connectedPortal.connectsTo] : "";
+    },
+    getPortalNumber: state => refName => {
+    
+      if(!state.portalsHashObject[refName] || !state.portalsHashObject[refName].connectsTo) return;
+    let keys = Object.keys(state.portalsHashObject);
+    let index = keys.indexOf(refName);
+    
+
+    let portalNumber = Math.round((index+1)/2);
+    return portalNumber;
+    },
     getArrowRefs: state => {
       return state.arrowRefs;
     },
@@ -143,10 +305,13 @@ export default new Vuex.Store({
       return state.playingDiv;
     },
     getGridSize: state => {
-      return state.gridSize.coordinates;
+      return state.gridSize;
     },
     getArpeggio: state => {
       return state.arpeggio
+    },
+    midiOutActive: state => {
+      return state.midiOutActive
     }
   },
   modules: {}

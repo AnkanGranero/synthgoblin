@@ -8,15 +8,12 @@
         :style="colorStyling(x, y)"
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
-        @click="$emit( 'clicked-square', {x,y} )"
       >
         <square
-          @openDirectionPicker="openDirectionPicker"
           :refForSquare="refForSquare(x, y)"
-          :directionPickerOpen="isdirectionPickerOpen(x, y)"
-          @closeDirectionPicker="closeDirectionPicker"
-          :direction="direction(x,y)"
-        ></square>
+          @clicked-on-square="$emit('clicked-on-square', $event)"
+        >
+        </square>
       </div>
     </div>
   </div>
@@ -24,7 +21,7 @@
 
 <script>
 import square from "./Square";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   name: "GridLayout",
@@ -33,9 +30,7 @@ export default {
   },
   data() {
     return {
-      mousePos: { x: 0, y: 0 },
-
-      directionPickerOpen: {}
+      mousePos: { x: 0, y: 0 }
     };
   },
   props: {
@@ -87,13 +82,6 @@ export default {
           return backgroundColors;
         }
       }
-    },
-    isdirectionPickerOpen(x, y) {
-      return x == this.directionPickerOpen.x && y == this.directionPickerOpen.y;
-    },
-
-    openDirectionPicker(payload) {
-      this.directionPickerOpen = payload;
     },
 
     mouseEventHandler(x, y) {
@@ -173,13 +161,11 @@ export default {
       let red = 200 - growedSubtractorX;
       let green = 200 - growedSubtractorY;
       return "rgb(" + green + "," + red + ",250)";
-    },
-    closeDirectionPicker() {
-      this.directionPickerOpen = {}; //ändra detta
     }
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying"]),
+    ...mapState(["playingDiv", "isPlaying", "portals", "arrowRefs"]),
+    /*     ...mapGetters(["isPortal"]), */
     colorCenter() {
       return this.playingDiv
         ? this.playingDiv
@@ -230,6 +216,7 @@ $square: 6.666666666666667%;
 
 .highlight {
   /*   border: 1px solid rgb(110, 110, 160);
-  z-index: 20; */
+  box-sizing: border-box; */
+  z-index: 20;
 }
 </style>

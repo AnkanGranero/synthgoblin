@@ -27,8 +27,8 @@ export default {
 $hagridGreen: #54bb5a;
 
 .modal {
-  width: 50%;
-  left: 23%;
+  width: 70%;
+  left: 15%;
   background: $hagridGreen;
   border: 5px solid white;
   height: 50%;
@@ -39,10 +39,15 @@ $hagridGreen: #54bb5a;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  @media only screen and (min-width: 375px) {
+  @media only screen and (min-width: 600px) {
+    width: 50%;
+    left: 23%;
+  }
+  @media only screen and (min-width: 1024px) {
     width: 33%;
     left: 33%;
-    height: 50%;
+    top: 20%;
+    height: 60%;
   }
 }
 </style>
