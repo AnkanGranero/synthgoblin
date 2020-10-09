@@ -1,28 +1,38 @@
 <template>
   <div class="tv__buttons">
-    <div
-      v-for="wave in waves"
-      :key="wave"
-      @click="handleClick(wave)"
-      class="tv__button"
-    >
-      <div>
-        <TvButton :value="wave" alt="waveform select button">
-          <component
-            v-bind:is="wave"
-            class="wave__btn"
-            :selected="selectedWaveform === wave"
-        /></TvButton>
+    <span class="tv__divider"></span>
+    <div class="tv__wrapper">
+      <div
+        v-for="wave in waves"
+        :key="wave"
+        @click="handleClick(wave)"
+        class="tv__button"
+      >
+        <div>
+          <TvButton :value="wave" alt="waveform select button">
+            <component
+              v-bind:is="wave"
+              class="wave__btn"
+              :selected="selectedWaveform === wave"
+          /></TvButton>
+        </div>
       </div>
     </div>
-    <div v-for="(tvButton, index) in tvButtons" :key="index" class="tv__button">
-      <TvButton>
-        <component
-          v-bind:is="tvButton"
-          class="wave__btn"
-          :selected="selectedTvButton === tvButton"
-        />
-      </TvButton>
+    <span class="tv__divider"></span>
+    <div class="tv__wrapper">
+      <div
+        v-for="(tvButton, index) in tvButtons"
+        :key="index"
+        class="tv__button"
+      >
+        <TvButton>
+          <component
+            v-bind:is="tvButton"
+            class="wave__btn"
+            :selected="selectedTvButton === tvButton"
+          />
+        </TvButton>
+      </div>
     </div>
   </div>
 </template>
@@ -86,6 +96,20 @@ export default {
   &__button {
     flex: 0 50%;
     margin-bottom: 2%;
+  }
+  &__divider {
+    width: 100%;
+
+    height: 5%;
+    transform: skew(-45deg);
+    /* background: white; */
+    background: rgb(66, 84, 148);
+  }
+  &__wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: 7%;
+    margin-top: 4%;
   }
 }
 </style>
