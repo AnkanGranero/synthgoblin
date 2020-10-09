@@ -6,7 +6,7 @@
       @mousedown="mouseHandler"
       @mouseup="clicked = false"
       @mousemove="mouseHandler"
-      @touchstart="clicked = true"
+      @touchstart="prevent.default(), (clicked = true)"
       @touchmove="mouseHandler"
       @touchend="clicked = false"
       @touchcancel="clicked = false"
@@ -36,6 +36,7 @@ export default {
       clicked: false
     };
   },
+
   props: {
     name: {
       type: String,
@@ -73,8 +74,13 @@ export default {
       type: String
     }
   },
+
   created: function() {
-    if (this.initialValue) {
+    if (this.valueType === "GridSize") {
+      let gridSize = this.$store.getters.getGridSize;
+      this.slideValue = this.valueToSlide(gridSize[this.name]);
+      return;
+    } else if (this.initialValue) {
       this.slideValue = this.valueToSlide(this.initialValue);
     }
   },
