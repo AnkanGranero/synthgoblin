@@ -248,7 +248,7 @@ export default {
   color: white;
 
   &__number {
-    z-index: 2;
+    z-index: 0;
   }
 
   &__invisible-overlay {

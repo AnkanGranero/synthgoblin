@@ -76,9 +76,7 @@ const getMidiOutputFromLocalStorage = async function() {
   let outputs = await midiOutputs;
   let matches = outputs.filter(output => output.name === localStorage.midiOutput)
 
-  // if(!matches[0]){
-  //   console.log("no matching midiOutput in localStorage");
-  // }
+
 
   return matches[0];
 }

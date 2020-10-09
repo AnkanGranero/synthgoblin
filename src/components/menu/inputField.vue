@@ -71,7 +71,6 @@ export default {
     confirm() {
       if (this.val && this.action) {
         this.$store.dispatch(this.action, this.val);
-        console.log("this.method", this.method);
 
         this.$store.dispatch("modalIsOpen", false);
       }
