@@ -13,7 +13,7 @@
     xml:space="preserve"
     class="svg"
     :fill="fillColor"
-    @click="clearAllArrowRefs"
+    @click="clearGrid"
   >
     <g id="knapp"></g>
     <g id="Layer_15">
@@ -61,7 +61,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["clearAllArrowRefs"])
+    ...mapActions(["clearGrid"])
   }
 };
 </script>

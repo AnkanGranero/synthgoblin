@@ -35,10 +35,7 @@ export default new Vuex.Store({
 
   },
   mutations: {
-    clickedOnPortal(state, refName) {
-      state.portalsHashObject[refName];
-      state.portalsHashObject
-    },
+
     toggleJoystickMode(state) {
       state.joystickMode = !state.joystickMode;
     },
@@ -63,14 +60,17 @@ export default new Vuex.Store({
     },
     bulkAddArrowRefs( state, payload){
       state.arrowRefs = payload;
-      setInCache(state.arrowRefs, 'arrowRefs');
     },
+    bulkAddPortals(state, portals) {
+      state.portalsHashObject = portals;
+     },
     removePortal(state, refName) {
       let connection = state.portalsHashObject[refName].connectsTo;
       delete state.portalsHashObject[refName];
       delete state.portalsHashObject[connection];
       state.portals.delete(refName);
       state.portals.delete(connection);
+      setInCache(state.portalsHashObject, 'portals')
     },
     removeArrowRef(state, payload) {
       
@@ -81,9 +81,11 @@ export default new Vuex.Store({
         setInCache(state.arrowRefs, 'arrowRefs');
       }
     },
-    clearAllArrowRefs(state) {
+    clearGrid(state) {
       state.arrowRefs = [];
+      state.portalsHashObject = {};
       setInCache(state.arrowRefs, 'arrowRefs');
+      setInCache(state.portalsHashObject);
     },
     changeDirectionOnArrowRef(state, payload) {
       let { index, direction } = payload;
@@ -135,11 +137,10 @@ export default new Vuex.Store({
       addOpenPortal(state,payload) {
         if(state.openPortal) {
           let { openPortal } = state;
-
-    
           state.portalsHashObject[payload.refName] = {...payload, connectsTo: openPortal.refName};
           state.portalsHashObject[openPortal.refName] = { ...openPortal, connectsTo: payload.refName};
           state.openPortal = null;
+          setInCache(state.portalsHashObject, 'portals')
           return
         }
         state.portalsHashObject[payload.refName] = payload;
@@ -150,11 +151,14 @@ export default new Vuex.Store({
    removePortal({commit}, refName) {
     commit("removePortal", refName)
    },
+   bulkAddPortals({commit}, portals) {
+    commit("bulkAddPortals", portals)
+   },
     toggleJoystickMode({commit}) {
       commit('toggleJoystickMode');
     },
-    clearAllArrowRefs( { commit }) {
-      commit('clearAllArrowRefs');
+    clearGrid( { commit }) {
+      commit('clearGrid');
     },
 
     modalIsOpen({ commit }, payload) {

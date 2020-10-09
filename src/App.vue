@@ -134,12 +134,15 @@ export default {
   methods: {
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
-      let { arrowRefs, gridSize } = cachedInfo;
+      let { arrowRefs, gridSize, portals } = cachedInfo;
       if (arrowRefs) {
         this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
       }
       if (gridSize) {
         this.$store.dispatch("changeGridSize", gridSize);
+      }
+      if (portals) {
+        this.$store.dispatch("bulkAddPortals", portals);
       }
 
       this.tvFinishedLoaded = true;

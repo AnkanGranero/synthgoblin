@@ -12,8 +12,9 @@ function getAllCachedInfo() {
     const gridSize = getCachedInfo('gridSize');
     const arpeggio = getCachedInfo('arpeggio');
     const arrowRefs = getCachedInfo("arrowRefs");
+    const portals = getCachedInfo("portals");
 
-    return { gridSize, arpeggio, arrowRefs }
+    return { gridSize, arpeggio, arrowRefs, portals }
 
 }
 
