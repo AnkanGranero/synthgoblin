@@ -8,7 +8,7 @@
         @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
-    <div v-if="portal" class="portal">
+    <div v-if="portal && isItStillPortal" class="portal">
       <span
         v-if="portalClicked"
         class="portal__invisible-overlay"
@@ -61,6 +61,7 @@ export default {
     handleClickOnPortal() {
       if (this.portalClicked) {
         this.removePortal(this.refForSquare.refName);
+        this.$emit("remove-portal-force-re-render");
         return;
       }
       this.portalClicked = true;
@@ -107,9 +108,12 @@ export default {
 
   computed: {
     ...mapState(["portalCreatorActive", "portalsHashObject"]),
-    ...mapGetters(["getArrowRefDirection", "getPortalNumber"]),
+    ...mapGetters(["getArrowRefDirection", "isPortal", "getPortalNumber"]),
     direction() {
       return this.getArrowRefDirection(this.refForSquare.refName);
+    },
+    isItStillPortal() {
+      return this.isPortal(this.refForSquare.refName);
     },
 
     whatDirection() {

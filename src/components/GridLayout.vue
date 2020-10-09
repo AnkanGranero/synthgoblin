@@ -11,6 +11,7 @@
       >
         <square
           :refForSquare="refForSquare(x, y)"
+          @remove-portal-force-re-render="mousePos = { x, y }"
           @clicked-on-square="$emit('clicked-on-square', $event)"
         >
         </square>
