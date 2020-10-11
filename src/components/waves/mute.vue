@@ -19,7 +19,6 @@
         style="display:inline;overflow:visible;enable-background:new    ;"
         width="1500"
         height="1500"
-        xlink:href="../../../../../hagrid/wavetable.png"
         transform="matrix(9.448819e-02 0 0 9.448819e-02 -19.1786 111.6376)"
       ></image>
     </g>
