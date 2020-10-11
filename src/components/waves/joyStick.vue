@@ -11,24 +11,10 @@
     viewBox="0 0 57 56.9"
     style="enable-background:new 0 0 57 56.9;"
     xml:space="preserve"
-    :fill="fillColor"
-    :class="{ svg: !getJoystickMode }"
+    :class="whatClass"
     @click="toggleJoystickMode"
   >
-    <g class="st0">
-      <image
-        style="display:inline;overflow:visible;enable-background:new    ;"
-        width="1500"
-        height="1500"
-        transform="matrix(9.448819e-02 0 0 9.448819e-02 -93.0779 111.6376)"
-      ></image>
-    </g>
     <g id="knapp2">
-      <path
-        class="st1"
-        d="M5,0.5h46.7c2.8,0.6,4.4,2.2,4.8,4.7v46.4c-0.7,2.8-2.3,4.4-5,4.8H6c-2.3-0.2-4.8-2.1-5.5-5.1V5.6
-		C1.1,3,2.5,1.2,5,0.5z"
-      />
       <path class="st1" d="M92.7,224.8" />
       <rect x="20.8" y="20.5" class="st2" width="15.6" height="15.6" />
       <circle class="st2" cx="28.6" cy="28.3" r="5.3" />
@@ -66,8 +52,8 @@ export default {
   },
   computed: {
     ...mapGetters(["getJoystickMode"]),
-    fillColor() {
-      return this.getJoystickMode ? "#d9d283" : "#D0DBCE";
+    whatClass() {
+      return this.getJoystickMode ? "active" : "default";
     }
   }
 };
@@ -77,22 +63,15 @@ export default {
 
 
 <style lang="scss" scoped>
-.st0 {
-  display: none;
+.default {
+  fill: $tv-button-active;
 }
 .st1 {
-  stroke: #050505;
-  stroke-miterlimit: 10;
-}
-.st2 {
-  fill: none;
-  stroke: #050505;
   stroke-miterlimit: 10;
 }
 
-.svg {
-  &:hover {
-    fill: rgb(141, 223, 232);
-  }
+.st2 {
+  fill: none;
+  stroke-miterlimit: 10;
 }
 </style>

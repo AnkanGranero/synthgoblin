@@ -133,8 +133,8 @@ export default new Vuex.Store({
         setInCache(state.midiOutActive, "midiOutActive");
 
       },
-      togglePortalCreator(state ){
-        state.portalCreatorActive = !state.portalCreatorActive;
+      changePortalCreatorActive(state, bool){
+        state.portalCreatorActive = bool;
       },
       addOpenPortal(state,payload) {
         if(state.openPortal) {
@@ -261,8 +261,8 @@ export default new Vuex.Store({
         setOutputDevice(cachedMidiOutput);
       }
     }, */
-    togglePortalCreator({ commit }) {
-     commit("togglePortalCreator");
+    changePortalCreatorActive({ commit },bool) {
+     commit("changePortalCreatorActive",bool);
     },
     createPortal({ commit }, payload) {
 

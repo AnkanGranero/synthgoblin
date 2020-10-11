@@ -12,7 +12,7 @@
           <TvButton :value="wave" alt="waveform select button">
             <component
               v-bind:is="wave"
-              class="wave__btn"
+              class="tv-button__btn"
               :selected="selectedWaveform === wave"
           /></TvButton>
         </div>
@@ -28,8 +28,8 @@
         <TvButton>
           <component
             v-bind:is="tvButton"
-            class="wave__btn"
             :selected="selectedTvButton === tvButton"
+            class="tv-button__btn"
           />
         </TvButton>
       </div>
@@ -44,10 +44,10 @@ import sine from "./waves/sine.vue";
 import sawtooth from "./waves/sawtooth.vue";
 import square from "./waves/square.vue";
 import triangle from "./waves/triangle.vue";
-import deleteAllArrows from "./waves/deleteAllArrows";
+import clearGrid from "./waves/clearGrid";
 import joyStick from "./waves/joyStick";
 import portal from "./waves/portal";
-import mute from "./waves/mute";
+import arrow from "./waves/arrow";
 export default {
   name: "TvButtonsComponent",
   data() {
@@ -55,7 +55,7 @@ export default {
       waves: ["sine", "square", "sawtooth", "triangle"],
       selectedWaveform: "sawtooth",
       selectedTvButton: "",
-      tvButtons: ["deleteAllArrows", "joyStick", "portal", "mute"]
+      tvButtons: ["clearGrid", "joyStick", "portal", "arrow"]
     };
   },
   components: {
@@ -64,10 +64,10 @@ export default {
     sawtooth,
     square,
     triangle,
-    deleteAllArrows,
+    clearGrid,
     joyStick,
     portal,
-    mute
+    arrow
   },
   methods: {
     changeWave,
