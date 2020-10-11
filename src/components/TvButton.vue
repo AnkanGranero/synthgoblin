@@ -30,6 +30,8 @@ $yellow: #d9d283;
   display: flex;
   justify-content: center;
   margin: 6%;
+  stroke-miterlimit: 10;
+  fill: none;
 
   &__btn {
     width: 100%;
