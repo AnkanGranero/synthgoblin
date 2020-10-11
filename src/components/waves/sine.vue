@@ -2,7 +2,6 @@
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 56.02 55.95"
-    :fill="fillColor"
     :class="whatClass"
   >
     <defs />
