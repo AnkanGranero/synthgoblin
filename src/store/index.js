@@ -70,6 +70,7 @@ export default new Vuex.Store({
       delete state.portalsHashObject[connection];
       state.portals.delete(refName);
       state.portals.delete(connection);
+      state.openPortal = "";
       setInCache(state.portalsHashObject, 'portals')
     },
     removeArrowRef(state, payload) {
@@ -85,7 +86,7 @@ export default new Vuex.Store({
       state.arrowRefs = [];
       state.portalsHashObject = {};
       setInCache(state.arrowRefs, 'arrowRefs');
-      setInCache(state.portalsHashObject);
+      setInCache(state.portalsHashObject, 'portals');
     },
     changeDirectionOnArrowRef(state, payload) {
       let { index, direction } = payload;
@@ -129,6 +130,7 @@ export default new Vuex.Store({
       },
       toggleMidiOutActive(state) {
         state.midiOutActive = !state.midiOutActive;
+        setInCache(state.midiOutActive, "midiOutActive");
 
       },
       togglePortalCreator(state ){
@@ -148,6 +150,9 @@ export default new Vuex.Store({
       },
 },
   actions: {
+/*     addMidiOutActive() {
+
+    }, */
    removePortal({commit}, refName) {
     commit("removePortal", refName)
    },
@@ -249,13 +254,13 @@ export default new Vuex.Store({
         }
       }
     },
-    async setMidiOutputFromCache() {
+/*     async setMidiOutputFromCache() {
       let cachedMidiOutput = await getMidiOutputFromLocalStorage()
       
       if(cachedMidiOutput) {
         setOutputDevice(cachedMidiOutput);
       }
-    },
+    }, */
     togglePortalCreator({ commit }) {
      commit("togglePortalCreator");
     },

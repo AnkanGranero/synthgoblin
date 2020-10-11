@@ -8,13 +8,11 @@
         @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
-    <div v-if="portal && isItStillPortal" class="portal">
-      <span
-        v-if="portalClicked"
-        class="portal__invisible-overlay"
-        @mouseleave="portalClicked = false"
-        @click="portalClicked = false"
-      ></span>
+    <div
+      v-if="portal && isItStillPortal"
+      class="portal"
+      @mouseleave="portalClicked = false"
+    >
       <span class="portal__number" @click="handleClickOnPortal">{{
         portalNumber()
       }}</span>
@@ -59,22 +57,25 @@ export default {
       return (this.portal = this.portalsHashObject[this.refForSquare.refName]);
     },
     handleClickOnPortal() {
-      if (this.portalClicked) {
+      if (this.portalClicked || !this.portalNumber()) {
         this.removePortal(this.refForSquare.refName);
         this.$emit("remove-portal-force-re-render");
+        this.portalClicked = false;
+        this.portal = "";
         return;
       }
       this.portalClicked = true;
     },
     handleClick(event) {
       event.preventDefault();
-      if (this.portal) {
-        this.portalClicked = true;
+      if (this.portal && this.getPortal()) {
         return;
       }
       if (!this.direction && this.portalCreatorActive) {
         this.createPortal(this.refForSquare);
         this.getPortal();
+        this.$emit("remove-portal-force-re-render");
+
         return;
       }
       if (this.directionPickerOpen) {
@@ -113,6 +114,7 @@ export default {
       return this.getArrowRefDirection(this.refForSquare.refName);
     },
     isItStillPortal() {
+      console.log("Hur ofta körs jag?", this.portal.refName);
       return this.isPortal(this.refForSquare.refName);
     },
 
@@ -246,15 +248,24 @@ export default {
   justify-content: center;
   line-height: 0;
   color: white;
+  cursor: pointer;
 
   &__number {
-    z-index: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   &__invisible-overlay {
     position: absolute;
     height: 100px;
     width: 100px;
+    background: red;
+    opacity: 0.2;
+    /*   z-index: 0; */
   }
 }
 </style>
