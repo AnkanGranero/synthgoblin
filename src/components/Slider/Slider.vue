@@ -221,8 +221,8 @@ $yellow: #d9d283;
   min-width: 60px;
 
   &__track {
-    background: $hagridGreen;
-    width: 5%;
+    background: $light-stroke;
+    width: 1px;
     max-width: 5px;
   }
 

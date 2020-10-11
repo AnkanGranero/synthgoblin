@@ -46,10 +46,16 @@ $yellow: #d9d283;
 .default {
   &:hover {
     background: rgb(141, 223, 232);
+    /*     background: $hagridGreen; */
+    border: none;
+    stroke: black;
   }
 
   stroke: $dark-stroke;
   background: rgb(121, 208, 132);
+  stroke: $light-stroke;
+  background: black;
+  border: solid 1px white;
 }
 .active {
   background: $tv-button-active;
