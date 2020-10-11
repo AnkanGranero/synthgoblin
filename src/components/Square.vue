@@ -114,7 +114,6 @@ export default {
       return this.getArrowRefDirection(this.refForSquare.refName);
     },
     isItStillPortal() {
-      console.log("Hur ofta körs jag?", this.portal.refName);
       return this.isPortal(this.refForSquare.refName);
     },
 

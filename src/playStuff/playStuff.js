@@ -60,9 +60,7 @@ reverb.wet.value = val;
       this.selectedWaveform = val;
     }
 const changeVolume = function(val) {
-  console.log("val", val);
   let transformedValue = -20 + (val * 2);
-  console.log("transformedVal" ,transformedValue);
   synth.volume.value = transformedValue;
 }
 const changeMuteState = function(bool) {
