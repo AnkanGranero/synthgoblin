@@ -66,7 +66,7 @@
               :max-value="10"
               :min-value="0"
               value-type="Tone"
-              initialValue="7"
+              :initialValue="7"
               method="changeVolume"
             />
           </div>
