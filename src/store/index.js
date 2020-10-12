@@ -31,11 +31,16 @@ export default new Vuex.Store({
     openPortal: null,
     portals: new Set(),
     completedPortals: [],
-    portalsHashObject: {}
+    portalsHashObject: {},
+    mousePos: { x: 10, y: 10}
 
   },
   mutations: {
 
+    setMousePos(state,coordinates) {
+      console.log("setting mousPOs", state.mousePos);
+      state.mousePos = coordinates
+    },
     toggleJoystickMode(state) {
       state.joystickMode = !state.joystickMode;
     },
@@ -153,6 +158,9 @@ export default new Vuex.Store({
 /*     addMidiOutActive() {
 
     }, */
+    setMousePos({commit},coordinates) {
+      commit("setMousePos", coordinates)
+    },
    removePortal({commit}, refName) {
     commit("removePortal", refName)
    },
@@ -321,6 +329,24 @@ export default new Vuex.Store({
     },
     midiOutActive: state => {
       return state.midiOutActive
+    },
+    getMousePos: state => {
+      return state.mousePos;
+    },
+    getHighlightPos: state => {
+      let { isPlaying, playingDiv, mousePos} = state;
+      let pos;
+      switch (isPlaying) {
+        case true:
+          pos = playingDiv;
+
+          break;
+        case false:
+          pos = mousePos;
+          break;
+      }
+      return pos;
+
     }
   },
   modules: {}
