@@ -1,5 +1,5 @@
 <template>
-  <div class="tv-button">
+  <div class="tv-button" :class="colorTheme">
     <slot />
   </div>
 </template>
@@ -15,6 +15,11 @@ export default {
     selected: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    colorTheme() {
+      return this.$store.getters.getColorTheme;
     }
   },
 
@@ -39,26 +44,37 @@ $yellow: #d9d283;
     box-sizing: border-box;
 
     @media only screen and (min-width: 2300px) {
-      width: 36%;
+      /* width: 36%; */
     }
   }
 }
-.default {
-  &:hover {
-    background: rgb(141, 223, 232);
-    /*     background: $hagridGreen; */
-    border: none;
-    stroke: black;
-  }
 
-  stroke: $dark-stroke;
-  background: rgb(121, 208, 132);
-  stroke: $light-stroke;
-  background: black;
-  border: solid 1px white;
-}
 .active {
   background: $tv-button-active;
   stroke: $dark-stroke;
+}
+
+.classic {
+  .default {
+    stroke: $dark-stroke;
+    background: rgb(121, 208, 132);
+    &:hover {
+      background: rgb(141, 223, 232);
+      border: none;
+      stroke: black;
+    }
+  }
+}
+.newStar {
+  .default {
+    stroke: $light-stroke;
+    background: black;
+    border: solid 1px white;
+    &:hover {
+      background: rgb(141, 223, 232);
+      border: none;
+      stroke: black;
+    }
+  }
 }
 </style>

@@ -31,7 +31,8 @@ export default new Vuex.Store({
     openPortal: null,
     portals: new Set(),
     completedPortals: [],
-    portalsHashObject: {}
+    portalsHashObject: {},
+    colorTheme: "classic"
 
   },
   mutations: {
@@ -321,6 +322,9 @@ export default new Vuex.Store({
     },
     midiOutActive: state => {
       return state.midiOutActive
+    },
+    getColorTheme: state => {
+      return state.colorTheme;
     }
   },
   modules: {}

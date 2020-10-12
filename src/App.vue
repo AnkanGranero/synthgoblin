@@ -10,7 +10,18 @@
           <h1 class="header__h1">Hagrid</h1>
           <p class="header__sub">grid sequencer</p>
         </div>
-        <img class="header__leaf" src="./assets/blad.svg" alt="leaf" />
+        <img
+          v-if="getColorTheme === 'classic'"
+          class="header__leaf"
+          src="./assets/blad.svg"
+          alt="leaf"
+        />
+        <img
+          v-if="getColorTheme === 'newStar'"
+          class="header__leaf"
+          src="./assets/blad_svart.svg"
+          alt="leaf"
+        />
       </div>
       <div class="tv">
         <div class="tv__top-mobile">
@@ -371,7 +382,7 @@ export default {
       "modalIsOpen",
       "joystickMode"
     ]),
-    ...mapGetters(["isPortal", "getPortalConnection"]),
+    ...mapGetters(["isPortal", "getPortalConnection", "getColorTheme"]),
     gridSize() {
       return this.$store.getters.getGridSize;
     },

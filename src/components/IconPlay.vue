@@ -1,24 +1,17 @@
 <template>
-  <div
-    class="wrapper"
-    @mouseover="mouseTouchHandler"
-    @mouseleave="mouseTouchHandler"
-    @touchstart="mouseTouchHandler"
-    @touchend="mouseTouchHandler"
-    @click="$emit('clicked')"
-  >
-    <svg
+  <div class="wrapper" @click="$emit('clicked')">
+    <!--  <svg
       v-if="!isPlaying"
       id="Layer_1"
       data-name="Layer 1"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 26.48 26.48"
+      :class="colorTheme"
     >
       <defs />
       <title>play</title>
       <path
         class="cls-1"
-        :style="{ 'fill': fillColor }"
         d="M25.71,15.83A13.24,13.24,0,1,0,39,29.06,13.23,13.23,0,0,0,25.71,15.83ZM21.19,35.2s0-11.75,0-12.27l11.49,5.7Z"
         transform="translate(-12.48 -15.83)"
       />
@@ -29,13 +22,41 @@
       data-name="Layer 1"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 26.48 26.48"
+      :class="colorTheme"
     >
       <defs />
       <title>stop</title>
       <path
         class="cls-1"
-        :style="{ 'fill': fillColor }"
         d="M13.24,0A13.24,13.24,0,1,0,26.48,13.24,13.24,13.24,0,0,0,13.24,0Zm4.13,17.37H9.1V9.1h8.27Z"
+      />
+    </svg> -->
+    <svg
+      version="1.1"
+      id="Layer_5"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      x="0px"
+      y="0px"
+      viewBox="0 0 95 95"
+      style="enable-background:new 0 0 95 95;"
+      xml:space="preserve"
+      :class="colorTheme"
+    >
+      <circle class="button" cx="47.5" cy="47.5" r="47.3" />
+      <path
+        v-if="!isPlaying"
+        class="symbol"
+        d="M72.1,47.8L35.3,27.6c0.1,1.9,0,43.4,0,43.4L72.1,47.8z"
+      />
+
+      <rect
+        v-else
+        x="31.4"
+        y="33.3"
+        class="symbol"
+        width="32.2"
+        height="32.2"
       />
     </svg>
   </div>
@@ -43,14 +64,14 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  name: "IconInfo",
+  name: "IconPlay",
   data() {
     return {
       mouseOver: false
     };
   },
   methods: {
-    mouseTouchHandler(event) {
+    /* mouseTouchHandler(event) {
       if (this.isMobile) {
         switch (event.type) {
           case "touchstart":
@@ -70,18 +91,19 @@ export default {
             break;
         }
       }
-    }
+    } */
   },
   computed: {
     ...mapState(["isPlaying", "isMobile"]),
-    fillColor() {
-      return this.mouseOver ? "rgb(141, 223, 232)" : "#52bb59";
+
+    colorTheme() {
+      return this.$store.getters.getColorTheme;
     }
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" >
 $medium: 768px;
 
 .wrapper {
@@ -97,6 +119,38 @@ $medium: 768px;
   @media only screen and (min-width: $medium) {
     height: 100%;
     width: 100%;
+  }
+}
+
+.symbol {
+  stroke-miterlimit: 10;
+}
+
+.classic {
+  .button {
+    fill: $hagrid-green;
+  }
+  .symbol {
+    stroke: #000000;
+    fill: black;
+  }
+}
+.newStar {
+  .button {
+    fill: black;
+    stroke: white;
+  }
+  .symbol {
+    fill: $hagrid-green;
+    stroke: white;
+  }
+}
+.button {
+  stroke: #000000;
+  stroke-miterlimit: 10;
+  fill: $hagrid-green;
+  &:hover {
+    fill: $blue;
   }
 }
 </style>

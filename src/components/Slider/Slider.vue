@@ -1,5 +1,5 @@
 <template>
-  <div class="slider-wrapper">
+  <div class="slider-wrapper" :class="colorTheme">
     <div
       class="slider"
       @mouseleave="clicked = false"
@@ -149,6 +149,9 @@ export default {
     }
   },
   computed: {
+    colorTheme() {
+      return this.$store.getters.getColorTheme;
+    },
     knobPosition() {
       let topValue =
         this.slideValueToInteger < 100 ? this.slideValueToInteger : 100;
@@ -201,6 +204,7 @@ $yellow: #d9d283;
     @media screen and (min-width: $ipad) {
       font-size: 15px;
     }
+
     @media screen and (min-width: $desktop-large) {
       font-size: 30px;
     }
@@ -218,10 +222,11 @@ $yellow: #d9d283;
   display: flex;
   justify-content: center;
   z-index: -2;
-  min-width: 60px;
+  @media screen and (min-width: 1024px) {
+    min-width: 60px;
+  }
 
   &__track {
-    background: $light-stroke;
     width: 1px;
     max-width: 5px;
   }
@@ -238,5 +243,15 @@ $yellow: #d9d283;
   /*   &__value {
     width: 100%;
   } */
+}
+.classic {
+  .slider__track {
+    background: $hagrid-green;
+  }
+}
+.newStar {
+  .slider__track {
+    background: $light-stroke;
+  }
 }
 </style>
