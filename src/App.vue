@@ -44,10 +44,10 @@
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
           <div class="sliderContainer">
-            <Slider2
+            <Slider
               :largeText="false"
               name="bpm"
-              :max-value="150"
+              :max-value="250"
               :min-value="50"
               value-type="Tone"
               :initialValue="bpm"
@@ -63,7 +63,7 @@
               :initial-value="reverb"
               method="changeReverb"
             />
-            <Slider2
+            <Slider
               :largeText="false"
               name="Vol"
               :max-value="10"
@@ -89,7 +89,6 @@ import {
   Modal,
   Overlay,
   Slider,
-  Slider2,
   GridLayout,
   TvButtonsComponent,
   SecretModal
@@ -116,7 +115,6 @@ export default {
   components: {
     GridLayout,
     Slider,
-    Slider2,
     Modal,
     Overlay,
     IconInfo,
