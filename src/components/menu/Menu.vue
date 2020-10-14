@@ -9,10 +9,11 @@
       >
         {{ value.name }}
         <span
-          v-if="value.type ==='toggle'"
+          v-if="value.type === 'toggle'"
           class="menu__toggle"
-          :class="{'active': midiOutActive}"
-        >{{toggleValue(value.name)}}</span>
+          :class="{ active: midiOutActive }"
+          >{{ toggleValue(value.name) }}</span
+        >
       </li>
     </ul>
     <component
@@ -22,7 +23,7 @@
       v-bind="componentData"
       @back="back()"
     />
-    <div class="menu__option" @click="back()">back</div>
+    <div class="menu__option menu__option-back" @click="back()">back</div>
   </div>
 </template>
 
@@ -139,11 +140,11 @@ export default {
   flex-direction: column;
   align-content: center;
   font-size: 30px;
+  justify-content: space-between;
 
   @media only screen and (min-width: 375px) {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
   }
   &__input-wrapper {
     display: flex;

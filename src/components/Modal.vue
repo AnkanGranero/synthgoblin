@@ -31,23 +31,26 @@ $hagridGreen: #54bb5a;
   left: 15%;
   background: $hagridGreen;
   border: 5px solid white;
-  height: 50%;
+  height: 70%;
   position: fixed;
-  top: 26%;
+  top: 15%;
   z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   @media only screen and (min-width: 600px) {
     width: 50%;
     left: 23%;
+    height: 65%;
+    top: 17%;
   }
   @media only screen and (min-width: 1024px) {
     width: 33%;
     left: 33%;
-    top: 20%;
-    height: 60%;
+    top: 15%;
+    height: 70%;
   }
 }
 </style>
