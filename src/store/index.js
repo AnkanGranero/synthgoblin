@@ -36,6 +36,9 @@ export default new Vuex.Store({
 
   },
   mutations: {
+    setColorTheme(state, colorTheme) {
+      state.colorTheme = colorTheme;
+    },
 
     toggleJoystickMode(state) {
       state.joystickMode = !state.joystickMode;
@@ -154,6 +157,11 @@ export default new Vuex.Store({
 /*     addMidiOutActive() {
 
     }, */
+    setColorTheme({commit}, colorTheme) {
+
+      commit("setColorTheme", colorTheme)
+      
+    },
    removePortal({commit}, refName) {
     commit("removePortal", refName)
    },

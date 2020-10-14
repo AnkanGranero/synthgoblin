@@ -132,10 +132,31 @@ const menuValues = {
             integer: false,
             method: "changeMidiNoteLength"
 
-        }
-        ]
+                    }
+                ]
             }
         ]
+    },
+    {
+        name: "Color theme",
+        type: "text",
+
+        values: [
+                    {
+                    name: "Classic",
+                    type: "action",
+                    action: "setColorTheme",
+                    payload: "classic"
+
+                    },
+                    {
+                    name: "New Star",
+                    type: "action",
+                    action: "setColorTheme",
+                    payload: "newStar"
+                    },
+                ]
+
     }
 
   ]

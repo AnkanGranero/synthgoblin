@@ -151,6 +151,7 @@ $medium: 768px;
   fill: $hagrid-green;
   &:hover {
     fill: $blue;
+    cursor: pointer;
   }
 }
 </style>
