@@ -212,6 +212,5 @@ $square: 6.666666666666667%;
 .highlight {
   /*   border: 1px solid rgb(110, 110, 160);
   box-sizing: border-box; */
-  z-index: 20;
 }
 </style>
