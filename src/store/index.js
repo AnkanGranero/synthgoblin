@@ -36,12 +36,21 @@ export default new Vuex.Store({
 
   },
   mutations: {
+    setAllCachedInfo(state, cachedInfo) {
+      Object.keys(cachedInfo).forEach(key => { 
+        if(cachedInfo[key]) {
+          state[key] = cachedInfo[key] }
+          }
+        );
+      },
     setColorTheme(state, colorTheme) {
       state.colorTheme = colorTheme;
+      setInCache(state.colorTheme, 'colorTheme');
     },
 
     toggleJoystickMode(state) {
       state.joystickMode = !state.joystickMode;
+      setInCache(state.joystickMode, 'joystickMode')
     },
     changeIsPlayingState(state, payload) {
       state.isPlaying = payload;
@@ -49,6 +58,7 @@ export default new Vuex.Store({
     changePlayingDiv(state, payload) {
       state.playingDiv = payload;
     },
+    //används denna?
     changeBackgroundColors(state, payload) {
       state.backgroundColors = payload;
     },
@@ -111,9 +121,8 @@ export default new Vuex.Store({
 
     },
     setArpeggio(state, payload) {
-        
-      state.arpeggio = payload,
-      setInCache(state.arpeggio, 'arpeggio');
+      state.arpeggio = payload;
+      setInCache(payload, 'arpeggio');
       
     },
       isMobile(state) {
@@ -154,6 +163,9 @@ export default new Vuex.Store({
       },
 },
   actions: {
+    setAllCachedInfo({commit}, cachedInfo) {
+      commit('setAllCachedInfo', cachedInfo);
+    },
 /*     addMidiOutActive() {
 
     }, */

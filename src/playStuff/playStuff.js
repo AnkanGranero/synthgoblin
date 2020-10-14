@@ -1,10 +1,12 @@
 /* import store from "../store/index" */
 import * as Tone from "tone"; 
+import { setInCache, getCachedToneInfo } from "../utils/cacheMethods";
 /* 
 let midiOutput = store.getters.getMidiOutput; */
 
 
-let bpm = 150;
+let tempoInBpm = 150;
+
 
 
 const reverb = new Tone.Reverb({
@@ -37,7 +39,7 @@ const synth = new Tone.Synth({
     }
 const playThang = function(repeat) {
 
-    Tone.Transport.bpm.value = bpm;
+    Tone.Transport.bpm.value = tempoInBpm;
     Tone.Transport.start();
    /*  midiOutput.send([0x80, 0x3c, 0x74]); */
     Tone.Transport.scheduleRepeat(repeat, "16n");
@@ -48,11 +50,13 @@ const stopPlaying = function() {
 }
 
 const changeBpm = function(val) {
-bpm = val;
+tempoInBpm = val;
+setInCache(val, "bpm");
 Tone.Transport.bpm.value = val;
 }
 const changeReverb = function(val) {
 reverb.wet.value = val;
+setInCache(val, "reverbValue");
 }
 
   const changeWave = function(val) {
@@ -62,12 +66,23 @@ reverb.wet.value = val;
 const changeVolume = function(val) {
   let transformedValue = -20 + (val * 2);
   synth.volume.value = transformedValue;
-}
+  setInCache(transformedValue,"volume");
+} 
+
 const changeMuteState = function(bool) {
   let value = bool? -150: 0;
   synth.volume.value = value;
 }
+const setToneValuesFromCache = function () {
+  const cachedInfo = getCachedToneInfo();
+  let { bpm, reverbValue, volume} = cachedInfo;
+  if(bpm) tempoInBpm = bpm;
+  if(reverbValue) {
+  reverb.wet.value = reverbValue};
+    
+  if(volume) synth.volume.value = volume;
+}
 
+setToneValuesFromCache();
 
-
-export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth, changeMuteState, changeVolume}
+export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth, changeMuteState, changeVolume, setToneValuesFromCache, tempoInBpm, reverb, Tone}

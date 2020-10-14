@@ -44,13 +44,15 @@
         <div class="tv__right">
           <IconPlay class="tv__large-button" @clicked="play" />
           <div class="sliderContainer">
-            <Slider
+            <Slider2
               :largeText="false"
               name="bpm"
-              :max-value="250"
+              :max-value="150"
               :min-value="50"
               value-type="Tone"
+              :initialValue="bpm"
               method="changeBpm"
+              :adjustValueToSlide="false"
             />
             <Slider
               :largeText="false"
@@ -58,15 +60,17 @@
               :max-value="1"
               :min-value="0"
               value-type="Tone"
+              :initial-value="reverb"
               method="changeReverb"
             />
-            <Slider
+            <Slider2
               :largeText="false"
               name="Vol"
               :max-value="10"
               :min-value="0"
               value-type="Tone"
-              :initialValue="7"
+              :actual-value="true"
+              :initialValue="initialVolume()"
               method="changeVolume"
             />
           </div>
@@ -85,6 +89,7 @@ import {
   Modal,
   Overlay,
   Slider,
+  Slider2,
   GridLayout,
   TvButtonsComponent,
   SecretModal
@@ -97,7 +102,9 @@ import {
   playThang,
   stopPlaying,
   preparePlayStuff,
-  synth
+  synth,
+  tempoInBpm,
+  reverb
 } from "./playStuff/playStuff";
 import { mapGetters } from "vuex";
 import { midiPlay, midiStop } from "./midi-service/midiService";
@@ -109,6 +116,7 @@ export default {
   components: {
     GridLayout,
     Slider,
+    Slider2,
     Modal,
     Overlay,
     IconInfo,
@@ -128,19 +136,20 @@ export default {
       styling: "classic",
       intervals: "",
 
-      bpm: 150,
       selectedWaveform: "sawtooth",
       tvFinishedLoaded: false,
       manualDirection: "",
       eraseKeyDown: false,
       lastPlayedDiv: "",
-      nextPlayingDiv: ""
+      nextPlayingDiv: "",
+      synth
     };
   },
 
   mounted() {
-    this.createNewArpeggios();
     this.setupCachedInfo();
+
+    this.createNewArpeggios();
 
     preparePlayStuff();
     window.addEventListener("keyup", e => {
@@ -152,6 +161,9 @@ export default {
     /*  this.checkLocalStorage(); */
   },
   methods: {
+    initialVolume() {
+      return (this.synth.volume.value + 20) / 2;
+    },
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
       let { arrowRefs, gridSize, portals } = cachedInfo;
@@ -164,6 +176,7 @@ export default {
       if (portals) {
         this.$store.dispatch("bulkAddPortals", portals);
       }
+      this.$store.dispatch("setAllCachedInfo", cachedInfo);
 
       this.tvFinishedLoaded = true;
     },
@@ -177,7 +190,7 @@ export default {
 
       this.midiOutActive
         ? this.midiPlay(note)
-        : synth.triggerAttackRelease(note, "8n");
+        : this.synth.triggerAttackRelease(note, "8n");
     },
 
     changeGridSize(gridSize) {
@@ -230,7 +243,7 @@ export default {
       }
       this.$store.dispatch("setPlayingDiv", firstArrowRef);
       this.$store.commit("changeIsPlayingState", true);
-      playThang(this.repeat, this.bpm);
+      playThang(this.repeat);
     },
     repeat(time) {
       //kolla last playing div
@@ -259,7 +272,7 @@ export default {
         let note = this.allArpeggios[x - 1][y - 1];
         this.midiOutActive
           ? this.midiPlay(note)
-          : synth.triggerAttackRelease(note, "8n", time);
+          : this.synth.triggerAttackRelease(note, "8n", time);
         return;
       }
 
@@ -288,7 +301,7 @@ export default {
       let note = this.allArpeggios[x - 1][y - 1];
       this.midiOutActive
         ? this.midiPlay(note)
-        : synth.triggerAttackRelease(note, "8n", time);
+        : this.synth.triggerAttackRelease(note, "8n", time);
 
       let nextCoordinates = this.nextCoordinateBasedOnDirection(
         x,
@@ -383,6 +396,12 @@ export default {
       "joystickMode"
     ]),
     ...mapGetters(["isPortal", "getPortalConnection", "getColorTheme"]),
+    bpm() {
+      return tempoInBpm;
+    },
+    reverb() {
+      return reverb.wet.value;
+    },
     gridSize() {
       return this.$store.getters.getGridSize;
     },

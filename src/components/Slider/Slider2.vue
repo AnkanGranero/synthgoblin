@@ -36,7 +36,7 @@ export default {
   name: "sliders",
   data() {
     return {
-      slideValue: this.maxValue / 2,
+      sliderValue: this.maxValue / 2,
       clicked: false
     };
   },
@@ -54,9 +54,9 @@ export default {
       type: Number,
       default: 100
     },
-    adjustValueToSlide: {
+    actualValue: {
       type: Boolean,
-      default: true
+      default: false
     },
     initialValue: {
       type: Number,
@@ -84,16 +84,7 @@ export default {
   },
 
   created: function() {
-    if (this.valueType === "GridSize") {
-      let gridSize = this.$store.getters.getGridSize;
-      this.slideValue = this.valueToSlide(gridSize[this.name]);
-      return;
-    } else if (this.adjustValueToSlide) {
-      this.slideValue = this.valueToSlide(this.initialValue);
-      /* this.slideValue = this.initialValue; */
-    } else {
-      this.slideValue = this.valueToSlide(this.initialValue);
-    }
+    this.sliderValue = this.valueToSlide(this.initialValue);
   },
   methods: {
     changeMidiNoteLength,
@@ -125,7 +116,7 @@ export default {
         if (mousePercentage > 100) {
           mousePercentage = 100;
         }
-        this.slideValue = mousePercentage;
+        this.sliderValue = mousePercentage;
 
         /*       this.$emit("changedValue", {
           val: this.customSlideValue,
@@ -140,7 +131,6 @@ export default {
       } else if (this.action) {
         const actionValues = {};
         actionValues[this.name] = this.customSlideValue;
-        this.$store.dispatch(this.action, actionValues);
       }
     },
     valueToSlide(value) {
@@ -161,21 +151,20 @@ export default {
     },
     knobPosition() {
       let topValue =
-        this.slideValueToInteger < 100 ? this.slideValueToInteger : 100;
+        this.sliderValueToInteger < 100 ? this.sliderValueToInteger : 100;
       return { bottom: `${topValue}%` };
     },
-    slideValueToInteger() {
-      return 100 - Math.round(this.slideValue);
+    sliderValueToInteger() {
+      return 100 - Math.round(this.sliderValue);
     },
 
     customSlideValue() {
       let { maxValue, minValue } = this;
       let totalRange = maxValue - minValue;
       let percentage = totalRange / 100;
-      let totalCustomValue = percentage * this.slideValueToInteger + minValue;
+      let totalCustomValue = percentage * this.sliderValueToInteger + minValue;
 
       let totalCustomValueRounded = Math.round(totalCustomValue * 10) / 10;
-
       return this.integer
         ? Math.round(totalCustomValueRounded)
         : totalCustomValueRounded;
