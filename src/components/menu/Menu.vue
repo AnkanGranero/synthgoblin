@@ -164,7 +164,7 @@ export default {
     margin-bottom: 2rem;
     cursor: pointer;
     text-align: center;
-    @media only screen and (min-width: 1200px) {
+    @media only screen and (min-width: $desktop-large) {
       font-size: 40px;
     }
   }
