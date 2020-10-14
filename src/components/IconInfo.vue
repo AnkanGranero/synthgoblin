@@ -100,6 +100,7 @@ export default {
 
 <style lang="scss" scoped>
 $medium: 768px;
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
 
 .icon {
   height: 100px;
@@ -151,7 +152,7 @@ $medium: 768px;
 
 .classic {
   .letter {
-    font-family: "OpenSans-ExtraBold";
+    font-family: "Open Sans", sans-serif;
     font-size: 61px;
     fill: black;
   }

@@ -24,12 +24,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$hagridGreen: #54bb5a;
-
 .modal {
   width: 70%;
   left: 15%;
-  background: $hagridGreen;
+  background: $hagrid-green-background;
   border: 5px solid white;
   height: 70%;
   position: fixed;
