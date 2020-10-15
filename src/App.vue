@@ -260,17 +260,25 @@ export default {
           suddenlyChangedCoordinates.x,
           suddenlyChangedCoordinates.y
         );
-        this.$store.dispatch("setPlayingDiv", {
+        let newPlayingDiv = {
           ...suddenlyChangedCoordinates,
           refName
-        });
+        };
+        this.$store.dispatch("setPlayingDiv", newPlayingDiv);
+        if (this.writeKeyDown) {
+          this.lastPlayedDiv.direction = this.manualDirection;
+          this.$store.dispatch("addArrowRef", this.lastPlayedDiv);
+        }
 
         this.justChangedDirection = false;
       }
 
       let { x, y, refName, direction } = this.playingDiv;
       let ref = this.gridRefs[refName];
-      if (!ref) this.stop();
+      if (!ref) {
+        this.stop();
+        return;
+      }
       this.changeHighlightClass(refName, "add");
 
       this.lastPlayedDiv = this.playingDiv;
@@ -294,15 +302,6 @@ export default {
       const isArrow = this.$store.getters.findArrowRef(refName);
       if (this.eraseKeyDown) {
         this.$store.dispatch("removeArrowRef", refName);
-      } else if (
-        this.writeKeyDown &&
-        this.manualDirection &&
-        this.manualDirection !== direction
-      ) {
-        let newPlayingDiv = this.playingDiv;
-        newPlayingDiv.direction = this.manualDirection;
-
-        this.$store.dispatch("addArrowRef", this.playingDiv);
       } else if (isArrow) {
         direction = isArrow.direction;
         this.manualDirection = "";
