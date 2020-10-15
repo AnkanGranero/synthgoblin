@@ -140,6 +140,7 @@ export default {
       eraseKeyDown: false,
       lastPlayedDiv: "",
       nextPlayingDiv: "",
+      justChangedDirection: false,
       synth
     };
   },
@@ -249,7 +250,25 @@ export default {
         this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
         this.$store.dispatch("setPlayingDiv", this.nextPlayingDiv);
       }
-      /* if (!this.isPlaying) return; */
+      if (this.justChangedDirection && this.lastPlayedDiv) {
+        let suddenlyChangedCoordinates = this.nextCoordinateBasedOnDirection(
+          this.lastPlayedDiv.x,
+          this.lastPlayedDiv.y,
+          this.manualDirection
+        );
+
+        refName = this.getRefFromCoordinates(
+          suddenlyChangedCoordinates.x,
+          suddenlyChangedCoordinates.y
+        );
+        this.$store.dispatch("setPlayingDiv", {
+          ...suddenlyChangedCoordinates,
+          refName
+        });
+
+        this.justChangedDirection = false;
+      }
+      if (!this.playingDiv) this.stop();
 
       let { x, y, refName, direction } = this.playingDiv;
       let ref = this.gridRefs[refName];
@@ -266,7 +285,6 @@ export default {
           direction,
           portal: true
         };
-
         let note = this.allArpeggios[x - 1][y - 1];
         this.midiOutActive
           ? this.midiPlay(note)
@@ -294,6 +312,7 @@ export default {
       if (this.manualDirection) {
         direction = this.manualDirection;
       }
+
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0
       let note = this.allArpeggios[x - 1][y - 1];
@@ -315,12 +334,12 @@ export default {
         ...nextCoordinates,
         refName: nextPlayingDivRef
       };
-      let doesNextDivExist = this.gridRefs[nextPlayingDivRef];
+      /*       let doesNextDivExist = this.gridRefs[nextPlayingDivRef];
       if (!doesNextDivExist || !doesNextDivExist.length) {
         Tone.Transport.cancel();
         this.stop();
         this.midiStop();
-      }
+      } */
     },
     changeHighlightClass(refName, action) {
       const target = this.gridRefs[refName];
@@ -358,6 +377,7 @@ export default {
       if (this.joystickMode && e.keyCode > 36 && e.keyCode < 41) {
         let direction = e.key.replace("Arrow", "").toLowerCase();
         this.manualDirection = direction;
+        this.justChangedDirection = true;
         e.preventDefault();
       }
       if (e.keyCode === 32) {
