@@ -65,7 +65,7 @@ $yellow: #d9d283;
     }
   }
 }
-.newStar {
+.darkStar {
   .default {
     stroke: $light-stroke;
     background: black;

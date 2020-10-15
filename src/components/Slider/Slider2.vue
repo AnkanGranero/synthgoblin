@@ -245,7 +245,7 @@ $yellow: #d9d283;
     background: $hagrid-green;
   }
 }
-.newStar {
+.darkStar {
   .slider__track {
     background: $light-stroke;
   }

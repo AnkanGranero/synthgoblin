@@ -135,7 +135,7 @@ $medium: 768px;
     fill: black;
   }
 }
-.newStar {
+.darkStar {
   .button {
     fill: black;
     stroke: white;

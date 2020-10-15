@@ -53,7 +53,7 @@
       d="M81,43.6C79.2,27.7,65.9,15.1,49.9,14c-20.3-1.4-37.1,15.3-35.8,35.6c1,16.1,13.5,29.4,29.5,31.2
 	C65,83.2,83.2,65,81,43.6z M17.9,47.5 M77.3,47.5"
     />
-    <g v-if="colorTheme === 'newStar'">
+    <g v-if="colorTheme === 'darkStar'">
       <g v-if="!mouseOver">
         <path
           class="open-eye"
@@ -117,7 +117,7 @@ $medium: 768px;
   }
 }
 
-.newStar {
+.darkStar {
   .icon {
     stroke: white;
   }

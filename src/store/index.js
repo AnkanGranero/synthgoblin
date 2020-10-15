@@ -29,7 +29,6 @@ export default new Vuex.Store({
     joystickMode: false,
     portalCreatorActive: false,
     openPortal: null,
-    portals: new Set(),
     completedPortals: [],
     portalsHashObject: {},
     colorTheme: "classic"
@@ -82,8 +81,6 @@ export default new Vuex.Store({
       let connection = state.portalsHashObject[refName].connectsTo;
       delete state.portalsHashObject[refName];
       delete state.portalsHashObject[connection];
-      state.portals.delete(refName);
-      state.portals.delete(connection);
       state.openPortal = "";
       setInCache(state.portalsHashObject, 'portals')
     },

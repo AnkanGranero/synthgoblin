@@ -150,10 +150,10 @@ const menuValues = {
 
                     },
                     {
-                    name: "New Star",
+                    name: "Dark Star",
                     type: "action",
                     action: "setColorTheme",
-                    payload: "newStar"
+                    payload: "darkStar"
                     },
                 ]
 

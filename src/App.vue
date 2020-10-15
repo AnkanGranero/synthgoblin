@@ -17,7 +17,7 @@
           alt="leaf"
         />
         <img
-          v-if="getColorTheme === 'newStar'"
+          v-if="getColorTheme === 'darkStar'"
           class="header__leaf"
           src="./assets/blad_svart.svg"
           alt="leaf"
