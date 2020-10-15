@@ -245,7 +245,6 @@ export default {
       playThang(this.repeat);
     },
     repeat(time) {
-      //kolla last playing div
       if (this.lastPlayedDiv) {
         this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
         this.$store.dispatch("setPlayingDiv", this.nextPlayingDiv);
@@ -268,10 +267,10 @@ export default {
 
         this.justChangedDirection = false;
       }
-      if (!this.playingDiv) this.stop();
 
       let { x, y, refName, direction } = this.playingDiv;
       let ref = this.gridRefs[refName];
+      if (!ref) this.stop();
       this.changeHighlightClass(refName, "add");
 
       this.lastPlayedDiv = this.playingDiv;
