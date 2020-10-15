@@ -25,6 +25,7 @@ export default {
 
 <style lang="scss" scoped>
 .modal {
+  z-index: 3;
   width: 70%;
   left: 15%;
   background: $hagrid-green-background;
@@ -32,7 +33,6 @@ export default {
   height: 70%;
   position: fixed;
   top: 15%;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -55,7 +55,7 @@ export default {
       waves: ["sine", "square", "sawtooth", "triangle"],
       selectedWaveform: "sawtooth",
       selectedTvButton: "",
-      tvButtons: ["clearGrid", "joyStick", "portal", "arrow"]
+      tvButtons: ["portal", "arrow", "clearGrid", "joyStick"]
     };
   },
   components: {
