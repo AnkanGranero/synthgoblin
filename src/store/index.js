@@ -57,10 +57,7 @@ export default new Vuex.Store({
     changePlayingDiv(state, payload) {
       state.playingDiv = payload;
     },
-    //används denna?
-    changeBackgroundColors(state, payload) {
-      state.backgroundColors = payload;
-    },
+
     addArrowRef(state, payload) {
       state.arrowRefs.push(payload);
       setInCache(state.arrowRefs, 'arrowRefs');
@@ -195,9 +192,7 @@ export default new Vuex.Store({
     setPlayingDiv({ commit }, payload) {
       commit("changePlayingDiv", payload);
     },
-    setBackgroundColors({ commit }, payload) {
-      commit("changeBackgroundColors", payload);
-    },
+
 
     addArrowRef({ commit, getters }, payload) {
       let { x, y, direction, refName } = payload;
@@ -272,13 +267,7 @@ export default new Vuex.Store({
         }
       }
     },
-/*     async setMidiOutputFromCache() {
-      let cachedMidiOutput = await getMidiOutputFromLocalStorage()
-      
-      if(cachedMidiOutput) {
-        setOutputDevice(cachedMidiOutput);
-      }
-    }, */
+
     changePortalCreatorActive({ commit },bool) {
      commit("changePortalCreatorActive",bool);
     },
@@ -302,8 +291,7 @@ export default new Vuex.Store({
       let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
       return arrowRef[0];
     },
-    getArrowRefDirection: state => refName => {
-
+/*     getArrowRefDirection: state => refName => {
       let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
       if(index !== -1) {
         let direction = state.arrowRefs[index].direction;
@@ -312,7 +300,7 @@ export default new Vuex.Store({
       else {
         return null
       }
-    },
+    }, */
     isPortal
     : state => refName => {
       return state.portalsHashObject[refName];

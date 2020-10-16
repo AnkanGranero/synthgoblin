@@ -1,5 +1,5 @@
 <template>
-  <div class="square" @mousedown="handleClick">
+  <div class="square" :class="isStartingArrow" @mousedown="handleClick">
     <slot>
       <Direction-picker
         v-if="directionPickerOpen"
@@ -66,6 +66,7 @@ export default {
       }
       this.portalClicked = true;
     },
+
     handleClick(event) {
       event.preventDefault();
       if (this.portal && this.getPortal()) {
@@ -108,17 +109,26 @@ export default {
   },
 
   computed: {
-    ...mapState(["portalCreatorActive", "portalsHashObject"]),
-    ...mapGetters(["getArrowRefDirection", "isPortal", "getPortalNumber"]),
-    direction() {
-      return this.getArrowRefDirection(this.refForSquare.refName);
+    ...mapState(["portalCreatorActive", "portalsHashObject", "arrowRefs"]),
+    ...mapGetters(["isPortal", "getPortalNumber", "findArrowRefIndex"]),
+    isStartingArrow() {
+      return this.refIndex === 0 ? "starting-arrow" : "";
     },
+    refIndex() {
+      return this.findArrowRefIndex(this.refForSquare.refName);
+    },
+    direction() {
+      if (this.refIndex === -1) return;
+      return this.arrowRefs[this.refIndex].direction;
+    },
+
     isItStillPortal() {
       return this.isPortal(this.refForSquare.refName);
     },
 
     whatDirection() {
-      let { direction, index } = this.direction;
+      let { direction } = this;
+
       let cssClass;
       switch (direction) {
         case "left":
@@ -138,8 +148,10 @@ export default {
           break;
       }
       let hidden = this.directionPickerOpen ? "hidden" : null;
-      let firstArrow = index === 0 ? cssClass + "-starting-arrow" : null;
-      return [cssClass, firstArrow, hidden];
+      let isStartingArrow = this.isStartingArrow
+        ? cssClass + "-starting-arrow"
+        : "";
+      return [cssClass, hidden, isStartingArrow];
     }
   }
 };
@@ -201,7 +213,7 @@ $starting-arrow: red;
     border-top: $arrow-size solid transparent;
     position: absolute;
     &-starting-arrow {
-      border-right: $arrow-size solid $starting-arrow;
+      border-right: $arrow-size solid white;
     }
   }
   .arrow-down {
@@ -210,7 +222,7 @@ $starting-arrow: red;
     border-top: $arrow-size solid rgb(51, 51, 51);
     position: absolute;
     &-starting-arrow {
-      border-top: $arrow-size solid $starting-arrow;
+      border-top: $arrow-size solid white;
     }
   }
 
@@ -220,7 +232,7 @@ $starting-arrow: red;
     border-top: $arrow-size solid transparent;
     position: absolute;
     &-starting-arrow {
-      border-left: $arrow-size solid $starting-arrow;
+      border-left: $arrow-size solid white;
     }
   }
   .arrow-up {
@@ -229,7 +241,7 @@ $starting-arrow: red;
     border-right: $arrow-size solid transparent;
     position: absolute;
     &-starting-arrow {
-      border-bottom: $arrow-size solid $starting-arrow;
+      border-bottom: $arrow-size solid white;
     }
   }
 }
@@ -279,6 +291,6 @@ $starting-arrow: red;
   }
 }
 .starting-arrow {
-  background: red;
+  background: black;
 }
 </style>
