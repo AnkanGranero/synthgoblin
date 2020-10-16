@@ -303,8 +303,15 @@ export default new Vuex.Store({
       return arrowRef[0];
     },
     getArrowRefDirection: state => refName => {
-      let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
-      return arrowRef[0]? arrowRef[0].direction: null;
+
+      let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
+      if(index !== -1) {
+        let direction = state.arrowRefs[index].direction;
+        return { direction, index}
+      }
+      else {
+        return null
+      }
     },
     isPortal
     : state => refName => {

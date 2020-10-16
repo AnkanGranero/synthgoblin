@@ -18,7 +18,7 @@
       }}</span>
     </div>
     <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
-      <div :class="[whatDirection, hidden]"></div>
+      <div :class="whatDirection"></div>
     </div>
   </div>
 </template>
@@ -118,8 +118,7 @@ export default {
     },
 
     whatDirection() {
-      let { direction } = this;
-
+      let { direction, index } = this.direction;
       let cssClass;
       switch (direction) {
         case "left":
@@ -138,16 +137,16 @@ export default {
           cssClass = "circle";
           break;
       }
-      return cssClass;
-    },
-    hidden() {
-      return this.directionPickerOpen ? "hidden" : null;
+      let hidden = this.directionPickerOpen ? "hidden" : null;
+      let firstArrow = index === 0 ? cssClass + "-starting-arrow" : null;
+      return [cssClass, firstArrow, hidden];
     }
   }
 };
 </script>
 
 <style lang="scss">
+$starting-arrow: red;
 .hidden {
   display: none;
 }
@@ -201,12 +200,18 @@ export default {
     border-right: $arrow-size solid rgb(51, 51, 51);
     border-top: $arrow-size solid transparent;
     position: absolute;
+    &-starting-arrow {
+      border-right: $arrow-size solid $starting-arrow;
+    }
   }
   .arrow-down {
     border-left: $arrow-size solid transparent;
     border-right: $arrow-size solid transparent;
     border-top: $arrow-size solid rgb(51, 51, 51);
     position: absolute;
+    &-starting-arrow {
+      border-top: $arrow-size solid $starting-arrow;
+    }
   }
 
   .arrow-right {
@@ -214,12 +219,18 @@ export default {
     border-left: $arrow-size solid rgb(51, 51, 51);
     border-top: $arrow-size solid transparent;
     position: absolute;
+    &-starting-arrow {
+      border-left: $arrow-size solid $starting-arrow;
+    }
   }
   .arrow-up {
     border-left: $arrow-size solid transparent;
     border-bottom: $arrow-size solid rgb(51, 51, 51);
     border-right: $arrow-size solid transparent;
     position: absolute;
+    &-starting-arrow {
+      border-bottom: $arrow-size solid $starting-arrow;
+    }
   }
 }
 .image {
@@ -230,7 +241,7 @@ export default {
     height: 2rem;
   }
 }
-
+//används denna?
 .arrow {
   border: 5px solid white;
 }
@@ -266,5 +277,8 @@ export default {
     opacity: 0.2;
     /*   z-index: 0; */
   }
+}
+.starting-arrow {
+  background: red;
 }
 </style>
