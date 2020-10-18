@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { getMidiOutputFromLocalStorage, setOutputDevice } from "../midi-service/midiService"
 import { createAllArpeggios } from "../utils/pitchCalculations";
 import { changeBpm, changeReverb } from "../playStuff/playStuff"
 import { setInCache } from "../utils/cacheMethods"
@@ -36,6 +35,7 @@ export default new Vuex.Store({
   },
   mutations: {
     setAllCachedInfo(state, cachedInfo) {
+
       Object.keys(cachedInfo).forEach(key => { 
         if(cachedInfo[key]) {
           state[key] = cachedInfo[key] }
@@ -158,6 +158,7 @@ export default new Vuex.Store({
 },
   actions: {
     setAllCachedInfo({commit}, cachedInfo) {
+
       commit('setAllCachedInfo', cachedInfo);
     },
 /*     addMidiOutActive() {
@@ -250,7 +251,7 @@ export default new Vuex.Store({
 
     toggleMidiOutActive({commit, dispatch}) {
       commit("toggleMidiOutActive");
-      dispatch("setMidiOutputFromCache");
+
     },
 
 

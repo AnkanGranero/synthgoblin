@@ -72,14 +72,14 @@ const midiStop = () => {
   midiOutput.stopNote("all");
 }
 //kanske byta till något i state
-const getMidiOutputFromLocalStorage = async function() {
+const setMidiOutputFromLocalStorage = async function() {
   let outputs = await midiOutputs;
   let matches = outputs.filter(output => output.name === localStorage.midiOutput)
 
-
-
-  return matches[0];
+  
+  midiOutput = matches[0];
 }
+setMidiOutputFromLocalStorage()
 
 export {
 
@@ -92,7 +92,6 @@ export {
     midiStop,
     midiOutputs,
     outputChannel,
-    getMidiOutputFromLocalStorage,
     changeMidiValue
 };
 

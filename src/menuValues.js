@@ -143,7 +143,7 @@ const menuValues = {
 
         values: [
                     {
-                    name: "Classic",
+                    name: "Classic Hagrid",
                     type: "action",
                     action: "setColorTheme",
                     payload: "classic"

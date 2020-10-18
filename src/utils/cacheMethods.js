@@ -15,8 +15,9 @@ function getAllCachedInfo() {
     const portals = getCachedInfo("portals");
     const colorTheme = getCachedInfo("colorTheme");
     const joystickMode = getCachedInfo("joystickMode");
+    const midiOutActive = getCachedInfo("midiOutActive");
 
-    return { gridSize, arpeggio, arrowRefs, portals, colorTheme, joystickMode }
+    return { gridSize, arpeggio, arrowRefs, portals, colorTheme, joystickMode, midiOutActive }
 
 }
 function getCachedToneInfo() {
@@ -24,7 +25,8 @@ function getCachedToneInfo() {
       const volume = getCachedInfo('volume');
       const reverbValue = getCachedInfo('reverbValue');
 
-return { bpm, volume, reverbValue};
+return { bpm, volume, reverbValue
+};
 }
 
 export { setInCache, getCachedInfo, getAllCachedInfo, getCachedToneInfo}

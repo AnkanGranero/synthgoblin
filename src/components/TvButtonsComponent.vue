@@ -96,6 +96,7 @@ export default {
   &__button {
     flex: 0 50%;
     margin-bottom: 2%;
+    cursor: pointer;
   }
   &__divider {
     width: 100%;
