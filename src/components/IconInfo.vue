@@ -104,8 +104,8 @@ $medium: 768px;
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
 
 .icon {
-  height: 150px;
-  width: 150px;
+  height: 100%;
+  width: 30%;
   border: none;
   fill: none;
   stroke-miterlimit: 10;
