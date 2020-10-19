@@ -43,6 +43,7 @@
 </template>
 <script>
 import Triangle from "../components/Triangle";
+import { mapState } from "vuex";
 export default {
   name: "directionPicker",
   components: {
@@ -54,6 +55,7 @@ export default {
       preliminaryDirection: ""
     };
   },
+
   methods: {
     setDirection(dir) {
       this.$emit("directionSet", dir);
@@ -68,6 +70,7 @@ export default {
     },
     handleMouseUp() {
       this.mouseDown = false;
+
       if (this.preliminaryDirection) {
         this.setDirection(this.preliminaryDirection);
       }
@@ -76,6 +79,10 @@ export default {
       this.$emit("removeArrowDiv");
     },
     handleMouseLeave() {
+      if (this.isMobile) {
+        return;
+      }
+
       if (this.mouseDown) {
         this.setDirection(this.preliminaryDirection);
         this.$emit("closeDirectionPicker");
@@ -83,6 +90,9 @@ export default {
         this.$emit("closeDirectionPicker");
       }
     }
+  },
+  computed: {
+    ...mapState(["isMobile"])
   }
 };
 </script>
