@@ -58,10 +58,12 @@ $yellow: #d9d283;
   .default {
     stroke: $dark-stroke;
     background: rgb(121, 208, 132);
-    &:hover {
-      background: rgb(141, 223, 232);
-      border: none;
-      stroke: black;
+    @media only screen and (min-width: $ipad) {
+      &:hover {
+        background: rgb(141, 223, 232);
+        border: none;
+        stroke: black;
+      }
     }
   }
 }
@@ -70,10 +72,12 @@ $yellow: #d9d283;
     stroke: $light-stroke;
     background: black;
     border: solid 1px white;
-    &:hover {
-      background: rgb(141, 223, 232);
-      border: none;
-      stroke: black;
+    @media only screen and (min-width: $ipad) {
+      &:hover {
+        background: rgb(141, 223, 232);
+        border: none;
+        stroke: black;
+      }
     }
   }
 }

@@ -31,7 +31,7 @@
         <div class="tv__left">
           <IconInfo class="tv__large-button" @clicked="openModal" />
 
-          <TvButtonsComponent class="tv__buttons" />
+          <TvButtonsComponent v-if="!isMobile" />
         </div>
         <div class="tv__middle">
           <GridLayout
@@ -39,6 +39,11 @@
             :styling="styling"
             ref="gridLayout"
             @clicked-on-square="playNote"
+          />
+          <TvButtonsComponent
+            v-if="isMobile"
+            :desktopVersion="false"
+            class="tv__buttons-mobile"
           />
         </div>
         <div class="tv__right">
@@ -409,7 +414,8 @@ export default {
       "allArpeggios",
       "angle",
       "modalIsOpen",
-      "joystickMode"
+      "joystickMode",
+      "isMobile"
     ]),
     ...mapGetters(["isPortal", "getPortalConnection", "getColorTheme"]),
     bpm() {
@@ -656,6 +662,7 @@ body {
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     min-height: 50%;
     min-width: 100%;

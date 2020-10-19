@@ -52,17 +52,4 @@ export default {
 
   stroke-miterlimit: 10;
 }
-/* .default {
-  &:hover {
-    fill: rgb(141, 223, 232);
-  }
-
-  stroke: $light-stroke;
-  background: $tv-button;
-  border: solid 1px white;
-}
-.active {
-  background: $tv-button-active;
-  stroke: $dark-stroke;
-} */
 </style>

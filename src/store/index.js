@@ -34,6 +34,9 @@ export default new Vuex.Store({
 
   },
   mutations: {
+    toggleArrowAndPortal(state) {
+      state.portalCreatorActive = !state.portalCreatorActive
+    },
     setAllCachedInfo(state, cachedInfo) {
 
       Object.keys(cachedInfo).forEach(key => { 
@@ -157,6 +160,9 @@ export default new Vuex.Store({
       },
 },
   actions: {
+    toggleArrowAndPortal({commit}) {
+      commit("toggleArrowAndPortal");
+    },
     setAllCachedInfo({commit}, cachedInfo) {
 
       commit('setAllCachedInfo', cachedInfo);

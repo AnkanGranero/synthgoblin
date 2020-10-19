@@ -1,27 +1,44 @@
 <template>
-  <div class="tv__buttons">
-    <span class="tv__divider"></span>
-    <div class="tv__wrapper">
-      <div
-        v-for="wave in waves"
-        :key="wave"
-        @click="handleClick(wave)"
-        class="tv__button"
-      >
-        <div>
-          <TvButton :value="wave" alt="waveform select button">
+  <div class="tv__buttons-wrapper">
+    <div class="tv__buttons">
+      <span class="tv__divider"></span>
+      <div class="tv__wrapper" v-if="desktopVersion">
+        <div
+          v-for="wave in waves"
+          :key="wave"
+          @click="handleClick(wave)"
+          class="tv__button"
+        >
+          <div>
+            <TvButton :value="wave" alt="waveform select button">
+              <component
+                v-bind:is="wave"
+                class="tv-button__btn"
+                :selected="selectedWaveform === wave"
+            /></TvButton>
+          </div>
+        </div>
+      </div>
+      <span class="tv__divider"></span>
+      <div class="tv__wrapper">
+        <div
+          v-for="(tvButton, index) in tvButtons"
+          :key="index"
+          class="tv__button"
+        >
+          <TvButton>
             <component
-              v-bind:is="wave"
+              v-bind:is="tvButton"
+              :selected="selectedTvButton === tvButton"
               class="tv-button__btn"
-              :selected="selectedWaveform === wave"
-          /></TvButton>
+            />
+          </TvButton>
         </div>
       </div>
     </div>
-    <span class="tv__divider"></span>
-    <div class="tv__wrapper">
+    <div class="tv__buttons-mobile">
       <div
-        v-for="(tvButton, index) in tvButtons"
+        v-for="(tvButton, index) in mobileTvButtons"
         :key="index"
         class="tv__button"
       >
@@ -48,6 +65,7 @@ import clearGrid from "./waves/clearGrid";
 import joyStick from "./waves/joyStick";
 import portal from "./waves/portal";
 import arrow from "./waves/arrow";
+import arrowOrPortal from "./waves/arrowOrPortal";
 export default {
   name: "TvButtonsComponent",
   data() {
@@ -55,8 +73,15 @@ export default {
       waves: ["sine", "square", "sawtooth", "triangle"],
       selectedWaveform: "sawtooth",
       selectedTvButton: "",
-      tvButtons: ["portal", "arrow", "clearGrid", "joyStick"]
+      tvButtons: ["portal", "arrow", "clearGrid", "joyStick"],
+      mobileTvButtons: ["arrowOrPortal", "clearGrid"]
     };
+  },
+  props: {
+    desktopVersion: {
+      type: Boolean,
+      default: true
+    }
   },
   components: {
     TvButton,
@@ -67,7 +92,8 @@ export default {
     clearGrid,
     joyStick,
     portal,
-    arrow
+    arrow,
+    arrowOrPortal
   },
   methods: {
     changeWave,
@@ -91,6 +117,16 @@ export default {
       flex-wrap: wrap;
       flex-direction: row;
       justify-content: space-between;
+    }
+    &-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+    &-mobile {
+      display: flex;
+      @media only screen and (min-width: $ipad) {
+        display: none;
+      }
     }
   }
   &__button {
