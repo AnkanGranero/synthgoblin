@@ -1,3 +1,4 @@
+
 <template>
   <!-- <svg
     viewBox="0 0 95 95"
@@ -103,8 +104,8 @@ $medium: 768px;
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
 
 .icon {
-  height: 100px;
-  width: 100px;
+  height: 150px;
+  width: 150px;
   border: none;
   fill: none;
   stroke-miterlimit: 10;

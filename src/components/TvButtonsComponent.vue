@@ -66,6 +66,7 @@ import joyStick from "./waves/joyStick";
 import portal from "./waves/portal";
 import arrow from "./waves/arrow";
 import arrowOrPortal from "./waves/arrowOrPortal";
+import mute from "./waves/mute";
 export default {
   name: "TvButtonsComponent",
   data() {
@@ -74,7 +75,7 @@ export default {
       selectedWaveform: "sawtooth",
       selectedTvButton: "",
       tvButtons: ["portal", "arrow", "clearGrid", "joyStick"],
-      mobileTvButtons: ["arrowOrPortal", "clearGrid"]
+      mobileTvButtons: ["arrowOrPortal", "clearGrid", "mute"]
     };
   },
   props: {
@@ -93,7 +94,8 @@ export default {
     joyStick,
     portal,
     arrow,
-    arrowOrPortal
+    arrowOrPortal,
+    mute
   },
   methods: {
     changeWave,
@@ -124,6 +126,7 @@ export default {
     }
     &-mobile {
       display: flex;
+      margin-top: 4%;
       @media only screen and (min-width: $ipad) {
         display: none;
       }

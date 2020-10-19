@@ -107,8 +107,8 @@ export default {
 $medium: 768px;
 
 .wrapper {
-  height: 100px;
-  width: 100px;
+  height: 150px;
+  width: 150px;
 
   @media only screen and (min-width: $medium) {
     height: unset;
