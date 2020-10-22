@@ -23,7 +23,7 @@
           alt="leaf"
         />
       </div>
-      <div class="tv">
+      <div class="tv" :class="colorTheme">
         <div class="tv__top-mobile">
           <IconPlay class="tv__large-button" @clicked="play" />
           <IconInfo class="tv__large-button" @clicked="openModal" />
@@ -418,6 +418,9 @@ export default {
       "isMobile"
     ]),
     ...mapGetters(["isPortal", "getPortalConnection", "getColorTheme"]),
+    colorTheme() {
+      return `tv-${this.getColorTheme}`;
+    },
     bpm() {
       return tempoInBpm;
     },
@@ -587,6 +590,10 @@ body {
   height: 100%;
   flex-direction: column;
   position: absolute;
+
+  &-yellowOrchestra {
+    background: $yellowStrong;
+  }
 
   @media only screen and (min-width: $ipad) {
     position: unset;

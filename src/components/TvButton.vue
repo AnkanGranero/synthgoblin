@@ -81,4 +81,18 @@ $yellow: #d9d283;
     }
   }
 }
+.yellowOrchestra {
+  .default {
+    stroke: $dark-stroke;
+    background: rgb(121, 208, 132);
+    border: solid 1px black;
+    @media only screen and (min-width: $ipad) {
+      &:hover {
+        background: rgb(141, 223, 232);
+        border: none;
+        stroke: black;
+      }
+    }
+  }
+}
 </style>
