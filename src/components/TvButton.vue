@@ -39,11 +39,14 @@ $yellow: #d9d283;
   fill: none;
 
   &__btn {
-    width: 100%;
+    height: 60px;
+    width: 60px;
     border-radius: 10%;
     box-sizing: border-box;
 
-    @media only screen and (min-width: 2300px) {
+    @media only screen and (min-width: $ipad) {
+      width: 100%;
+      height: unset;
       /* width: 36%; */
     }
   }

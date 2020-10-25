@@ -155,12 +155,12 @@ const menuValues = {
                     action: "setColorTheme",
                     payload: "darkStar"
                     },
-                      {
+                /*       {
                     name: "Yellow Orchestra",
                     type: "action",
                     action: "setColorTheme",
                     payload: "yellowOrchestra"
-                    },
+                    }, */
                 ]
 
     }

@@ -126,7 +126,8 @@ export default {
     }
     &-mobile {
       display: flex;
-      margin-top: 4%;
+      margin-top: 3%;
+      width: 100%;
       @media only screen and (min-width: $ipad) {
         display: none;
       }
@@ -134,7 +135,9 @@ export default {
   }
   &__button {
     flex: 0 50%;
-    margin-bottom: 2%;
+    @media only screen and(min-width: $ipad ) {
+      margin-bottom: 2%;
+    }
     cursor: pointer;
   }
   &__divider {
@@ -148,7 +151,7 @@ export default {
   &__wrapper {
     display: flex;
     flex-wrap: wrap;
-    margin-right: 7%;
+    /*  margin-right: 7%; */
     margin-top: 4%;
   }
 }

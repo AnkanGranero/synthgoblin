@@ -265,11 +265,11 @@ export default {
           suddenlyChangedCoordinates.x,
           suddenlyChangedCoordinates.y
         );
-        let newPlayingDiv = {
+        this.playingDiv = {
           ...suddenlyChangedCoordinates,
           refName
         };
-        this.$store.dispatch("setPlayingDiv", newPlayingDiv);
+        this.$store.dispatch("setPlayingDiv", this.playingDiv);
         if (this.writeKeyDown) {
           this.lastPlayedDiv.direction = this.manualDirection;
           this.$store.dispatch("addArrowRef", this.lastPlayedDiv);
@@ -287,9 +287,21 @@ export default {
       this.changeHighlightClass(refName, "add");
 
       this.lastPlayedDiv = this.playingDiv;
-      const isPortal = this.$store.getters.isPortal(refName);
+      let isPortal = this.$store.getters.isPortal(refName);
+      let isArrow = this.$store.getters.findArrowRef(refName);
 
-      if (isPortal && !this.lastPlayedDiv.portal) {
+      if (this.eraseKeyDown) {
+        if (isArrow) {
+          this.$store.dispatch("removeArrowRef", refName);
+          isArrow = false;
+        }
+        if (isPortal) {
+          this.$store.dispatch("removePortal", refName);
+          isPortal = false;
+        }
+      }
+
+      if (isPortal && !this.lastPlayedDiv.portal && !this.eraseKeyDown) {
         let nextPortal = this.getPortalConnection(refName);
         if (!nextPortal) this.stop();
         this.nextPlayingDiv = {
@@ -304,10 +316,7 @@ export default {
         return;
       }
 
-      const isArrow = this.$store.getters.findArrowRef(refName);
-      if (this.eraseKeyDown) {
-        this.$store.dispatch("removeArrowRef", refName);
-      } else if (isArrow) {
+      if (isArrow) {
         direction = isArrow.direction;
         this.manualDirection = "";
       }
@@ -608,7 +617,7 @@ body {
   &__top-mobile {
     display: flex;
     justify-content: space-evenly;
-    padding: 10% 0 5%;
+    padding: 5% 0 0;
     @media only screen and (min-width: $ipad) {
       display: none;
     }
