@@ -6,6 +6,10 @@
         @directionSet="addingArrowRef"
         @removeArrowDiv="removeArrowDiv"
         @closeDirectionPicker="directionPickerOpen = false"
+        v-touch:swipe.left="swipeHandler('left')"
+        v-touch:swipe.right="swipeHandler('right')"
+        v-touch:swipe.up="swipeHandler('up')"
+        v-touch:swipe.down="swipeHandler('down')"
       />
     </slot>
     <div
@@ -53,6 +57,9 @@ export default {
   },
   methods: {
     ...mapActions(["addArrowRef", "createPortal", "removePortal"]),
+    swipeHandler(direction) {
+      this.addingArrowRef(direction);
+    },
     getPortal() {
       return (this.portal = this.portalsHashObject[this.refForSquare.refName]);
     },
