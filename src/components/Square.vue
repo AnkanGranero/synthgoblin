@@ -54,8 +54,8 @@ export default {
   mounted() {
     this.getPortal();
     if (this.isMobile) {
-      this.$el.addEventListener("touchstart", e => this.handleTouch(e));
-      this.$el.addEventListener("touchmove", e => this.handleTouch(e));
+      this.$el.addEventListener("touchstart", e => this.handleTouchStart(e));
+      this.$el.addEventListener("touchmove", e => this.handleTouchMove(e));
       this.$el.addEventListener("touchend", e => this.handTouchEnd(e));
     }
   },
@@ -63,18 +63,36 @@ export default {
     ...mapActions(["addArrowRef", "createPortal", "removePortal"]),
     handTouchEnd(e) {
       e.preventDefault();
+      if (!this.touchStart) return;
       const { x, y } = this;
 
       this.directionBasedOnTouch(x, y);
+      this.touchStart = null;
     },
-    handleTouch(e) {
-      e.preventDefault();
+    handleTouchStart(e) {
+      if (!this.direction && this.portalCreatorActive) {
+        if (this.isPortal(this.refForSquare.refName)) {
+          this.removePortal(this.refForSquare.refName);
+          this.portal = "";
+          this.$emit("remove-portal-force-re-render");
+          return;
+        }
 
-      const { screenX: x, screenY: y } = e.touches[0];
-      if (e.type === "touchstart") {
+        this.createPortal(this.refForSquare);
+        this.getPortal();
+        this.$emit("remove-portal-force-re-render");
+
+        return;
+      } else {
+        const { screenX: x, screenY: y } = e.touches[0];
         this.touchStart = { x, y };
+        this.x = x;
+        this.y = y;
       }
-
+    },
+    handleTouchMove(e) {
+      e.preventDefault();
+      const { screenX: x, screenY: y } = e.touches[0];
       this.x = x;
       this.y = y;
     },
