@@ -2,7 +2,7 @@
   <div id="hagrid">
     <Modal v-if="modalIsOpen" @modalEmit="modalEventHandler" />
 
-    <SecretModal @changeGridSize="changeGridSize" />
+    <SecretModal v-if="!isMobile" @changeGridSize="changeGridSize" />
     <div class="tv-wrapper">
       <div class="header">
         <div class="header__empty"></div>
@@ -131,7 +131,6 @@ export default {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
       this.$store.commit("isMobile");
-      this.$store.dispatch("changeGridSize", { x: 6, y: 8 });
     }
   },
   data() {
@@ -162,8 +161,8 @@ export default {
     window.addEventListener("keydown", e => {
       this.handleKeyDownCommands(e);
     });
-    /*  this.checkLocalStorage(); */
   },
+
   methods: {
     initialVolume() {
       return (this.synth.volume.value + 20) / 2;
@@ -346,12 +345,6 @@ export default {
         ...nextCoordinates,
         refName: nextPlayingDivRef
       };
-      /*       let doesNextDivExist = this.gridRefs[nextPlayingDivRef];
-      if (!doesNextDivExist || !doesNextDivExist.length) {
-        Tone.Transport.cancel();
-        this.stop();
-        this.midiStop();
-      } */
     },
     changeHighlightClass(refName, action) {
       const target = this.gridRefs[refName];
@@ -527,11 +520,15 @@ body {
 }
 
 .tv-wrapper {
-  display: flex;
-  flex-direction: column;
+  /* display: flex; */
+  /*   flex-direction: column; */
   height: 100%;
+  width: 100%;
+  position: fixed;
   @media only screen and (min-width: $ipad) {
+    position: unset;
     height: 85%;
+    width: unset;
     margin: 0 14%;
   }
 
@@ -597,8 +594,8 @@ body {
 
   justify-content: space-between;
   height: 100%;
+
   flex-direction: column;
-  position: absolute;
 
   &-yellowOrchestra {
     background: $yellowStrong;
@@ -677,14 +674,13 @@ body {
   &__middle {
     width: 100%;
     height: 100%;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     min-height: 50%;
     min-width: 100%;
     padding: 5%;
     box-sizing: border-box;
-    position: relative;
+    display: flex;
     @media only screen and (min-width: $ipad) {
       padding: unset;
       width: 50%;

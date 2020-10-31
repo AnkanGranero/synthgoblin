@@ -32,7 +32,10 @@ export default {
     return {
       directionPickerOpen: false,
       portalClicked: false,
-      portal: false
+      portal: false,
+      touchStart: null,
+      x: 0,
+      y: 0
     };
   },
 
@@ -50,11 +53,52 @@ export default {
   },
   mounted() {
     this.getPortal();
+    if (this.isMobile) {
+      this.$el.addEventListener("touchstart", e => this.handleTouch(e));
+      this.$el.addEventListener("touchmove", e => this.handleTouch(e));
+      this.$el.addEventListener("touchend", e => this.handTouchEnd(e));
+    }
   },
   methods: {
     ...mapActions(["addArrowRef", "createPortal", "removePortal"]),
-    swipeHandler(direction) {
-      /* this.addingArrowRef(direction); */
+    handTouchEnd(e) {
+      e.preventDefault();
+      const { x, y } = this;
+
+      this.directionBasedOnTouch(x, y);
+    },
+    handleTouch(e) {
+      e.preventDefault();
+
+      const { screenX: x, screenY: y } = e.touches[0];
+      if (e.type === "touchstart") {
+        this.touchStart = { x, y };
+      }
+
+      this.x = x;
+      this.y = y;
+    },
+
+    directionBasedOnTouch(x2, y2) {
+      let direction;
+      const x = this.touchStart.x;
+      const y = this.touchStart.y;
+      const xDifference = x > x2 ? x - x2 : x2 - x;
+      const yDifference = y > y2 ? y - y2 : y2 - y;
+
+      if (xDifference > yDifference) {
+        direction = x > x2 ? "left" : "right";
+      }
+      if (yDifference > xDifference) {
+        direction = y > y2 ? "up" : "down";
+      }
+      if (xDifference === yDifference) {
+        this.removeArrowDiv(this.refForSquare);
+        return;
+      }
+      let payloadForStore = { ...this.refForSquare, direction };
+
+      this.addArrowRef(payloadForStore);
     },
     getPortal() {
       return (this.portal = this.portalsHashObject[this.refForSquare.refName]);
@@ -92,14 +136,13 @@ export default {
     },
 
     addingArrowRef(payload) {
-      let { x, y, refName } = this.refForSquare;
-      let payloadForStore = { x, y, refName, direction: payload };
+      let payloadForStore = { ...this.refForSquare, direction: payload };
 
       this.addArrowRef(payloadForStore);
     },
 
     clickedOnArrow() {
-      this.$emit("closeDirectionPicker");
+      this.$emit("closeDirectionPicker", this.refForSquare);
     },
     removeArrowDiv() {
       let { refName } = this.refForSquare;
@@ -112,7 +155,12 @@ export default {
   },
 
   computed: {
-    ...mapState(["portalCreatorActive", "portalsHashObject", "arrowRefs"]),
+    ...mapState([
+      "portalCreatorActive",
+      "portalsHashObject",
+      "arrowRefs",
+      "isMobile"
+    ]),
     ...mapGetters(["isPortal", "getPortalNumber", "findArrowRefIndex"]),
     isStartingArrow() {
       return this.refIndex === 0 ? "starting-arrow" : "";
