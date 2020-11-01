@@ -78,7 +78,6 @@ export default new Vuex.Store({
       state.portalsHashObject = portals;
      },
     removePortal(state, refName) {
-      console.log("nu ska jag köra remove");
       let connection = state.portalsHashObject[refName].connectsTo;
       delete state.portalsHashObject[refName];
       delete state.portalsHashObject[connection];
