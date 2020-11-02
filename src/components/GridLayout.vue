@@ -197,6 +197,7 @@ $square: 6.666666666666667%;
   width: 100%;
   @media only screen and (min-width: 768px) {
     /* height: 80vh; */
+    height: 100%;
   }
 }
 .col {
