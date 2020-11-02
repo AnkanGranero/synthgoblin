@@ -253,6 +253,7 @@ export default {
         this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
         this.$store.dispatch("setPlayingDiv", this.nextPlayingDiv);
       }
+      if (!this.isPlaying) this.stop();
       if (this.justChangedDirection && this.lastPlayedDiv) {
         let suddenlyChangedCoordinates = this.nextCoordinateBasedOnDirection(
           this.lastPlayedDiv.x,

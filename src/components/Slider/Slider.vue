@@ -6,7 +6,7 @@
       @mousedown="mouseHandler"
       @mouseup="clicked = false"
       @mousemove="mouseHandler"
-      @touchstart="prevent.default(), (clicked = true)"
+      @touchstart="clicked = true"
       @touchmove="mouseHandler"
       @touchend="clicked = false"
       @touchcancel="clicked = false"
