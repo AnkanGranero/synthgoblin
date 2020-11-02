@@ -134,9 +134,8 @@ export default {
 
     handleClick(event) {
       event.preventDefault();
-      if (this.portal && this.getPortal()) {
-        return;
-      }
+      if (this.portal && this.getPortal()) return;
+      if (this.direction && this.portalCreatorActive) return;
       if (!this.direction && this.portalCreatorActive) {
         this.createPortal(this.refForSquare);
         this.getPortal();
