@@ -27,10 +27,6 @@ export default {
 };
 </script>
 <style lang="scss">
-$hagridGreen: #54bb5a;
-$blue: rgb(141, 223, 232);
-$yellow: #d9d283;
-
 .tv-button {
   display: flex;
   justify-content: center;
@@ -82,6 +78,9 @@ $yellow: #d9d283;
         stroke: black;
       }
     }
+  }
+  .active {
+    background: $hagrid-light;
   }
 }
 .yellowOrchestra {

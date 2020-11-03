@@ -1,6 +1,7 @@
 <template>
   <div
     class="wrapper"
+    :class="'wrapper__' + colorTheme"
     @click="$emit('clicked')"
     @mouseover="mouseOver = true"
     @mouseleave="mouseOver = false"
@@ -26,6 +27,7 @@
       <path
         v-if="!isPlaying"
         class="symbol"
+        :class="mouseOver ? 'symbol__mouseOver' : ''"
         d="M72.1,47.8L35.3,27.6c0.1,1.9,0,43.4,0,43.4L72.1,47.8z"
       />
 
@@ -34,6 +36,7 @@
         x="31.4"
         y="33.3"
         class="symbol"
+        :class="mouseOver ? 'symbol__mouseOver' : ''"
         width="32.2"
         height="32.2"
       />
@@ -60,7 +63,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 $medium: 768px;
 
 .wrapper {
@@ -69,7 +72,16 @@ $medium: 768px;
 
   @media only screen and (min-width: $medium) {
     height: unset;
-    width: unset;
+
+    width: 50%;
+  }
+
+  &__darkStar {
+    @media only screen and (min-width: $medium) {
+      height: unset;
+
+      width: 40%;
+    }
   }
 }
 .icon {
@@ -101,7 +113,19 @@ $medium: 768px;
 
   .symbol {
     fill: $hagrid-green;
-    stroke: white;
+
+    @media only screen and (min-width: $medium) {
+      fill: $blue;
+      stroke: white;
+    }
+    &__mouseOver {
+      fill: black;
+      stroke: black;
+    }
+  }
+
+  .mouseOver {
+    fill: $hagrid-green;
   }
 }
 .button {

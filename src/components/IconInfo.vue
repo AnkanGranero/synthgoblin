@@ -10,8 +10,8 @@
     viewBox="0 0 95 95"
     style="enable-background:new 0 0 95 95;"
     xml:space="preserve"
-    :class="colorTheme"
     class="icon"
+    :class="'icon__' + colorTheme"
     @mouseover="mouseOver = true"
     @mouseleave="mouseOver = false"
     @click="$emit('clicked')"
@@ -95,71 +95,80 @@ $medium: 768px;
     width: 50%;
     border: none;
   }
-}
 
-.darkStar,
-.yellowOrchestra {
-  .icon {
-    stroke: white;
-  }
-  .circle {
-    stroke: white;
-    fill: $hagrid-green;
-  }
-  .closed {
-    stroke: black;
-  }
-  .open-eye {
-    fill: black;
-    stroke: white;
-  }
+  &__darkStar,
+  &__yellowOrchestra {
+    @media only screen and (min-width: $medium) {
+      height: 40%;
+      width: 40%;
+      border: none;
+    }
 
-  .fill {
-    stroke: black;
-    stroke: white;
-    fill: $blue;
-  }
+    .icon {
+      stroke: white;
+    }
+    .circle {
+      stroke: white;
+      fill: $hagrid-green;
+      @media only screen and (min-width: $medium) {
+        fill: $blue;
+        stroke: white;
+      }
+    }
+    .closed {
+      stroke: black;
+    }
+    .open-eye {
+      fill: black;
+      stroke: white;
+    }
 
-  .iris {
-    fill: none;
-    stroke: white;
-    stroke-miterlimit: 10;
-  }
-  .outer-wheel {
-    fill: black;
-    stroke: white;
-  }
-}
+    .fill {
+      stroke: black;
+      stroke: white;
+      fill: $hagrid-green;
+    }
 
-.classic {
-  .letter {
-    font-family: "Open Sans", sans-serif;
-    font-size: 61px;
-    fill: black;
+    .iris {
+      fill: none;
+      stroke: white;
+      stroke-miterlimit: 10;
+    }
+    .outer-wheel {
+      fill: black;
+      stroke: white;
+    }
   }
+  &__classic {
+    .letter {
+      font-family: "Open Sans", sans-serif;
+      font-size: 61px;
+      fill: black;
+    }
 
-  .icon {
-    stroke: black;
-  }
-  .circle {
-    stroke: black;
-    fill: $hagrid-green;
-  }
+    .icon {
+      stroke: black;
+    }
+    .circle {
+      stroke: black;
+      fill: $hagrid-green;
+    }
 
-  .fill {
-    stroke: black;
-    stroke: white;
-    fill: $blue;
-  }
+    .fill {
+      stroke: black;
+      stroke: white;
+      fill: $blue;
+    }
 
-  .outer-wheel {
-    fill: $hagrid-green;
-    stroke: black;
-  }
-  .fill {
-    stroke: black;
-    stroke: white;
-    fill: $blue;
+    .outer-wheel {
+      fill: $hagrid-green;
+      stroke: black;
+    }
+    .fill {
+      stroke: black;
+      stroke: white;
+      fill: $blue;
+    }
   }
 }
 </style>

@@ -176,9 +176,6 @@ export default {
 };
 </script>
 <style lang="scss">
-$hagridGreen: #54bb5a;
-$yellow: #d9d283;
-
 .slider-wrapper {
   height: 100%;
   position: relative;
@@ -251,6 +248,12 @@ $yellow: #d9d283;
 .darkStar {
   .slider__track {
     background: $light-stroke;
+  }
+  .slider__knob {
+    background: $hagrid-light;
+  }
+  .slider-wrapper__type {
+    color: $yellowMedium;
   }
 }
 </style>

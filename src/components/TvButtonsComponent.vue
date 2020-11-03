@@ -1,13 +1,16 @@
 <template>
-  <div class="tv__buttons-wrapper">
-    <div class="tv__buttons">
-      <span class="tv__divider"></span>
-      <div class="tv__wrapper" v-if="desktopVersion">
+  <div class="wrapper">
+    <div
+      class="tv-buttons__buttons"
+      :class="'tv-buttons__buttons-' + getColorTheme"
+    >
+      <span class="tv-buttons__divider"></span>
+      <div class="tv-buttons__wrapper" v-if="desktopVersion">
         <div
           v-for="wave in waves"
           :key="wave"
           @click="handleClick(wave)"
-          class="tv__button"
+          class="tv-buttons__button"
         >
           <div>
             <TvButton :value="wave" alt="waveform select button">
@@ -19,12 +22,12 @@
           </div>
         </div>
       </div>
-      <span class="tv__divider"></span>
-      <div class="tv__wrapper">
+      <span class="tv-buttons__divider"></span>
+      <div class="tv-buttons__wrapper">
         <div
           v-for="(tvButton, index) in tvButtons"
           :key="index"
-          class="tv__button"
+          class="tv-buttons__button"
         >
           <TvButton>
             <component
@@ -36,11 +39,11 @@
         </div>
       </div>
     </div>
-    <div class="tv__buttons-mobile">
+    <div class="tv-buttons__buttons-mobile">
       <div
         v-for="(tvButton, index) in mobileTvButtons"
         :key="index"
-        class="tv__button"
+        class="tv-buttons__button"
       >
         <TvButton>
           <component
@@ -67,6 +70,7 @@ import portal from "./waves/portal";
 import arrow from "./waves/arrow";
 import arrowOrPortal from "./waves/arrowOrPortal";
 import mute from "./waves/mute";
+import { mapGetters } from "vuex";
 export default {
   name: "TvButtonsComponent",
   data() {
@@ -103,12 +107,19 @@ export default {
       this.selectedWaveform = wave;
       this.changeWave(wave);
     }
+  },
+  computed: {
+    ...mapGetters(["getColorTheme"])
   }
 };
 </script>
 
-<style lang="scss">
-.tv {
+<style lang="scss" scoped>
+.wrapper {
+  display: flex;
+  justify-content: center;
+}
+.tv-buttons {
   &__buttons {
     display: none;
 
@@ -120,13 +131,18 @@ export default {
       flex-direction: row;
       justify-content: space-between;
     }
-    &-wrapper {
-      display: flex;
-      justify-content: center;
+    &-darkStar {
+      width: 50%;
+
+      .tv-buttons__wrapper {
+        margin-bottom: 40%;
+        margin-top: 10%;
+      }
     }
+
     &-mobile {
       display: flex;
-      margin-top: 3%;
+      margin: 5% 0;
       width: 100%;
       @media only screen and (min-width: $ipad) {
         display: none;

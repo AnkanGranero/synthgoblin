@@ -1,29 +1,11 @@
 <template>
-  <div id="hagrid">
+  <div class="hagrid" :class="'hagrid__' + getColorTheme">
     <Modal v-if="modalIsOpen" @modalEmit="modalEventHandler" />
 
     <SecretModal v-if="!isMobile" @changeGridSize="changeGridSize" />
-    <div class="tv-wrapper">
-      <div class="header">
-        <div class="header__empty"></div>
-        <div class="header__center">
-          <h1 class="header__h1">Hagrid</h1>
-          <p class="header__sub">grid sequencer</p>
-        </div>
-        <img
-          v-if="getColorTheme === 'classic'"
-          class="header__leaf"
-          src="./assets/blad.svg"
-          alt="leaf"
-        />
-        <img
-          v-if="getColorTheme === 'darkStar'"
-          class="header__leaf"
-          src="./assets/blad_svart.svg"
-          alt="leaf"
-        />
-      </div>
-      <div class="tv" :class="colorTheme">
+    <div class="tv-wrapper" :class="'tv-wrapper__' + getColorTheme">
+      <CHeader v-if="getColorTheme === 'classic'" />
+      <div class="tv" :class="'tv__' + getColorTheme">
         <div class="tv__top-mobile">
           <IconPlay class="tv__large-button" @clicked="play" />
           <IconInfo class="tv__large-button" @clicked="openModal" />
@@ -34,6 +16,7 @@
           <TvButtonsComponent v-if="!isMobile" />
         </div>
         <div class="tv__middle">
+          <CHeader v-if="getColorTheme === 'darkStar'" />
           <GridLayout
             v-if="tvFinishedLoaded"
             :styling="styling"
@@ -96,7 +79,8 @@ import {
   Slider,
   GridLayout,
   TvButtonsComponent,
-  SecretModal
+  SecretModal,
+  CHeader
 } from "./components/index.js";
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
@@ -125,7 +109,8 @@ export default {
     IconInfo,
     IconPlay,
     TvButtonsComponent,
-    SecretModal
+    SecretModal,
+    CHeader
   },
   created: function() {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -421,9 +406,7 @@ export default {
       "isMobile"
     ]),
     ...mapGetters(["isPortal", "getPortalConnection", "getColorTheme"]),
-    colorTheme() {
-      return `tv-${this.getColorTheme}`;
-    },
+
     bpm() {
       return tempoInBpm;
     },
@@ -461,12 +444,10 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap");
 //så småningom byta font till smoothare utstickande bitar
 $square: 6.666666666666667%;
-$hagridGreen: #54bb5a;
-$blue: rgb(141, 223, 232);
-$yellow: #d9d283;
+
 $leafGreen: #368a3c;
 
-#hagrid {
+.hagrid {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -481,7 +462,13 @@ $leafGreen: #368a3c;
     display: flex;
     height: 146%;
   }
+  &__darkStar {
+    background: black;
+    position: fixed;
+    height: 100%;
+  }
 }
+
 html {
   font-size: 10px;
   @media only screen and (min-width: 768px) {
@@ -505,24 +492,23 @@ html {
 }
 
 body {
-  background: #54bb5a;
   height: 100%;
   width: 100%;
   min-height: 100%;
   margin: 0;
   min-width: fit-content;
   min-height: fit-content;
-  background: $hagridGreen;
+  background: $hagrid-green;
   margin: 0;
 
   font-size: 1.5rem;
   letter-spacing: -1px;
   font-family: "Open Sans", sans-serif;
 }
+.blackStar {
+}
 
 .tv-wrapper {
-  /* display: flex; */
-  /*   flex-direction: column; */
   height: 100%;
   width: 100%;
   position: fixed;
@@ -532,55 +518,14 @@ body {
     width: unset;
     margin: 0 14%;
   }
-
-  .header {
-    display: none;
+  &__darkStar {
     @media only screen and (min-width: $ipad) {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: 1fr;
-      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
-      margin: 5% 0;
-      margin-bottom: 13%;
-    }
-
-    &__h1 {
-      color: #d9d283;
-      margin: 0;
-      letter-spacing: -0.4rem;
-      line-height: 0.8;
-      font-size: 12.5vw;
-      font-size: 12.9rem;
-    }
-    &__sub {
-      margin: 0;
-      padding: 0;
-      top: -57px;
-      left: 13px;
-      margin-left: 2%;
-      font-size: 1.7vw;
-    }
-    &__leaf {
-      display: none;
-      @media only screen and (min-width: 768px) {
-        display: unset;
-        height: 19vw;
-        position: absolute;
-        bottom: 0;
-        top: 56%;
-        right: -11%;
-      }
-      @media only screen and (min-width: 1024px) {
-        right: 0;
-      }
-    }
-    &__middle {
-      width: 50%;
-    }
-    &__left,
-    &__leaf {
-      flex-grow: 1;
+      align-items: center;
+      width: 100%;
     }
   }
 }
@@ -598,7 +543,7 @@ body {
 
   flex-direction: column;
 
-  &-yellowOrchestra {
+  &__yellowOrchestra {
     background: $yellowStrong;
   }
 
@@ -612,10 +557,16 @@ body {
     width: 100%;
     flex-direction: row;
   }
+  &__darkStar {
+    @media only screen and (min-width: $ipad) {
+      padding: 0;
+      width: 85%;
+    }
+  }
   &__top-mobile {
     display: flex;
     justify-content: space-evenly;
-    padding: 5% 0 0;
+    padding: 5% 0;
     @media only screen and (min-width: $ipad) {
       display: none;
     }
@@ -679,7 +630,7 @@ body {
     justify-content: center;
     min-height: 50%;
     min-width: 100%;
-    padding: 5%;
+    padding: 0 5%;
     box-sizing: border-box;
     display: flex;
     @media only screen and (min-width: $ipad) {
