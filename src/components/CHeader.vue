@@ -67,7 +67,7 @@ export default {
   }
 
   &__h1 {
-    color: #d9d283;
+    color: $yellow;
     margin: 0;
     letter-spacing: -0.4rem;
     line-height: 0.8;

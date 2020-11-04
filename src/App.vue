@@ -499,6 +499,7 @@ body {
   min-width: fit-content;
   min-height: fit-content;
   background: $hagrid-green;
+
   margin: 0;
 
   font-size: 1.5rem;
@@ -533,7 +534,7 @@ body {
 .tv {
   background: black;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 30px;
   align-content: center;
   display: flex;
   min-height: 100%;
