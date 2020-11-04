@@ -164,6 +164,9 @@ export default {
     margin-bottom: 2rem;
     cursor: pointer;
     text-align: center;
+    &:hover {
+      color: $yellowMedium;
+    }
     @media only screen and (min-width: $desktop-large) {
       font-size: 40px;
     }

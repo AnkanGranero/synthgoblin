@@ -104,15 +104,12 @@ export default {
   &__span {
     margin: 5%;
     font-size: 4rem;
+    color: black;
     @media only screen and (min-width: $ipad) {
       font-size: 3rem;
     }
-
-    &--yes {
+    &:hover {
       color: $yellow;
-    }
-    &--no {
-      color: black;
     }
   }
 }
