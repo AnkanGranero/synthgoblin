@@ -250,11 +250,12 @@ export default {
           suddenlyChangedCoordinates.x,
           suddenlyChangedCoordinates.y
         );
-        this.playingDiv = {
+
+        this.$store.dispatch("setPlayingDiv", {
           ...suddenlyChangedCoordinates,
           refName
-        };
-        this.$store.dispatch("setPlayingDiv", this.playingDiv);
+        });
+        console.log("JÖNFÖR", this.playingDiv, suddenlyChangedCoordinates);
         if (this.writeKeyDown) {
           this.lastPlayedDiv.direction = this.manualDirection;
           this.$store.dispatch("addArrowRef", this.lastPlayedDiv);
@@ -305,7 +306,7 @@ export default {
         direction = isArrow.direction;
         this.manualDirection = "";
       }
-
+      //behövs denna?
       if (this.manualDirection) {
         direction = this.manualDirection;
       }
