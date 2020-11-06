@@ -255,7 +255,6 @@ export default {
           ...suddenlyChangedCoordinates,
           refName
         });
-        console.log("JÖNFÖR", this.playingDiv, suddenlyChangedCoordinates);
         if (this.writeKeyDown) {
           this.lastPlayedDiv.direction = this.manualDirection;
           this.$store.dispatch("addArrowRef", this.lastPlayedDiv);
