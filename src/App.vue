@@ -150,7 +150,7 @@ export default {
 
   methods: {
     initialVolume() {
-      return (this.synth.volume.value + 20) / 2;
+      return this.synth.volume.value < 0 ? this.synth.volume.value / 4 + 10 : 0;
     },
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();

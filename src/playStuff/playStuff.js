@@ -41,6 +41,7 @@ const synth = new Tone.Synth({
 const playThang = function(repeat) {
 
     Tone.Transport.bpm.value = tempoInBpm;
+    Tone.Transport.volume
     Tone.Transport.start();
     Tone.Transport.scheduleRepeat(repeat, "16n");
 }
@@ -64,9 +65,17 @@ setInCache(val, "reverbValue");
       setInCache( val, "waveform")
     }
 const changeVolume = function(val) {
-  let transformedValue = -20 + (val * 2);
-  synth.volume.value = transformedValue;
-  setInCache(transformedValue,"volume");
+  let transformedValue;
+
+  if(val > 0) {
+    transformedValue = val - 10;
+  }
+  else {
+    transformedValue = -100
+  }
+  let finalValue = transformedValue * 4
+  synth.volume.value = finalValue;
+  setInCache(val,"volume");
 } 
 
 const changeMuteState = function(bool) {
@@ -80,7 +89,9 @@ const setToneValuesFromCache = function () {
   if(reverbValue) {
   reverb.wet.value = reverbValue};
     
-  if(volume) synth.volume.value = volume;
+  if(!isNaN(volume)) {
+    changeVolume(volume);
+  }
   if(waveform) {
     changeWave(waveform);
   } 
