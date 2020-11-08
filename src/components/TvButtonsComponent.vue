@@ -17,7 +17,7 @@
               <component
                 v-bind:is="wave"
                 class="tv-button__btn"
-                :selected="selectedWaveform === wave"
+                :selected="getSelectedWaveform === wave"
             /></TvButton>
           </div>
         </div>
@@ -76,7 +76,6 @@ export default {
   data() {
     return {
       waves: ["sine", "square", "sawtooth", "triangle"],
-      selectedWaveform: "sawtooth",
       selectedTvButton: "",
       tvButtons: ["portal", "arrow", "clearGrid", "joyStick"],
       mobileTvButtons: ["arrowOrPortal", "clearGrid", "mute"]
@@ -104,12 +103,12 @@ export default {
   methods: {
     changeWave,
     handleClick(wave) {
-      this.selectedWaveform = wave;
+      this.$store.dispatch("setSelectedWaveform", wave);
       this.changeWave(wave);
     }
   },
   computed: {
-    ...mapGetters(["getColorTheme"])
+    ...mapGetters(["getColorTheme", "getSelectedWaveform"])
   }
 };
 </script>

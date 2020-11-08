@@ -42,7 +42,6 @@ const playThang = function(repeat) {
 
     Tone.Transport.bpm.value = tempoInBpm;
     Tone.Transport.start();
-   /*  midiOutput.send([0x80, 0x3c, 0x74]); */
     Tone.Transport.scheduleRepeat(repeat, "16n");
 }
 
@@ -62,7 +61,7 @@ setInCache(val, "reverbValue");
 
   const changeWave = function(val) {
       synth.oscillator.type = val;
-      this.selectedWaveform = val;
+      setInCache( val, "waveform")
     }
 const changeVolume = function(val) {
   let transformedValue = -20 + (val * 2);
@@ -76,12 +75,15 @@ const changeMuteState = function(bool) {
 }
 const setToneValuesFromCache = function () {
   const cachedInfo = getCachedToneInfo();
-  let { bpm, reverbValue, volume} = cachedInfo;
+  let { bpm, reverbValue, volume, waveform} = cachedInfo;
   if(bpm) tempoInBpm = bpm;
   if(reverbValue) {
   reverb.wet.value = reverbValue};
     
   if(volume) synth.volume.value = volume;
+  if(waveform) {
+    changeWave(waveform);
+  } 
 }
 
 setToneValuesFromCache();

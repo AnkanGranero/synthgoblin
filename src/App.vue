@@ -154,7 +154,7 @@ export default {
     },
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
-      let { arrowRefs, gridSize, portals } = cachedInfo;
+      let { arrowRefs, gridSize, portals, waveform } = cachedInfo;
       if (arrowRefs) {
         this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
       }
@@ -165,6 +165,9 @@ export default {
         this.$store.dispatch("bulkAddPortals", portals);
       }
       this.$store.dispatch("setAllCachedInfo", cachedInfo);
+      if (waveform) {
+        this.$store.dispatch("setSelectedWaveform", waveform);
+      }
 
       this.tvFinishedLoaded = true;
     },

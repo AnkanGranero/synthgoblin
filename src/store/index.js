@@ -30,10 +30,14 @@ export default new Vuex.Store({
     openPortal: null,
     completedPortals: [],
     portalsHashObject: {},
-    colorTheme: "classic"
+    colorTheme: "classic",
+    selectedWaveform: "sawtooth" 
 
   },
   mutations: {
+    setSelectedWaveform(state, payload) {
+      state.selectedWaveform = payload
+    },
     toggleArrowAndPortal(state) {
       state.portalCreatorActive = !state.portalCreatorActive
     },
@@ -160,6 +164,9 @@ export default new Vuex.Store({
       },
 },
   actions: {
+    setSelectedWaveform({commit},payload) {
+      commit("setSelectedWaveform", payload)
+    },
     toggleArrowAndPortal({commit}) {
       commit("toggleArrowAndPortal");
     },
@@ -285,6 +292,7 @@ export default new Vuex.Store({
 
   },
   getters: {
+    getSelectedWaveform: state => state.selectedWaveform,
     getPortalCreatorActive: state => state.portalCreatorActive,
     getJoystickMode: state => {
       return state.joystickMode;

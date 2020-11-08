@@ -16,16 +16,19 @@ function getAllCachedInfo() {
     const colorTheme = getCachedInfo("colorTheme");
     const joystickMode = getCachedInfo("joystickMode");
     const midiOutActive = getCachedInfo("midiOutActive");
+    const waveform = getCachedInfo("waveform");
+    
 
-    return { gridSize, arpeggio, arrowRefs, portals, colorTheme, joystickMode, midiOutActive }
+    return { gridSize, arpeggio, arrowRefs, portals, colorTheme, joystickMode, midiOutActive, waveform }
 
 }
 function getCachedToneInfo() {
       const bpm = getCachedInfo('bpm');
       const volume = getCachedInfo('volume');
       const reverbValue = getCachedInfo('reverbValue');
+      const waveform = getCachedInfo("waveform");
 
-return { bpm, volume, reverbValue
+return { bpm, volume, reverbValue, waveform
 };
 }
 
