@@ -31,10 +31,12 @@ export default new Vuex.Store({
     completedPortals: [],
     portalsHashObject: {},
     colorTheme: "classic",
-    selectedWaveform: "sawtooth" 
+    selectedWaveform: "sawtooth",
+    intialVolume: 8
 
   },
   mutations: {
+
     setSelectedWaveform(state, payload) {
       state.selectedWaveform = payload
     },

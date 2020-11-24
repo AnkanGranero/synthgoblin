@@ -17,18 +17,18 @@ function getAllCachedInfo() {
     const joystickMode = getCachedInfo("joystickMode");
     const midiOutActive = getCachedInfo("midiOutActive");
     const waveform = getCachedInfo("waveform");
+    const volume = getCachedInfo("volume")
     
 
-    return { gridSize, arpeggio, arrowRefs, portals, colorTheme, joystickMode, midiOutActive, waveform }
+    return { gridSize, arpeggio, arrowRefs, portals, colorTheme, joystickMode, midiOutActive, waveform, volume }
 
 }
 function getCachedToneInfo() {
       const bpm = getCachedInfo('bpm');
-      const volume = getCachedInfo('volume');
       const reverbValue = getCachedInfo('reverbValue');
       const waveform = getCachedInfo("waveform");
 
-return { bpm, volume, reverbValue, waveform
+return { bpm, reverbValue, waveform
 };
 }
 

@@ -24,12 +24,12 @@
 <script>
 import {
   changeMidiNoteLength,
-  changeMidiNoteVelocity
+  changeMidiNoteVelocity,
 } from "../../midi-service/midiService";
 import {
   changeBpm,
   changeReverb,
-  changeVolume
+  changeVolume,
 } from "../../playStuff/playStuff";
 
 export default {
@@ -37,56 +37,57 @@ export default {
   data() {
     return {
       sliderValue: this.maxValue / 2,
-      clicked: false
+      clicked: false,
     };
   },
 
   props: {
     name: {
       type: String,
-      default: ""
+      default: "",
     },
     maxValue: {
       type: Number,
-      default: 100
+      default: 100,
     },
     minValue: {
       type: Number,
-      default: 100
+      default: 100,
     },
 
     initialValue: {
       type: Number,
-      default: 0
+      default: 0,
     },
     integer: {
       type: Boolean,
-      default: false
+      default: false,
     },
     largeText: {
       type: Boolean,
-      default: true
+      default: true,
     },
     valueType: {
       type: String,
-      required: true
+      required: true,
     },
     method: {
       type: String,
-      default: ""
+      default: "",
     },
     action: {
-      type: String
-    }
+      type: String,
+    },
   },
 
-  created: function() {
+  created: function () {
     if (this.valueType === "GridSize") {
       let gridSize = this.$store.getters.getGridSize;
       this.sliderValue = this.valueToSlide(gridSize[this.name]);
       return;
     }
     this.sliderValue = this.valueToSlide(this.initialValue);
+    this.handleChange();
   },
   methods: {
     changeMidiNoteLength,
@@ -146,7 +147,7 @@ export default {
         : percentage * 100;
 
       return 100 - backToValue;
-    }
+    },
   },
   computed: {
     colorTheme() {
@@ -171,8 +172,8 @@ export default {
       return this.integer
         ? Math.round(totalCustomValueRounded)
         : totalCustomValueRounded;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

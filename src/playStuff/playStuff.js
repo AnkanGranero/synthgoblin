@@ -10,6 +10,7 @@ let tempoInBpm = 150;
 
 
 
+
 const reverb = new Tone.Reverb({
   decay: 5,
   wet: 0.3,
@@ -41,7 +42,6 @@ const synth = new Tone.Synth({
 const playThang = function(repeat) {
 
     Tone.Transport.bpm.value = tempoInBpm;
-    Tone.Transport.volume
     Tone.Transport.start();
     Tone.Transport.scheduleRepeat(repeat, "16n");
 }
@@ -67,6 +67,7 @@ setInCache(val, "reverbValue");
 const changeVolume = function(val) {
   let transformedValue;
 
+
   if(val > 0) {
     transformedValue = val - 10;
   }
@@ -89,13 +90,11 @@ const setToneValuesFromCache = function () {
   if(reverbValue) {
   reverb.wet.value = reverbValue};
     
-  if(!isNaN(volume)) {
-    changeVolume(volume);
-  }
   if(waveform) {
     changeWave(waveform);
   } 
 }
+
 
 setToneValuesFromCache();
 

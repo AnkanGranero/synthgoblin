@@ -5,7 +5,7 @@
     <SecretModal v-if="!isMobile" @changeGridSize="changeGridSize" />
     <div class="tv-wrapper" :class="'tv-wrapper__' + getColorTheme">
       <CHeader v-if="getColorTheme === 'classic'" />
-      <div class="tv" :class="'tv__' + getColorTheme">
+      <div class="tv" :class="'tv__' + getColorTheme" v-if="tvFinishedLoaded">
         <div class="tv__top-mobile">
           <IconPlay class="tv__large-button" @clicked="play" />
           <IconInfo class="tv__large-button" @clicked="openModal" />
@@ -18,7 +18,6 @@
         <div class="tv__middle">
           <CHeader v-if="getColorTheme === 'darkStar'" />
           <GridLayout
-            v-if="tvFinishedLoaded"
             :styling="styling"
             ref="gridLayout"
             @clicked-on-square="playNote"
@@ -58,7 +57,7 @@
               :min-value="0"
               value-type="Tone"
               :actual-value="true"
-              :initialValue="initialVolume()"
+              :initialValue="initialVolume"
               method="changeVolume"
             />
           </div>
@@ -80,7 +79,7 @@ import {
   GridLayout,
   TvButtonsComponent,
   SecretModal,
-  CHeader
+  CHeader,
 } from "./components/index.js";
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
@@ -92,7 +91,7 @@ import {
   preparePlayStuff,
   synth,
   tempoInBpm,
-  reverb
+  reverb,
 } from "./playStuff/playStuff";
 import { mapGetters } from "vuex";
 import { midiPlay, midiStop } from "./midi-service/midiService";
@@ -110,9 +109,9 @@ export default {
     IconPlay,
     TvButtonsComponent,
     SecretModal,
-    CHeader
+    CHeader,
   },
-  created: function() {
+  created: function () {
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
       this.$store.commit("isMobile");
@@ -130,7 +129,8 @@ export default {
       lastPlayedDiv: "",
       nextPlayingDiv: "",
       justChangedDirection: false,
-      synth
+      synth,
+      initialVolume: 8,
     };
   },
 
@@ -140,21 +140,18 @@ export default {
     this.createNewArpeggios();
 
     preparePlayStuff();
-    window.addEventListener("keyup", e => {
+    window.addEventListener("keyup", (e) => {
       this.handleKeyUpCommands(e);
     });
-    window.addEventListener("keydown", e => {
+    window.addEventListener("keydown", (e) => {
       this.handleKeyDownCommands(e);
     });
   },
 
   methods: {
-    initialVolume() {
-      return this.synth.volume.value < 0 ? this.synth.volume.value / 4 + 10 : 0;
-    },
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
-      let { arrowRefs, gridSize, portals, waveform } = cachedInfo;
+      let { arrowRefs, gridSize, portals, waveform, volume } = cachedInfo;
       if (arrowRefs) {
         this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
       }
@@ -167,6 +164,9 @@ export default {
       this.$store.dispatch("setAllCachedInfo", cachedInfo);
       if (waveform) {
         this.$store.dispatch("setSelectedWaveform", waveform);
+      }
+      if (!isNaN(volume)) {
+        this.initialVolume = volume;
       }
 
       this.tvFinishedLoaded = true;
@@ -256,7 +256,7 @@ export default {
 
         this.$store.dispatch("setPlayingDiv", {
           ...suddenlyChangedCoordinates,
-          refName
+          refName,
         });
         if (this.writeKeyDown) {
           this.lastPlayedDiv.direction = this.manualDirection;
@@ -295,7 +295,7 @@ export default {
         this.nextPlayingDiv = {
           ...nextPortal,
           direction,
-          portal: true
+          portal: true,
         };
         let note = this.allArpeggios[x - 1][y - 1];
         this.midiOutActive
@@ -332,7 +332,7 @@ export default {
       );
       this.nextPlayingDiv = {
         ...nextCoordinates,
-        refName: nextPlayingDivRef
+        refName: nextPlayingDivRef,
       };
     },
     changeHighlightClass(refName, action) {
@@ -396,7 +396,7 @@ export default {
     },
 
     midiPlay,
-    midiStop
+    midiStop,
   },
   computed: {
     ...mapState([
@@ -406,7 +406,7 @@ export default {
       "angle",
       "modalIsOpen",
       "joystickMode",
-      "isMobile"
+      "isMobile",
     ]),
     ...mapGetters(["isPortal", "getPortalConnection", "getColorTheme"]),
 
@@ -436,11 +436,11 @@ export default {
         return this.$store.state.backgroundColors;
       } else {
         return {
-          background: "white"
+          background: "white",
         };
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" >
