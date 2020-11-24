@@ -165,7 +165,7 @@ export default {
       if (waveform) {
         this.$store.dispatch("setSelectedWaveform", waveform);
       }
-      if (!isNaN(volume)) {
+      if (volume || volume === 0) {
         this.initialVolume = volume;
       }
 
