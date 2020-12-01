@@ -84,7 +84,7 @@ import {
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
 import * as Tone from "tone";
-import { mapState } from "vuex";
+
 import {
   playThang,
   stopPlaying,
@@ -93,7 +93,7 @@ import {
   tempoInBpm,
   reverb,
 } from "./playStuff/playStuff";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 import { midiPlay, midiStop } from "./midi-service/midiService";
 import { getAllCachedInfo } from "./utils/cacheMethods";
 import { getCoordinatesFromRefName } from "./utils/squareRefHelpers";
@@ -149,17 +149,24 @@ export default {
   },
 
   methods: {
+    ...mapActions(["setPlayingDiv", "changeIsPlayingState"]),
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
-      let { arrowRefs, gridSize, portals, waveform, volume } = cachedInfo;
+      let {
+        arrowRefs,
+        gridSize,
+        transformedSquares,
+        waveform,
+        volume,
+      } = cachedInfo;
       if (arrowRefs) {
         this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
       }
       if (gridSize) {
         this.$store.dispatch("changeGridSize", gridSize);
       }
-      if (portals) {
-        this.$store.dispatch("bulkAddPortals", portals);
+      if (transformedSquares) {
+        this.$store.dispatch("bulkAddTransformedSquares", transformedSquares);
       }
       this.$store.dispatch("setAllCachedInfo", cachedInfo);
       if (waveform) {
@@ -216,10 +223,10 @@ export default {
     },
     stop() {
       stopPlaying();
-      this.$store.dispatch("changeIsPlayingState", false);
+      this.changeIsPlayingState(false);
       this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
       this.lastPlayedDiv = "";
-      this.$store.dispatch("setPlayingDiv", null);
+      this.setPlayingDiv(null);
       this.midiStop();
     },
     async play() {
@@ -228,11 +235,11 @@ export default {
         return;
       }
 
-      let firstArrowRef = await this.$store.getters.getArrowRefs[0];
+      let firstArrowRef = await this.getStartingArrow;
       if (!firstArrowRef) {
         return;
       }
-      this.$store.dispatch("setPlayingDiv", firstArrowRef);
+      this.setPlayingDiv(firstArrowRef);
       this.$store.commit("changeIsPlayingState", true);
       playThang(this.repeat);
     },
@@ -243,97 +250,68 @@ export default {
       }
       if (!this.isPlaying) this.stop();
       if (this.justChangedDirection && this.lastPlayedDiv) {
-        let suddenlyChangedCoordinates = this.nextCoordinateBasedOnDirection(
-          this.lastPlayedDiv.x,
-          this.lastPlayedDiv.y,
-          this.manualDirection
-        );
-
-        refName = this.getRefFromCoordinates(
-          suddenlyChangedCoordinates.x,
-          suddenlyChangedCoordinates.y
-        );
-
-        this.$store.dispatch("setPlayingDiv", {
-          ...suddenlyChangedCoordinates,
-          refName,
-        });
-        if (this.writeKeyDown) {
-          this.lastPlayedDiv.direction = this.manualDirection;
-          this.$store.dispatch("addArrowRef", this.lastPlayedDiv);
-        }
-
-        this.justChangedDirection = false;
+        this.changedDirectionsManually();
       }
 
       let { x, y, refName, direction } = this.playingDiv;
-      let ref = this.gridRefs[refName];
-      if (!ref) {
+      let squareIsWithinGrid = this.gridRefs[refName];
+      if (!squareIsWithinGrid) {
         this.stop();
         return;
       }
       this.changeHighlightClass(refName, "add");
-
       this.lastPlayedDiv = this.playingDiv;
-      let isPortal = this.$store.getters.isPortal(refName);
-      let isArrow = this.$store.getters.findArrowRef(refName);
-
-      if (this.eraseKeyDown) {
-        if (isArrow) {
-          this.$store.dispatch("removeArrowRef", refName);
-          isArrow = false;
-        }
-        if (isPortal) {
-          this.$store.dispatch("removePortal", refName);
-          isPortal = false;
+      let isTransformedSquare = this.$store.getters.findTransformedSquare(
+        refName
+      );
+      if (isTransformedSquare) {
+        if (this.eraseKeyDown) {
+          this.$store.dispatch("removeTransformedSquare", isTransformedSquare);
+          isTransformedSquare = false;
+        } else {
+          this.setPlayingDiv(isTransformedSquare);
         }
       }
+      /*        if (type === "Portal" && !this.lastPlayedDiv.type === "Portal") {
+          let nextPortal = this.findTransformedSquare(
+            isTransformedSquare.connectsTo
+          );
+          if (!nextPortal) this.stop();
 
-      if (isPortal && !this.lastPlayedDiv.portal && !this.eraseKeyDown) {
-        let nextPortal = this.getPortalConnection(refName);
-        if (!nextPortal) this.stop();
-        this.nextPlayingDiv = {
-          ...nextPortal,
-          direction,
-          portal: true,
-        };
-        let note = this.allArpeggios[x - 1][y - 1];
-        this.midiOutActive
-          ? this.midiPlay(note)
-          : this.synth.triggerAttackRelease(note, "8n", time);
-        return;
-      }
+          this.nextPlayingDiv = {
+            ...nextPortal,
+            direction,
+          }; */
+      /*  note = this.allArpeggios[x - 1][y - 1]; */
+      /*           this.midiOutActive
+            ? this.midiPlay(note)
+            : this.synth.triggerAttackRelease(note, "8n", time);
+          return; */
 
-      if (isArrow) {
-        direction = isArrow.direction;
-        this.manualDirection = "";
-      }
+      /*         if (isTransformedSquare.type === "Arrow") {
+          direction = isTransformedSquare.direction;
+          this.manualDirection = "";
+        } */
+      /*   } */
+
       //behövs denna?
-      if (this.manualDirection) {
+      /*       if (this.manualDirection) {
         direction = this.manualDirection;
-      }
+      } */
 
       //we need to subtract one since the coordinates starts on 1
       //and the allArpeggios arr start at index 0
+
       let note = this.allArpeggios[x - 1][y - 1];
+
       this.midiOutActive
         ? this.midiPlay(note)
         : this.synth.triggerAttackRelease(note, "8n", time);
 
-      let nextCoordinates = this.nextCoordinateBasedOnDirection(
-        x,
-        y,
-        direction
-      );
-
-      let nextPlayingDivRef = this.getRefFromCoordinates(
-        nextCoordinates.x,
-        nextCoordinates.y
-      );
-      this.nextPlayingDiv = {
-        ...nextCoordinates,
-        refName: nextPlayingDivRef,
-      };
+      this.nextPlayingDiv =
+        isTransformedSquare && isTransformedSquare.type === "Portal"
+          ? this.nextCoordinatesBasedOnConnetion(isTransformedSquare)
+          : this.nextCoordinatesBasedOnDirection(this.playingDiv);
     },
     changeHighlightClass(refName, action) {
       const target = this.gridRefs[refName];
@@ -346,10 +324,37 @@ export default {
         }
       }
     },
+    changedDirectionsManually() {
+      const nextCoordinatesInfo = {
+        x: this.lastPlayedDiv.x,
+        y: this.lastPlayedDiv.y,
+        direction: this.manualDirection,
+      };
+      let suddenlyChangedCoordinates = this.nextCoordinatesBasedOnDirection(
+        nextCoordinatesInfo
+      );
+
+      const refName = this.getRefFromCoordinates(
+        suddenlyChangedCoordinates.x,
+        suddenlyChangedCoordinates.y
+      );
+
+      this.setPlayingDiv({
+        ...suddenlyChangedCoordinates,
+        refName,
+      });
+      if (this.writeKeyDown) {
+        this.lastPlayedDiv.direction = this.manualDirection;
+        this.$store.dispatch("addTransformedSquare", this.lastPlayedDiv);
+      }
+      this.justChangedDirection = false;
+    },
     getRefFromCoordinates(x, y) {
       return `r${x}-${y}`;
     },
-    nextCoordinateBasedOnDirection(x, y, direction) {
+
+    nextCoordinatesBasedOnDirection(playingDiv) {
+      let { x, y, direction } = playingDiv;
       switch (direction) {
         case "down":
           y += 1;
@@ -364,8 +369,16 @@ export default {
           y -= 1;
           break;
       }
-
-      return { x, y, direction };
+      let refName = this.getRefFromCoordinates(x, y);
+      return { x, y, direction, refName };
+    },
+    nextCoordinatesBasedOnConnetion(transformedSquare) {
+      let { connectsTo } = transformedSquare;
+      if (!connectsTo) {
+        this.stop();
+        return;
+      }
+      return this.findTransformedSquare(connectsTo);
     },
     handleKeyDownCommands(e) {
       if (this.joystickMode && e.keyCode > 36 && e.keyCode < 41) {
@@ -408,7 +421,7 @@ export default {
       "joystickMode",
       "isMobile",
     ]),
-    ...mapGetters(["isPortal", "getPortalConnection", "getColorTheme"]),
+    ...mapGetters(["getPortalConnection", "getColorTheme", "getStartingArrow"]),
 
     bpm() {
       return tempoInBpm;

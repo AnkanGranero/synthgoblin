@@ -1,21 +1,24 @@
 <template>
-  <div class="square" :class="isStartingArrow" @mousedown="handleClick">
+  <div
+    class="square"
+    :class="isStartingArrow"
+    @contextmenu="handleRightClick"
+    @mousedown="handleClick"
+  >
     <slot>
       <Direction-picker
         v-if="directionPickerOpen"
-        @directionSet="addingArrowRef"
-        @removeArrowDiv="removeArrowDiv"
+        @directionSet="addArrow"
+        @removeArrowDiv="removeTransformedSquare(transformedSquare)"
         @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
     <div
-      v-if="portal && isItStillPortal"
+      v-if="transformedSquare && transformedSquare.type === 'Portal'"
       class="portal"
       @mouseleave="portalClicked = false"
     >
-      <span class="portal__number" @click="handleClickOnPortal">{{
-        portalNumber()
-      }}</span>
+      <span class="portal__number">{{ portalNumber() }}</span>
     </div>
     <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
       <div :class="whatDirection"></div>
@@ -35,32 +38,36 @@ export default {
       portal: false,
       touchStart: null,
       x: 0,
-      y: 0
+      y: 0,
     };
   },
 
   props: {
     refForSquare: {
       default: () => {},
-      type: Object
+      type: Object,
     },
     refreshIndex: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   components: {
-    DirectionPicker
+    DirectionPicker,
   },
   mounted() {
-    this.getPortal();
     if (this.isMobile) {
-      this.$el.addEventListener("touchstart", e => this.handleTouchStart(e));
-      this.$el.addEventListener("touchmove", e => this.handleTouchMove(e));
-      this.$el.addEventListener("touchend", e => this.handTouchEnd(e));
+      this.$el.addEventListener("touchstart", (e) => this.handleTouchStart(e));
+      this.$el.addEventListener("touchmove", (e) => this.handleTouchMove(e));
+      this.$el.addEventListener("touchend", (e) => this.handTouchEnd(e));
     }
   },
   methods: {
-    ...mapActions(["addArrowRef", "createPortal", "removePortal"]),
+    ...mapActions([
+      "addArrowRef",
+      "addTransformedSquare",
+      "removeTransformedSquare",
+      "togglePause",
+    ]),
     handTouchEnd(e) {
       e.preventDefault();
       if (!this.touchStart) return;
@@ -70,18 +77,13 @@ export default {
       this.touchStart = null;
     },
     handleTouchStart(e) {
-      if (!this.direction && this.portalCreatorActive) {
-        if (this.isPortal(this.refForSquare.refName)) {
-          this.removePortal(this.refForSquare.refName);
-          this.portal = "";
-          this.$emit("remove-portal-force-re-render");
-          return;
-        }
+      if (this.transformedSquare) {
+        this.removeTransformedSquare(this.removeTransformedSquare);
+        return;
+      }
 
-        this.createPortal(this.refForSquare);
-        this.getPortal();
-        this.$emit("remove-portal-force-re-render");
-
+      if (this.portalCreatorActive) {
+        this.addPortal();
         return;
       } else {
         const { screenX: x, screenY: y } = e.touches[0];
@@ -111,35 +113,25 @@ export default {
         direction = y > y2 ? "up" : "down";
       }
       if (xDifference === yDifference) {
-        this.removeArrowDiv(this.refForSquare);
+        this.removeTransformedSquare(this.transformedSquare);
         return;
       }
       let payloadForStore = { ...this.refForSquare, direction };
 
       this.addArrowRef(payloadForStore);
     },
-    getPortal() {
-      return (this.portal = this.portalsHashObject[this.refForSquare.refName]);
-    },
-    handleClickOnPortal() {
-      if (this.portalClicked || !this.portalNumber()) {
-        this.removePortal(this.refForSquare.refName);
-        this.$emit("remove-portal-force-re-render");
-        this.portalClicked = false;
-        this.portal = "";
-        return;
-      }
-      this.portalClicked = true;
-    },
 
     handleClick(event) {
       event.preventDefault();
-      if (this.portal && this.getPortal()) return;
-      if (this.direction && this.portalCreatorActive) return;
-      if (!this.direction && this.portalCreatorActive) {
-        this.createPortal(this.refForSquare);
-        this.getPortal();
-        this.$emit("remove-portal-force-re-render");
+
+      if (event.button === 2) return;
+      if (this.transformedSquare) {
+        this.removeTransformedSquare(this.transformedSquare);
+        return;
+      }
+
+      if (this.portalCreatorActive) {
+        this.addPortal();
 
         return;
       }
@@ -151,24 +143,32 @@ export default {
       this.$emit("clicked-on-square", this.refForSquare);
       return;
     },
+    handleRightClick(event) {
+      event.preventDefault();
+      this.togglePause(this.refForSquare);
+    },
 
-    addingArrowRef(payload) {
-      let payloadForStore = { ...this.refForSquare, direction: payload };
+    addArrow(payload) {
+      let payloadForStore = {
+        ...this.refForSquare,
+        direction: payload,
+        type: "Arrow",
+      };
 
-      this.addArrowRef(payloadForStore);
+      this.addTransformedSquare(payloadForStore);
+    },
+    addPortal() {
+      this.addTransformedSquare({ ...this.refForSquare, type: "Portal" });
     },
 
     clickedOnArrow() {
       this.$emit("closeDirectionPicker", this.refForSquare);
     },
-    removeArrowDiv() {
-      let { refName } = this.refForSquare;
-      this.$store.dispatch("removeArrowRef", refName);
-    },
+
     portalNumber() {
       let { refName } = this.refForSquare;
       return this.getPortalNumber(refName);
-    }
+    },
   },
 
   computed: {
@@ -176,22 +176,31 @@ export default {
       "portalCreatorActive",
       "portalsHashObject",
       "arrowRefs",
-      "isMobile"
+      "isMobile",
+      "transformedSquares",
     ]),
-    ...mapGetters(["isPortal", "getPortalNumber", "findArrowRefIndex"]),
+    ...mapGetters([
+      "getPortalNumber",
+      "findTransformedSquareIndex",
+      "findTransformedSquare",
+      "getStartingArrow",
+    ]),
+    transformedSquare() {
+      return this.findTransformedSquare(this.refForSquare.refName);
+    },
     isStartingArrow() {
-      return this.refIndex === 0 ? "starting-arrow" : "";
+      if (!this.getStartingArrow) return;
+      return this.getStartingArrow.refName === this.refForSquare.refName
+        ? "starting-arrow"
+        : "";
     },
     refIndex() {
-      return this.findArrowRefIndex(this.refForSquare.refName);
+      return this.$store.getters.findTransformedSquareIndex(
+        this.refForSquare.refName
+      );
     },
     direction() {
-      if (this.refIndex === -1) return;
-      return this.arrowRefs[this.refIndex].direction;
-    },
-
-    isItStillPortal() {
-      return this.isPortal(this.refForSquare.refName);
+      return this.transformedSquare ? this.transformedSquare.direction : null;
     },
 
     whatDirection() {
@@ -220,8 +229,8 @@ export default {
         ? cssClass + "-starting-arrow"
         : "";
       return [cssClass, hidden, isStartingArrow];
-    }
-  }
+    },
+  },
 };
 </script>
 

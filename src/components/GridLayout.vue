@@ -11,7 +11,6 @@
       >
         <square
           :refForSquare="refForSquare(x, y)"
-          @remove-portal-force-re-render="mousePos = { x, y }"
           @clicked-on-square="$emit('clicked-on-square', $event)"
         >
         </square>
@@ -27,18 +26,18 @@ import { mapState, mapGetters } from "vuex";
 export default {
   name: "GridLayout",
   components: {
-    square
+    square,
   },
   data() {
     return {
-      mousePos: { x: 0, y: 0 }
+      mousePos: { x: 0, y: 0 },
     };
   },
   props: {
     styling: {
       type: String,
-      default: "classic"
-    }
+      default: "classic",
+    },
   },
 
   methods: {
@@ -50,7 +49,7 @@ export default {
       return {
         x,
         y,
-        refName
+        refName,
       };
     },
     addHighlight(refName) {
@@ -67,11 +66,11 @@ export default {
             background: this.colorCalcDifference(x, y),
             /*    border: `1px solid ${this.colorCalcDifference(y, x)}`, */
             /*  border: "1px solid red", */
-            "box-shadow": `-5px -5px 10px ${this.colorCalcDifference(y, x)} `
+            "box-shadow": `-5px -5px 10px ${this.colorCalcDifference(y, x)} `,
           };
         case "classic": {
           let backgroundColors = {
-            background: this.colorCalcDifBoth(x, y)
+            background: this.colorCalcDifBoth(x, y),
           };
           /*         this.$store.dispatch("setBackgroundColors", backgroundColors);*/
           return backgroundColors;
@@ -156,7 +155,7 @@ export default {
       let red = 200 - growedSubtractorX;
       let green = 200 - growedSubtractorY;
       return "rgb(" + green + "," + red + ",250)";
-    }
+    },
   },
   computed: {
     ...mapState(["playingDiv", "isPlaying", "portals", "arrowRefs"]),
@@ -181,8 +180,8 @@ export default {
     },
     gridSize() {
       return this.$store.getters.getGridSize;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

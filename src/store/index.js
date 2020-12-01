@@ -13,6 +13,7 @@ export default new Vuex.Store({
     isPlaying: false,
     playingDiv: null,
     backgroundColors: "",
+    transformedSquares: [],
     arrowRefs: [],
     direction: "",
     gridSize: {
@@ -28,8 +29,6 @@ export default new Vuex.Store({
     joystickMode: false,
     portalCreatorActive: false,
     openPortal: null,
-    completedPortals: [],
-    portalsHashObject: {},
     colorTheme: "classic",
     selectedWaveform: "sawtooth",
     intialVolume: 8
@@ -67,48 +66,49 @@ export default new Vuex.Store({
       state.playingDiv = payload;
     },
 
-    addArrowRef(state, payload) {
-      state.arrowRefs.push(payload);
-      setInCache(state.arrowRefs, 'arrowRefs');
+    addArrow(state, payload) {
+      state.transformedSquares.push(payload);
+      setInCache(state.transformedSquares, 'transformedSquares');
     },
-    updateArrowRefsAfterGridSizeChange(state, payload) {
-      state.arrowRefs = payload;
-      setInCache(state.arrowRefs, 'arrowRefs');
+    updateTransformedSquaresAfterGridChange(state, payload) {
+      state.transformedSquares = payload;
+      setInCache(state.transformedSquares, 'transformedSquares');
 
 
     },
-    bulkAddArrowRefs( state, payload){
+    bulkAddTransformedSquares( state, payload){
       state.arrowRefs = payload;
     },
-    bulkAddPortals(state, portals) {
-      state.portalsHashObject = portals;
-     },
-    removePortal(state, refName) {
-      let connection = state.portalsHashObject[refName].connectsTo;
-      delete state.portalsHashObject[refName];
-      delete state.portalsHashObject[connection];
+    removePortal(state, payload) {
+      console.log("payload", payload);
+      let newTransformedSquaresState = state.transformedSquares;
+      const { connectsTo, refName } = payload;
+      if(connectsTo) {
+        newTransformedSquaresState = newTransformedSquaresState.filter(square => square.refName !== connectsTo);
+      }
+       newTransformedSquaresState = newTransformedSquaresState.filter(square => square.refName !== refName);
       state.openPortal = "";
-      setInCache(state.portalsHashObject, 'portals')
-    },
-    removeArrowRef(state, payload) {
       
-      let index = this.getters.findArrowRefIndex(payload);
+      state.transformedSquares = newTransformedSquaresState;
+      setInCache(newTransformedSquaresState, 'transformedSquares')
+    },
+    removeArrow(refName) {
+        let index = this.getters.findTransformedSquareIndex(refName);
 
       if (index !== -1) {
-        state.arrowRefs.splice(index, 1);
-        setInCache(state.arrowRefs, 'arrowRefs');
+        state.transformedSquares.splice(index, 1);
+        setInCache(state.transformedSquares, 'transformedSquares');
       }
     },
+
     clearGrid(state) {
-      state.arrowRefs = [];
-      state.portalsHashObject = {};
-      setInCache(state.arrowRefs, 'arrowRefs');
-      setInCache(state.portalsHashObject, 'portals');
+      state.transformedSquares = [];
+      setInCache(state.transformedSquares, 'transformedSquares');
     },
     changeDirectionOnArrowRef(state, payload) {
       let { index, direction } = payload;
-      state.arrowRefs[index].direction = direction;
-      setInCache(state.arrowRefs, 'arrowRefs');
+      state.transformedSquares[index].direction = direction;
+      setInCache(state.transformedSquares, 'arrowRefs');
     },
 /*     setDirection(state, payload) {
       state.direction = payload;
@@ -152,20 +152,25 @@ export default new Vuex.Store({
       changePortalCreatorActive(state, bool){
         state.portalCreatorActive = bool;
       },
-      addOpenPortal(state,payload) {
+      addPortal(state,payload) {
         if(state.openPortal) {
+
           let { openPortal } = state;
-          state.portalsHashObject[payload.refName] = {...payload, connectsTo: openPortal.refName};
-          state.portalsHashObject[openPortal.refName] = { ...openPortal, connectsTo: payload.refName};
+          state.transformedSquares.push({ ...payload, connectsTo: openPortal.refName, type: 'Portal' });
+          let indexOfConnection = state.transformedSquares.findIndex(square => square.refName == openPortal.refName);
+          state.transformedSquares[indexOfConnection].connectsTo = payload.refName;
           state.openPortal = null;
-          setInCache(state.portalsHashObject, 'portals')
+          setInCache(state.transformedSquares, 'transformedSquares')
           return
         }
-        state.portalsHashObject[payload.refName] = payload;
+        state.transformedSquares.push({...payload, type: 'Portal'});
         state.openPortal = payload;
       },
 },
   actions: {
+    togglePause({commit}, refForSquare) {
+      console.log("REF",refForSquare);
+    },
     setSelectedWaveform({commit},payload) {
       commit("setSelectedWaveform", payload)
     },
@@ -184,12 +189,8 @@ export default new Vuex.Store({
       commit("setColorTheme", colorTheme)
       
     },
-   removePortal({commit}, refName) {
-    commit("removePortal", refName)
-   },
-   bulkAddPortals({commit}, portals) {
-    commit("bulkAddPortals", portals)
-   },
+
+
     toggleJoystickMode({commit}) {
       commit('toggleJoystickMode');
     },
@@ -213,7 +214,7 @@ export default new Vuex.Store({
     addArrowRef({ commit, getters }, payload) {
       let { x, y, direction, refName } = payload;
 
-      let indexOfDuplicate = getters.findArrowRefIndex(refName);
+      let indexOfDuplicate = getters.findTransformedSquareIndex(refName);
 
       if (indexOfDuplicate !== -1) {
         commit("changeDirectionOnArrowRef", {
@@ -222,20 +223,20 @@ export default new Vuex.Store({
         });
         return;
       }
-      commit("addArrowRef", { x, y, refName, direction: direction });
+      commit("addArrowRef", { x, y, refName, direction, type: "arrow" });
     },
-    removeArrowRef({ commit }, payload) {
-     
-      commit("removeArrowRef", payload);
+    removeTransformedSquare({ commit }, payload) {
+      commit(`remove${payload.type}`, payload );
     },
-/*     setDirection({ commit }, payload) {
-      commit("setDirection", payload);
-    }, */
+    addTransformedSquare({ commit }, payload) {
+      commit(`add${payload.type}`, payload );
+    },
+
     changeGridSize({commit, dispatch}, payload) {
       commit("changeIsPlayingState",false);
       commit("setGridSize", payload);
       dispatch("setAllArpeggios");
-      dispatch("updateArrowRefsAfterGridSizeChange");
+      dispatch("updateTransformedSquaresAfterGridChange");
 
     },
     changeArpeggio({commit,dispatch}, payload) {
@@ -243,15 +244,15 @@ export default new Vuex.Store({
       dispatch("setAllArpeggios");
 
     },
-    bulkAddArrowRefs({commit, dispatch}, payload) {
-      commit("bulkAddArrowRefs", payload);
+    bulkAddTransformedSquares({commit, dispatch}, payload) {
+      commit("bulkAddTransformedSquares", payload);
 
-      dispatch("updateArrowRefsAfterGridSizeChange");
+      dispatch("updateTransformedSquaresAfterGridChange");
     },
-    updateArrowRefsAfterGridSizeChange({commit, state}) {
+    updateTransformedSquaresAfterGridChange({commit, state}) {
       let { x, y } = state.gridSize;
-      let availableArrowRefs = state.arrowRefs.filter( arrowRef => arrowRef.x <= x && arrowRef.y <= y );
-      commit("updateArrowRefsAfterGridSizeChange",availableArrowRefs );
+      let availableTransformedSquares = state.transformedSquares.filter( square => square.x <= x && square.y <= y );
+      commit("updateTransformedSquaresAfterGridChange",availableTransformedSquares );
     },
     changeGridMaxValue({commit}, payload) {
         commit("setGridMaxValue", Number(payload))
@@ -287,10 +288,6 @@ export default new Vuex.Store({
     changePortalCreatorActive({ commit },bool) {
      commit("changePortalCreatorActive",bool);
     },
-    createPortal({ commit }, payload) {
-
-      commit("addOpenPortal", payload);
-    }
 
   },
   getters: {
@@ -299,14 +296,16 @@ export default new Vuex.Store({
     getJoystickMode: state => {
       return state.joystickMode;
     },
-    findArrowRefIndex: state => refName => {
-
-      let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
+    getStartingArrow: state => {
+      return state.transformedSquares.find(square => square.direction);
+    },
+    findTransformedSquareIndex: state => refName => {
+      let index = state.transformedSquares.findIndex(square => square.refName == refName);
       return index;
     },
-    findArrowRef: state => refName => {
-      let arrowRef = state.arrowRefs.filter(ref => ref.refName == refName);
-      return arrowRef[0];
+    findTransformedSquare: state => refName => {
+      let transformedSquare = state.transformedSquares.filter(ref => ref.refName == refName);
+      return transformedSquare[0];
     },
 /*     getArrowRefDirection: state => refName => {
       let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
@@ -318,20 +317,11 @@ export default new Vuex.Store({
         return null
       }
     }, */
-    isPortal
-    : state => refName => {
-      return state.portalsHashObject[refName];
-    },
-    getPortalConnection: state => refName => {
-      let connectedPortal = state.portalsHashObject[refName];
 
-      return connectedPortal? state.portalsHashObject[connectedPortal.connectsTo] : "";
-    },
+
     getPortalNumber: state => refName => {
     
-      if(!state.portalsHashObject[refName] || !state.portalsHashObject[refName].connectsTo) return;
-    let keys = Object.keys(state.portalsHashObject);
-    let index = keys.indexOf(refName);
+    let index = state.transformedSquares.findIndex(square => square.refName === refName);
     
 
     let portalNumber = Math.round((index+1)/2);
