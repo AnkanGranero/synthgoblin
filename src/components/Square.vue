@@ -123,7 +123,10 @@ export default {
 
     handleClick(event) {
       event.preventDefault();
-
+      if (this.directionPickerOpen) {
+        this.directionPickerOpen = false;
+        return;
+      }
       if (event.button === 2) return;
       if (this.transformedSquare) {
         this.removeTransformedSquare(this.transformedSquare);

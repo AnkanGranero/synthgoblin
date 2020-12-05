@@ -21,7 +21,6 @@
     </div>
     <div
       class="direction-picker__wrapper direction-picker__row--2 direction-picker__column--2"
-      @mousedown="removeArrowDiv"
       @mouseover="handleMouseOver('')"
     ></div>
     <div
@@ -47,12 +46,12 @@ import { mapState } from "vuex";
 export default {
   name: "directionPicker",
   components: {
-    Triangle
+    Triangle,
   },
   data() {
     return {
       mouseDown: true,
-      preliminaryDirection: ""
+      preliminaryDirection: "",
     };
   },
 
@@ -75,9 +74,7 @@ export default {
         this.setDirection(this.preliminaryDirection);
       }
     },
-    removeArrowDiv() {
-      this.$emit("removeArrowDiv");
-    },
+
     handleMouseLeave() {
       if (this.isMobile) {
         return;
@@ -89,11 +86,11 @@ export default {
       } else {
         this.$emit("closeDirectionPicker");
       }
-    }
+    },
   },
   computed: {
-    ...mapState(["isMobile"])
-  }
+    ...mapState(["isMobile"]),
+  },
 };
 </script>
 

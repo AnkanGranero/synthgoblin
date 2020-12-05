@@ -92,11 +92,15 @@ export default new Vuex.Store({
       state.transformedSquares = newTransformedSquaresState;
       setInCache(newTransformedSquaresState, 'transformedSquares')
     },
-    removeArrow(refName) {
+    removeArrow(state, arrow) {
+
+        const {refName} = arrow;
         let index = this.getters.findTransformedSquareIndex(refName);
 
       if (index !== -1) {
-        state.transformedSquares.splice(index, 1);
+
+        let newState = state.transformedSquares.filter(square => square.refName !== refName);
+        state.transformedSquares = newState;
         setInCache(state.transformedSquares, 'transformedSquares');
       }
     },
@@ -226,6 +230,7 @@ export default new Vuex.Store({
       commit("addArrowRef", { x, y, refName, direction, type: "arrow" });
     },
     removeTransformedSquare({ commit }, payload) {
+      
       commit(`remove${payload.type}`, payload );
     },
     addTransformedSquare({ commit }, payload) {
