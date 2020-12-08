@@ -125,6 +125,7 @@ export default {
       selectedWaveform: "sawtooth",
       tvFinishedLoaded: false,
       manualDirection: "",
+      direction: "",
       eraseKeyDown: false,
       lastPlayedDiv: "",
       nextPlayingDiv: "",
@@ -244,15 +245,14 @@ export default {
     repeat(time) {
       if (this.lastPlayedDiv) {
         this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
-        this.$store.dispatch("setPlayingDiv", this.nextPlayingDiv);
       }
       if (!this.isPlaying) this.stop();
       if (this.justChangedDirection && this.lastPlayedDiv) {
-        this.changedDirectionsManually();
       }
-
-      let { x, y, refName, direction } = this.playingDiv;
-
+      let isTransformedSquare = this.findTransformedSquare(
+        this.playingDiv.refName
+      );
+      let { x, y, refName, direction, type, connectsTo } = this.playingDiv;
       let squareIsWithinGrid = this.gridRefs[refName];
 
       if (!squareIsWithinGrid) {
@@ -261,70 +261,39 @@ export default {
       }
       this.changeHighlightClass(refName, "add");
 
-      let isTransformedSquare = this.findTransformedSquare(refName);
-      if (isTransformedSquare) {
-        if (this.eraseKeyDown) {
-          this.$store.dispatch("removeTransformedSquare", isTransformedSquare);
-          isTransformedSquare = false;
-        } else {
-          if (isTransformedSquare.type === "Portal") {
-            isTransformedSquare.direction = this.lastPlayedDiv.direction;
-          }
-          this.setPlayingDiv(isTransformedSquare);
-        }
+      if (this.eraseKeyDown && type) {
+        this.$store.dispatch("removeTransformedSquare", this.playingDiv);
+        isTransformedSquare = false;
+        direction = this.direction;
+        type = "";
       }
 
-      /*        if (type === "Portal" && !this.lastPlayedDiv.type === "Portal") {
-          let nextPortal = this.findTransformedSquare(
-            isTransformedSquare.connectsTo
-          );
-          if (!nextPortal) this.stop();
-
-          this.nextPlayingDiv = {
-            ...nextPortal,
-            direction,
-          }; */
-      /*  note = this.allArpeggios[x - 1][y - 1]; */
-      /*           this.midiOutActive
-            ? this.midiPlay(note)
-            : this.synth.triggerAttackRelease(note, "8n", time);
-          return; */
-
-      /*         if (isTransformedSquare.type === "Arrow") {
-          direction = isTransformedSquare.direction;
-          this.manualDirection = "";
-        } */
-      /*   } */
-
-      //behövs denna?
-      /*       if (this.manualDirection) {
-        direction = this.manualDirection;
-      } */
-
-      //we need to subtract one since the coordinates starts on 1
-      //and the allArpeggios arr start at index 0
-
+      if (direction) {
+        this.direction = direction;
+      }
       let note = this.allArpeggios[x - 1][y - 1];
 
       this.midiOutActive
         ? this.midiPlay(note)
         : this.synth.triggerAttackRelease(note, "8n", time);
 
-      if (
-        isTransformedSquare &&
-        isTransformedSquare.type === "Portal" &&
-        this.lastPlayedDiv.type !== "Portal"
-      ) {
-        this.nextPlayingDiv = this.nextCoordinatesBasedOnConnetion(
-          isTransformedSquare
-        );
+      let nextCoordinates;
+
+      if (type === "Portal" && this.lastPlayedDiv.type !== "Portal") {
+        nextCoordinates = this.nextCoordinatesBasedOnConnetion(this.playingDiv);
       } else {
-        this.nextPlayingDiv = this.nextCoordinatesBasedOnDirection(
-          this.playingDiv
-        );
+        nextCoordinates = this.nextCoordinatesBasedOnDirection(this.playingDiv);
       }
       this.lastPlayedDiv = this.playingDiv;
-      console.log("lastPlayedDiv", this.lastPlayedDiv);
+      let isNextSquareTransformed = this.findTransformedSquare(
+        nextCoordinates.refName
+      );
+      let nextSquareInfo = isNextSquareTransformed
+        ? isNextSquareTransformed
+        : nextCoordinates;
+      this.$store.dispatch("setPlayingDiv", nextSquareInfo);
+
+      // ta reda på direction, antingen
     },
     changeHighlightClass(refName, action) {
       const target = this.gridRefs[refName];
@@ -341,7 +310,6 @@ export default {
       const nextCoordinatesInfo = {
         x: this.lastPlayedDiv.x,
         y: this.lastPlayedDiv.y,
-        direction: this.manualDirection,
       };
       let suddenlyChangedCoordinates = this.nextCoordinatesBasedOnDirection(
         nextCoordinatesInfo
@@ -357,7 +325,7 @@ export default {
         refName,
       });
       if (this.writeKeyDown) {
-        this.lastPlayedDiv.direction = this.manualDirection;
+        this.lastPlayedDiv.direction = this.direction;
         this.$store.dispatch("addTransformedSquare", this.lastPlayedDiv);
       }
       this.justChangedDirection = false;
@@ -367,8 +335,8 @@ export default {
     },
 
     nextCoordinatesBasedOnDirection(playingDiv) {
-      let { x, y, direction } = playingDiv;
-      switch (direction) {
+      let { x, y } = playingDiv;
+      switch (this.direction) {
         case "down":
           y += 1;
           break;
@@ -383,7 +351,7 @@ export default {
           break;
       }
       let refName = this.getRefFromCoordinates(x, y);
-      return { x, y, direction, refName };
+      return { x, y, refName };
     },
     nextCoordinatesBasedOnConnetion(transformedSquare) {
       let { connectsTo } = transformedSquare;
@@ -391,12 +359,13 @@ export default {
         this.stop();
         return;
       }
-      return this.findTransformedSquare(connectsTo);
+      let { x, y, refName } = this.findTransformedSquare(connectsTo);
+      return { x, y, refName };
     },
     handleKeyDownCommands(e) {
       if (this.joystickMode && e.keyCode > 36 && e.keyCode < 41) {
         let direction = e.key.replace("Arrow", "").toLowerCase();
-        this.manualDirection = direction;
+        this.direction = direction;
         this.justChangedDirection = true;
         e.preventDefault();
       }
