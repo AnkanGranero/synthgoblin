@@ -77,7 +77,8 @@ export default new Vuex.Store({
 
     },
     bulkAddTransformedSquares( state, payload){
-      state.arrowRefs = payload;
+      state.transformedSquares = payload;
+      setInCache(state.transformedSquares, 'transformedSquares')
     },
     removePortal(state, payload) {
       console.log("payload", payload);

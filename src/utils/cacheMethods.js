@@ -11,8 +11,7 @@ function getCachedInfo(name) {
 function getAllCachedInfo() {
     const gridSize = getCachedInfo('gridSize');
     const arpeggio = getCachedInfo('arpeggio');
-    const arrowRefs = getCachedInfo("arrowRefs");
-    const portals = getCachedInfo("portals");
+    const transformedSquares = getCachedInfo("transformedSquares");
     const colorTheme = getCachedInfo("colorTheme");
     const joystickMode = getCachedInfo("joystickMode");
     const midiOutActive = getCachedInfo("midiOutActive");
@@ -20,7 +19,7 @@ function getAllCachedInfo() {
     const volume = getCachedInfo("volume")
     
 
-    return { gridSize, arpeggio, arrowRefs, portals, colorTheme, joystickMode, midiOutActive, waveform, volume }
+    return { gridSize, arpeggio, transformedSquares, colorTheme, joystickMode, midiOutActive, waveform, volume }
 
 }
 function getCachedToneInfo() {
