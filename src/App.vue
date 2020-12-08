@@ -159,9 +159,7 @@ export default {
         waveform,
         volume,
       } = cachedInfo;
-      if (arrowRefs) {
-        this.$store.dispatch("bulkAddArrowRefs", arrowRefs);
-      }
+
       if (gridSize) {
         this.$store.dispatch("changeGridSize", gridSize);
       }
@@ -254,24 +252,28 @@ export default {
       }
 
       let { x, y, refName, direction } = this.playingDiv;
+
       let squareIsWithinGrid = this.gridRefs[refName];
+
       if (!squareIsWithinGrid) {
         this.stop();
         return;
       }
       this.changeHighlightClass(refName, "add");
-      this.lastPlayedDiv = this.playingDiv;
-      let isTransformedSquare = this.$store.getters.findTransformedSquare(
-        refName
-      );
+
+      let isTransformedSquare = this.findTransformedSquare(refName);
       if (isTransformedSquare) {
         if (this.eraseKeyDown) {
           this.$store.dispatch("removeTransformedSquare", isTransformedSquare);
           isTransformedSquare = false;
         } else {
+          if (isTransformedSquare.type === "Portal") {
+            isTransformedSquare.direction = this.lastPlayedDiv.direction;
+          }
           this.setPlayingDiv(isTransformedSquare);
         }
       }
+
       /*        if (type === "Portal" && !this.lastPlayedDiv.type === "Portal") {
           let nextPortal = this.findTransformedSquare(
             isTransformedSquare.connectsTo
@@ -308,10 +310,21 @@ export default {
         ? this.midiPlay(note)
         : this.synth.triggerAttackRelease(note, "8n", time);
 
-      this.nextPlayingDiv =
-        isTransformedSquare && isTransformedSquare.type === "Portal"
-          ? this.nextCoordinatesBasedOnConnetion(isTransformedSquare)
-          : this.nextCoordinatesBasedOnDirection(this.playingDiv);
+      if (
+        isTransformedSquare &&
+        isTransformedSquare.type === "Portal" &&
+        this.lastPlayedDiv.type !== "Portal"
+      ) {
+        this.nextPlayingDiv = this.nextCoordinatesBasedOnConnetion(
+          isTransformedSquare
+        );
+      } else {
+        this.nextPlayingDiv = this.nextCoordinatesBasedOnDirection(
+          this.playingDiv
+        );
+      }
+      this.lastPlayedDiv = this.playingDiv;
+      console.log("lastPlayedDiv", this.lastPlayedDiv);
     },
     changeHighlightClass(refName, action) {
       const target = this.gridRefs[refName];
@@ -421,7 +434,12 @@ export default {
       "joystickMode",
       "isMobile",
     ]),
-    ...mapGetters(["getPortalConnection", "getColorTheme", "getStartingArrow"]),
+    ...mapGetters([
+      "getPortalConnection",
+      "getColorTheme",
+      "getStartingArrow",
+      "findTransformedSquare",
+    ]),
 
     bpm() {
       return tempoInBpm;

@@ -325,10 +325,8 @@ export default new Vuex.Store({
 
 
     getPortalNumber: state => refName => {
-    
-    let index = state.transformedSquares.findIndex(square => square.refName === refName);
-    
-
+    let arrayOfPortals = state.transformedSquares.filter(square => square.type === 'Portal');
+    let index = arrayOfPortals.findIndex(square => square.refName === refName);
     let portalNumber = Math.round((index+1)/2);
     return portalNumber;
     },
