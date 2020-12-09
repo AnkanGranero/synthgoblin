@@ -273,9 +273,11 @@ export default {
       }
       let note = this.allArpeggios[x - 1][y - 1];
 
-      this.midiOutActive
-        ? this.midiPlay(note)
-        : this.synth.triggerAttackRelease(note, "8n", time);
+      if (type !== "Pause") {
+        this.midiOutActive
+          ? this.midiPlay(note)
+          : this.synth.triggerAttackRelease(note, "8n", time);
+      }
 
       let nextCoordinates;
 
@@ -285,12 +287,16 @@ export default {
         nextCoordinates = this.nextCoordinatesBasedOnDirection(this.playingDiv);
       }
       this.lastPlayedDiv = this.playingDiv;
+      if (!nextCoordinates) {
+        return;
+      }
       let isNextSquareTransformed = this.findTransformedSquare(
         nextCoordinates.refName
       );
       let nextSquareInfo = isNextSquareTransformed
         ? isNextSquareTransformed
         : nextCoordinates;
+
       this.$store.dispatch("setPlayingDiv", nextSquareInfo);
 
       // ta reda på direction, antingen
@@ -355,6 +361,7 @@ export default {
     },
     nextCoordinatesBasedOnConnetion(transformedSquare) {
       let { connectsTo } = transformedSquare;
+
       if (!connectsTo) {
         this.stop();
         return;

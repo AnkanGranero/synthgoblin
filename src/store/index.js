@@ -81,7 +81,6 @@ export default new Vuex.Store({
       setInCache(state.transformedSquares, 'transformedSquares')
     },
     removePortal(state, payload) {
-      console.log("payload", payload);
       let newTransformedSquaresState = state.transformedSquares;
       const { connectsTo, refName } = payload;
       if(connectsTo) {
@@ -93,7 +92,7 @@ export default new Vuex.Store({
       state.transformedSquares = newTransformedSquaresState;
       setInCache(newTransformedSquaresState, 'transformedSquares')
     },
-    removeArrow(state, arrow) {
+    removeTransformedSquare(state, arrow) {
 
         const {refName} = arrow;
         let index = this.getters.findTransformedSquareIndex(refName);
@@ -171,10 +170,14 @@ export default new Vuex.Store({
         state.transformedSquares.push({...payload, type: 'Portal'});
         state.openPortal = payload;
       },
+      addPause(state, payload) {
+        state.transformedSquares.push(payload);
+        setInCache(state.transformedSquares, 'transformedSquares');
+      }
+
 },
   actions: {
     togglePause({commit}, refForSquare) {
-      console.log("REF",refForSquare);
     },
     setSelectedWaveform({commit},payload) {
       commit("setSelectedWaveform", payload)
@@ -231,8 +234,12 @@ export default new Vuex.Store({
       commit("addArrowRef", { x, y, refName, direction, type: "arrow" });
     },
     removeTransformedSquare({ commit }, payload) {
-      
-      commit(`remove${payload.type}`, payload );
+      if(payload.type === 'Portal') {
+        commit('removePortal', payload);
+      }
+      else {
+        commit('removeTransformedSquare', payload);
+      }
     },
     addTransformedSquare({ commit }, payload) {
       commit(`add${payload.type}`, payload );

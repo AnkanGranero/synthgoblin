@@ -13,15 +13,15 @@
         @closeDirectionPicker="directionPickerOpen = false"
       />
     </slot>
-    <div
-      v-if="transformedSquare && transformedSquare.type === 'Portal'"
-      class="portal"
-      @mouseleave="portalClicked = false"
-    >
-      <span class="portal__number">{{ portalNumber() }}</span>
-    </div>
-    <div v-if="direction" class="square__arrow-wrapper" @click="clickedOnArrow">
-      <div :class="whatDirection"></div>
+
+    <div v-if="transformedSquare" class="square__arrow-wrapper">
+      <div :class="transformedSquareStyle">
+        <span
+          v-if="transformedSquare.type === 'Portal'"
+          class="portal__number"
+          >{{ portalNumber() }}</span
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       directionPickerOpen: false,
-      portalClicked: false,
       portal: false,
       touchStart: null,
       x: 0,
@@ -148,7 +147,7 @@ export default {
     },
     handleRightClick(event) {
       event.preventDefault();
-      this.togglePause(this.refForSquare);
+      this.addTransformedSquare({ ...this.refForSquare, type: "Pause" });
     },
 
     addArrow(payload) {
@@ -205,7 +204,26 @@ export default {
     direction() {
       return this.transformedSquare ? this.transformedSquare.direction : null;
     },
+    transformedSquareStyle() {
+      if (!this.transformedSquare) return;
+      let styling;
 
+      switch (this.transformedSquare.type) {
+        case "Arrow": {
+          styling = this.whatDirection;
+          break;
+        }
+        case "Pause": {
+          styling = "pause";
+          break;
+        }
+        case "Portal": {
+          styling = "portal";
+          break;
+        }
+      }
+      return styling;
+    },
     whatDirection() {
       let { direction } = this;
 
@@ -334,6 +352,12 @@ $starting-arrow: red;
   }
 }
 //används denna?
+
+.pause {
+  height: 1px;
+  background: black;
+  width: 60%;
+}
 .arrow {
   border: 5px solid white;
 }
@@ -353,12 +377,21 @@ $starting-arrow: red;
   cursor: pointer;
 
   &__number {
+    font-family: "VT323";
+
     z-index: 2;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 30px;
+    @media only screen and (min-width: $ipad) {
+      font-size: 25px;
+    }
+    @media screen and(min-width: $laptop ) {
+      font-size: 30px;
+    }
   }
 
   &__invisible-overlay {
