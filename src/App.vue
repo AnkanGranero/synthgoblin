@@ -281,7 +281,7 @@ export default {
 
       let nextCoordinates;
 
-      if (type === "Portal" && this.lastPlayedDiv.type !== "Portal") {
+      if (type === "Portal" && this.lastPlayedDiv.refName !== connectsTo) {
         nextCoordinates = this.nextCoordinatesBasedOnConnetion(this.playingDiv);
       } else {
         nextCoordinates = this.nextCoordinatesBasedOnDirection(this.playingDiv);
