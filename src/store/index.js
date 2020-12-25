@@ -304,6 +304,11 @@ export default new Vuex.Store({
 
   },
   getters: {
+    getColorCenter: state => {
+      return state.playingDiv
+        ? state.playingDiv
+        : { x: 10, y: 10, refName: "r10,10" };
+    },
     getSelectedWaveform: state => state.selectedWaveform,
     getPortalCreatorActive: state => state.portalCreatorActive,
     getJoystickMode: state => {

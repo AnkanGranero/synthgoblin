@@ -10,20 +10,18 @@ export default {
   props: {
     value: {
       type: String,
-      default: "sine"
+      default: "sine",
     },
     selected: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     colorTheme() {
       return this.$store.getters.getColorTheme;
-    }
+    },
   },
-
-  components: {}
 };
 </script>
 <style lang="scss">
@@ -46,11 +44,10 @@ export default {
       /* width: 36%; */
     }
   }
-}
-
-.active {
-  background: $tv-button-active;
-  stroke: $dark-stroke;
+  .active {
+    background: $tv-button-active;
+    stroke: $dark-stroke;
+  }
 }
 
 .classic {

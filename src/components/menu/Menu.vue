@@ -40,14 +40,14 @@ export default {
   data() {
     return {
       menuStep: [],
-      componentData: null
+      componentData: null,
     };
   },
   components: {
     SliderContainer,
     MidiOutputs,
     inputField,
-    MidiOptionSliders
+    MidiOptionSliders,
   },
   methods: {
     handleClick(value, index) {
@@ -98,7 +98,7 @@ export default {
         case "Midi out:":
           return this.midiOutActive ? "ON" : "OFF";
       }
-    }
+    },
   },
 
   computed: {
@@ -118,13 +118,13 @@ export default {
           return menuValues[menuStep[0]].values[menuStep[1]];
       }
       return menuValues;
-    }
+    },
     /*     menuOptionComponent() {
       return this.currentMenuValues.type === "component"
         ? this.currentMenuValues
         : false;
     } */
-  }
+  },
 };
 </script>
 

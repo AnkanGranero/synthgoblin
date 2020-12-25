@@ -5,12 +5,12 @@
         v-for="x in gridSize.x"
         :key="x"
         @mouseover="mouseEventHandler(x, y)"
-        :style="colorStyling(x, y)"
         :class="createColClass(x)"
         :ref="getRefFromCoordinates(x, y)"
       >
         <square
           :refForSquare="refForSquare(x, y)"
+          :highlightPos="highlightPos"
           @clicked-on-square="$emit('clicked-on-square', $event)"
         >
         </square>
@@ -69,11 +69,9 @@ export default {
             "box-shadow": `-5px -5px 10px ${this.colorCalcDifference(y, x)} `,
           };
         case "classic": {
-          let backgroundColors = {
-            background: this.colorCalcDifBoth(x, y),
-          };
+          return this.colorCalcDifBoth(x, y);
+
           /*         this.$store.dispatch("setBackgroundColors", backgroundColors);*/
-          return backgroundColors;
         }
       }
     },
@@ -95,18 +93,21 @@ export default {
     colorCalcDifBoth(x, y) {
       if (
         this.isPlaying &
-        (x === this.colorCenter.x) &
-        (y === this.colorCenter.y)
+        (x === this.getColorCenter.x) &
+        (y === this.getColorCenter.y)
       ) {
-        return "white";
-      }
-      return (
-        "rgb(" +
-        this.colorCalcDif(y, "y") +
-        "," +
-        this.colorCalcDif(x, "x") +
-        ",250)"
-      );
+        return {
+          background: "white",
+          border: "1px solid black",
+          boxSizing: "border-box",
+          borderBottom: "1px solid black",
+        };
+      } else if (this.isStartingArrow)
+        return {
+          background: `rgb(
+        ${this.colorCalcDif(y, "y")},
+        ${this.colorCalcDif(x, "x")},250)`,
+        };
     },
 
     colorCalcDif(n, coordinate) {
@@ -159,17 +160,13 @@ export default {
   },
   computed: {
     ...mapState(["playingDiv", "isPlaying", "portals", "arrowRefs"]),
-    /*     ...mapGetters(["isPortal"]), */
-    colorCenter() {
-      return this.playingDiv
-        ? this.playingDiv
-        : { x: 10, y: 10, refName: "r10,10" };
-    },
+    ...mapGetters(["getColorCenter"]),
+
     highlightPos() {
       let pos;
       switch (this.isPlaying) {
         case true:
-          pos = this.colorCenter;
+          pos = this.getColorCenter;
 
           break;
         case false:
@@ -207,10 +204,5 @@ $square: 6.666666666666667%;
 .row {
   display: flex;
   grid-template-columns: $square $square $square $square $square $square $square $square $square $square $square $square $square $square $square;
-}
-
-.highlight {
-  /*   border: 1px solid rgb(110, 110, 160);
-  box-sizing: border-box; */
 }
 </style>

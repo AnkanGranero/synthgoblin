@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       x: "",
-      y: ""
+      y: "",
     };
   },
   methods: {
@@ -25,9 +25,9 @@ export default {
     },
     changeGridSize() {
       let { x, y } = this;
-      this.$emit("changeGridSize", { x: Number(x), y: Number(y) });
-    }
-  }
+      this.$store.dispatch("changeGridSize", { x: Number(x), y: Number(y) });
+    },
+  },
 };
 </script>
 

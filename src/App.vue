@@ -2,7 +2,7 @@
   <div class="hagrid" :class="'hagrid__' + getColorTheme">
     <Modal v-if="modalIsOpen" @modalEmit="modalEventHandler" />
 
-    <SecretModal v-if="!isMobile" @changeGridSize="changeGridSize" />
+    <SecretModal v-if="!isMobile" />
     <div class="tv-wrapper" :class="'tv-wrapper__' + getColorTheme">
       <CHeader v-if="getColorTheme === 'classic'" />
       <div class="tv" :class="'tv__' + getColorTheme" v-if="tvFinishedLoaded">

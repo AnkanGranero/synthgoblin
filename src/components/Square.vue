@@ -1,7 +1,8 @@
 <template>
   <div
     class="square"
-    :class="isStartingArrow"
+    :style="colorStyling"
+    :class="{ startingArrow: isStartingArrow }"
     @contextmenu="handleRightClick"
     @mousedown="handleClick"
   >
@@ -49,6 +50,10 @@ export default {
     refreshIndex: {
       type: Number,
     },
+    highlightPos: {
+      type: Object,
+      default: () => {},
+    },
   },
   components: {
     DirectionPicker,
@@ -67,6 +72,21 @@ export default {
       "removeTransformedSquare",
       "togglePause",
     ]),
+    colorCalcDif(n, coordinate) {
+      let pos = this.highlightPos[coordinate];
+
+      let availableDistance = this.gridSize[coordinate] - 1;
+
+      let numbers = [n, pos];
+      numbers.sort((a, b) => b - a);
+      let high = numbers[0];
+      let low = numbers[1];
+      let difference = high - low;
+      let percentageAway = difference / availableDistance;
+
+      let invert = 250 * percentageAway;
+      return 250 - invert;
+    },
     handTouchEnd(e) {
       e.preventDefault();
       if (!this.touchStart) return;
@@ -180,21 +200,45 @@ export default {
       "arrowRefs",
       "isMobile",
       "transformedSquares",
+      "isPlaying",
+      "gridSize",
     ]),
     ...mapGetters([
       "getPortalNumber",
       "findTransformedSquareIndex",
       "findTransformedSquare",
       "getStartingArrow",
+      "getColorCenter",
     ]),
+    colorStyling() {
+      const { x, y } = this.refForSquare;
+      if (this.isStartingArrow) {
+        return;
+      } else if (
+        this.isPlaying &
+        (x === this.getColorCenter.x) &
+        (y === this.getColorCenter.y)
+      ) {
+        return {
+          background: "white",
+          border: "1px solid black",
+          boxSizing: "border-box",
+          borderBottom: "1px solid black",
+        };
+      } else {
+        return {
+          background: `rgb(
+        ${this.colorCalcDif(y, "y")},
+        ${this.colorCalcDif(x, "x")},250)`,
+        };
+      }
+    },
     transformedSquare() {
       return this.findTransformedSquare(this.refForSquare.refName);
     },
     isStartingArrow() {
       if (!this.getStartingArrow) return;
-      return this.getStartingArrow.refName === this.refForSquare.refName
-        ? "starting-arrow"
-        : "";
+      return this.getStartingArrow.refName === this.refForSquare.refName;
     },
     refIndex() {
       return this.$store.getters.findTransformedSquareIndex(
@@ -257,6 +301,7 @@ export default {
 
 <style lang="scss">
 $starting-arrow: red;
+
 .hidden {
   display: none;
 }
