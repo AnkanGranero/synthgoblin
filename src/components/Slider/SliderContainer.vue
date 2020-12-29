@@ -14,18 +14,19 @@ export default {
   props: {
     values: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   components: {
-    Slider
-  }
+    Slider,
+  },
 };
 </script>
 <style lang="scss">
 $medium: 768px;
 
 .slider-container {
+  position: relative;
   display: flex;
   height: 60%;
   margin-top: 10%;
@@ -34,16 +35,9 @@ $medium: 768px;
   flex-direction: column;
 }
 .slot-container {
+  height: 100%;
   display: flex;
   flex-grow: 3;
   justify-content: space-around;
-  /* margin-top: 15%; */
 }
-/* .btn-wrapper {
-  flex-grow: 1;
-  margin-top: 20%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-} */
 </style>
