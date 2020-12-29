@@ -62,7 +62,7 @@ export default {
     if (this.isMobile) {
       this.$el.addEventListener("touchstart", (e) => this.handleTouchStart(e));
       this.$el.addEventListener("touchmove", (e) => this.handleTouchMove(e));
-      this.$el.addEventListener("touchend", (e) => this.handTouchEnd(e));
+      this.$el.addEventListener("touchend", (e) => this.handleTouchEnd(e));
     }
   },
   methods: {
@@ -87,7 +87,7 @@ export default {
       let invert = 250 * percentageAway;
       return 250 - invert;
     },
-    handTouchEnd(e) {
+    handleTouchEnd(e) {
       e.preventDefault();
       if (!this.touchStart) return;
       const { x, y } = this;
@@ -97,7 +97,7 @@ export default {
     },
     handleTouchStart(e) {
       if (this.transformedSquare) {
-        this.removeTransformedSquare(this.removeTransformedSquare);
+        this.removeTransformedSquare(this.transformedSquare);
         return;
       }
 
@@ -132,16 +132,16 @@ export default {
         direction = y > y2 ? "up" : "down";
       }
       if (xDifference === yDifference) {
-        this.removeTransformedSquare(this.transformedSquare);
         return;
       }
-      let payloadForStore = { ...this.refForSquare, direction };
+      let payloadForStore = { ...this.refForSquare, direction, type: "Arrow" };
 
-      this.addArrowRef(payloadForStore);
+      this.addTransformedSquare(payloadForStore);
     },
 
     handleClick(event) {
       event.preventDefault();
+      if (this.isMobile) return;
       if (this.directionPickerOpen) {
         this.directionPickerOpen = false;
         return;
