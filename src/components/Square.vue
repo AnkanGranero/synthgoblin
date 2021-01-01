@@ -39,6 +39,7 @@ export default {
       touchStart: null,
       x: 0,
       y: 0,
+      longTouch: false,
     };
   },
 
@@ -89,7 +90,12 @@ export default {
     },
     handleTouchEnd(e) {
       e.preventDefault();
+      this.longTouch = false;
       if (!this.touchStart) return;
+      if (this.portalCreatorActive && !this.transformedSquare) {
+        this.addPortal();
+        return;
+      }
       const { x, y } = this;
 
       this.directionBasedOnTouch(x, y);
@@ -100,19 +106,21 @@ export default {
         this.removeTransformedSquare(this.transformedSquare);
         return;
       }
+      this.longTouch = true;
+      setTimeout(() => {
+        if (this.longTouch) {
+          this.addTransformedSquare({ ...this.refForSquare, type: "Pause" });
+        }
+      }, 400);
 
-      if (this.portalCreatorActive) {
-        this.addPortal();
-        return;
-      } else {
-        const { screenX: x, screenY: y } = e.touches[0];
-        this.touchStart = { x, y };
-        this.x = x;
-        this.y = y;
-      }
+      const { screenX: x, screenY: y } = e.touches[0];
+      this.touchStart = { x, y };
+      this.x = x;
+      this.y = y;
     },
     handleTouchMove(e) {
       e.preventDefault();
+      this.longTouch = false;
       const { screenX: x, screenY: y } = e.touches[0];
       this.x = x;
       this.y = y;
@@ -167,6 +175,7 @@ export default {
     },
     handleRightClick(event) {
       event.preventDefault();
+      if (this.isMobile) return;
       this.addTransformedSquare({ ...this.refForSquare, type: "Pause" });
     },
 

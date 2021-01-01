@@ -458,6 +458,7 @@ $square: 6.666666666666667%;
 $leafGreen: #368a3c;
 
 .hagrid {
+  -webkit-user-select: none;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -478,8 +479,8 @@ $leafGreen: #368a3c;
     height: 100%;
   }
 }
-
 html {
+  -webkit-user-select: none;
   font-size: 10px;
   @media only screen and (min-width: 768px) {
     font-size: 10px;
@@ -502,6 +503,7 @@ html {
 }
 
 body {
+  -webkit-user-select: none;
   height: 100%;
   width: 100%;
   min-height: 100%;
