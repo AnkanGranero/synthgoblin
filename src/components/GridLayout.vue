@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      mousePos: { x: 0, y: 0 },
+      mousePos: { x: 1, y: 1 },
     };
   },
   props: {
@@ -159,12 +159,18 @@ export default {
     },
   },
   computed: {
-    ...mapState(["playingDiv", "isPlaying", "portals", "arrowRefs"]),
+    ...mapState([
+      "playingDiv",
+      "isPlaying",
+      "portals",
+      "arrowRefs",
+      "isMobile",
+    ]),
     ...mapGetters(["getColorCenter"]),
 
     highlightPos() {
       let pos;
-      switch (this.isPlaying) {
+      switch (this.isPlaying || this.isMobile) {
         case true:
           pos = this.getColorCenter;
 

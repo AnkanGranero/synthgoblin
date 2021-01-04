@@ -305,9 +305,17 @@ export default new Vuex.Store({
   },
   getters: {
     getColorCenter: state => {
-      return state.playingDiv
-        ? state.playingDiv
-        : { x: 10, y: 10, refName: "r10,10" };
+      if(state.playingDiv) {
+        return state.playingDiv
+      }
+      else {
+        let x = Math.floor(state.gridSize.x / 2 ); 
+        let y = Math.floor(state.gridSize.y / 2); 
+        let refName = `r${x},${y}`
+        return {
+          x, y, refName
+        }
+      }
     },
     getSelectedWaveform: state => state.selectedWaveform,
     getPortalCreatorActive: state => state.portalCreatorActive,
