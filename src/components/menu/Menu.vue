@@ -168,9 +168,11 @@ export default {
     margin-top: 70px;
     list-style: none;
     padding: 0;
+    @media only screen and (min-width: $ipad) {
+    }
   }
   &__option {
-    font-size: 30px;
+    font-size: 25px;
     margin-bottom: 2rem;
     cursor: pointer;
     text-align: center;
@@ -178,7 +180,7 @@ export default {
       color: $yellowMedium;
     }
     @media only screen and (min-width: $desktop-large) {
-      font-size: 40px;
+      font-size: 35px;
     }
     &--link {
       text-decoration: none;

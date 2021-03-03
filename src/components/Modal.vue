@@ -13,13 +13,13 @@ export default {
     return {};
   },
   components: {
-    Menu
+    Menu,
   },
   methods: {
     modalEmit(payload) {
       this.$emit("modalEmit", payload);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -29,10 +29,11 @@ export default {
   width: 70%;
   left: 15%;
   background: $hagrid-green-background;
+
   border: 5px solid white;
-  height: 70%;
+  height: 90%;
   position: fixed;
-  top: 15%;
+  top: 5%;
   display: flex;
   flex-direction: column;
   justify-content: center;
