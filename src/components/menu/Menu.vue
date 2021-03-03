@@ -165,10 +165,10 @@ export default {
     margin-left: 5%;
   }
   &__options {
-    margin-top: 70px;
     list-style: none;
     padding: 0;
     @media only screen and (min-width: $ipad) {
+      margin-top: 70px;
     }
   }
   &__option {
