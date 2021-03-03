@@ -4,10 +4,17 @@
       <li
         v-for="(value, index) in currentMenuValues.values"
         :key="index"
-        @click="handleClick(value, index)"
         class="menu__option"
       >
-        {{ value.name }}
+        <a
+          v-if="value.type === 'link'"
+          :href="value.url"
+          @click="$emit('menuEmit', 'closeModal')"
+          class="menu__option menu__option--link"
+        >
+          {{ value.name }}</a
+        >
+        <span v-else @click="handleClick(value, index)">{{ value.name }}</span>
         <span
           v-if="value.type === 'toggle'"
           class="menu__toggle"
@@ -51,18 +58,21 @@ export default {
   },
   methods: {
     handleClick(value, index) {
-      if (value.type === "text") {
-        this.menuStep.push(index);
-        return;
+      switch (value.type) {
+        case "text": {
+          this.menuStep.push(index);
+          return;
+        }
+        case "component": {
+          this.componentData = value;
+          return;
+        }
+        case "toggle": {
+          this.$store.dispatch(value.action);
+          return;
+        }
       }
-      if (value.type === "component") {
-        this.componentData = value;
-        return;
-      }
-      if (value.type === "toggle") {
-        this.$store.dispatch(value.action);
-        return;
-      }
+
       this.menuChoice(value);
     },
 
@@ -169,6 +179,10 @@ export default {
     }
     @media only screen and (min-width: $desktop-large) {
       font-size: 40px;
+    }
+    &--link {
+      text-decoration: none;
+      color: inherit;
     }
   }
   &__triangle {

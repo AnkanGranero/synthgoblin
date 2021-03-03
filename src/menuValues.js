@@ -163,6 +163,12 @@ const menuValues = {
                     }, */
                 ]
 
+    },
+    {
+        name: "Tutorials",
+        type: "link",
+        url: "https://youtube.com/playlist?list=PL33pZJPW8OPWcvtw1XmrNGq15qqMsdSm9"
+
     }
 
   ]
