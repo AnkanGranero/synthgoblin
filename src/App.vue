@@ -153,13 +153,8 @@ export default {
     ...mapActions(["setPlayingDiv", "changeIsPlayingState"]),
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
-      let {
-        arrowRefs,
-        gridSize,
-        transformedSquares,
-        waveform,
-        volume,
-      } = cachedInfo;
+      let { arrowRefs, gridSize, transformedSquares, waveform, volume } =
+        cachedInfo;
 
       if (gridSize) {
         this.$store.dispatch("changeGridSize", gridSize);
@@ -317,9 +312,8 @@ export default {
         x: this.lastPlayedDiv.x,
         y: this.lastPlayedDiv.y,
       };
-      let suddenlyChangedCoordinates = this.nextCoordinatesBasedOnDirection(
-        nextCoordinatesInfo
-      );
+      let suddenlyChangedCoordinates =
+        this.nextCoordinatesBasedOnDirection(nextCoordinatesInfo);
 
       const refName = this.getRefFromCoordinates(
         suddenlyChangedCoordinates.x,
@@ -447,6 +441,18 @@ export default {
         };
       }
     },
+  },
+  metaInfo() {
+    return {
+      title: "Hagrid grid sequencer",
+      meta: [
+        {
+          vmid: "description",
+          name: "Hagrid grid sequencer",
+          content: "A grid sequencer you can use in your browswer, enjoy!",
+        },
+      ],
+    };
   },
 };
 </script>
