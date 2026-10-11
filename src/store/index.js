@@ -311,7 +311,7 @@ export default new Vuex.Store({
       else {
         let x = Math.floor(state.gridSize.x / 2 ); 
         let y = Math.floor(state.gridSize.y / 2); 
-        let refName = `r${x},${y}`
+        let refName = `r${x}-${y}`
         return {
           x, y, refName
         }

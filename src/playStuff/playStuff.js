@@ -7,6 +7,8 @@ let midiOutput = store.getters.getMidiOutput; */
 
 
 let tempoInBpm = 150;
+let volumeDb = 0;
+let isMuted = false;
 
 
 
@@ -48,6 +50,7 @@ const playThang = function(repeat) {
 
 const stopPlaying = function() {
     Tone.Transport.cancel();
+    Tone.Transport.stop();
 }
 
 const changeBpm = function(val) {
@@ -74,14 +77,14 @@ const changeVolume = function(val) {
   else {
     transformedValue = -100
   }
-  let finalValue = transformedValue * 4
-  synth.volume.value = finalValue;
+  volumeDb = transformedValue * 4
+  if(!isMuted) synth.volume.value = volumeDb;
   setInCache(val,"volume");
-} 
+}
 
 const changeMuteState = function(bool) {
-  let value = bool? -150: 0;
-  synth.volume.value = value;
+  isMuted = bool;
+  synth.volume.value = bool? -150: volumeDb;
 }
 const setToneValuesFromCache = function () {
   const cachedInfo = getCachedToneInfo();

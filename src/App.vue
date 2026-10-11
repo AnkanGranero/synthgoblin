@@ -241,7 +241,10 @@ export default {
       if (this.lastPlayedDiv) {
         this.changeHighlightClass(this.lastPlayedDiv.refName, "remove");
       }
-      if (!this.isPlaying) this.stop();
+      if (!this.isPlaying) {
+        this.stop();
+        return;
+      }
       if (this.justChangedDirection && this.lastPlayedDiv) {
       }
       let isTransformedSquare = this.findTransformedSquare(

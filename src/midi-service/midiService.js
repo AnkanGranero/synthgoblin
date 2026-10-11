@@ -73,7 +73,13 @@ const midiStop = () => {
 }
 //kanske byta till något i state
 const setMidiOutputFromLocalStorage = async function() {
-  let outputs = await midiOutputs;
+  let outputs;
+  try {
+    outputs = await midiOutputs;
+  } catch (err) {
+    // browser lacks Web MIDI support or access was denied
+    return;
+  }
   let matches = outputs.filter(output => output.name === localStorage.midiOutput)
 
   

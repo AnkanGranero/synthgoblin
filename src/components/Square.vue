@@ -224,9 +224,9 @@ export default {
       if (this.isStartingArrow) {
         return;
       } else if (
-        this.isPlaying &
-        (x === this.getColorCenter.x) &
-        (y === this.getColorCenter.y)
+        this.isPlaying &&
+        x === this.getColorCenter.x &&
+        y === this.getColorCenter.y
       ) {
         return {
           background: "white",

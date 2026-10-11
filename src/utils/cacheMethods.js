@@ -4,8 +4,13 @@
 }
 function getCachedInfo(name) {
       let cachedInfo = localStorage.getItem(name);
-      return cachedInfo? JSON.parse(cachedInfo) : ""
-    
+      if (!cachedInfo) return "";
+      try {
+        return JSON.parse(cachedInfo);
+      } catch (err) {
+        localStorage.removeItem(name);
+        return "";
+      }
 }
 
 function getAllCachedInfo() {
