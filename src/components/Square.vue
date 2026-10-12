@@ -67,12 +67,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
-      "addArrowRef",
-      "addTransformedSquare",
-      "removeTransformedSquare",
-      "togglePause",
-    ]),
+    ...mapActions(["addTransformedSquare", "removeTransformedSquare"]),
     colorCalcDif(n, coordinate) {
       let pos = this.highlightPos[coordinate];
 
@@ -205,8 +200,6 @@ export default {
   computed: {
     ...mapState([
       "portalCreatorActive",
-      "portalsHashObject",
-      "arrowRefs",
       "isMobile",
       "transformedSquares",
       "isPlaying",

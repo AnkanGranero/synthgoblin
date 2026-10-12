@@ -18,7 +18,6 @@
         <div class="tv__middle">
           <CHeader v-if="getColorTheme === 'darkStar'" />
           <GridLayout
-            :styling="styling"
             ref="gridLayout"
             @clicked-on-square="playNote"
           />
@@ -83,7 +82,6 @@ import {
 } from "./components/index.js";
 import IconInfo from "./components/IconInfo";
 import IconPlay from "./components/IconPlay";
-import * as Tone from "tone";
 
 import {
   playThang,
@@ -96,7 +94,7 @@ import {
 import { mapGetters, mapActions, mapState } from "vuex";
 import { midiPlay, midiStop } from "./midi-service/midiService";
 import { getAllCachedInfo } from "./utils/cacheMethods";
-import { getCoordinatesFromRefName } from "./utils/squareRefHelpers";
+import { getRefFromCoordinates } from "./utils/squareRefHelpers";
 
 export default {
   name: "App",
@@ -119,17 +117,10 @@ export default {
   },
   data() {
     return {
-      styling: "classic",
-      intervals: "",
-
-      selectedWaveform: "sawtooth",
       tvFinishedLoaded: false,
-      manualDirection: "",
       direction: "",
       eraseKeyDown: false,
       lastPlayedDiv: "",
-      nextPlayingDiv: "",
-      justChangedDirection: false,
       synth,
       initialVolume: 8,
     };
@@ -153,8 +144,7 @@ export default {
     ...mapActions(["setPlayingDiv", "changeIsPlayingState"]),
     setupCachedInfo() {
       const cachedInfo = getAllCachedInfo();
-      let { arrowRefs, gridSize, transformedSquares, waveform, volume } =
-        cachedInfo;
+      let { gridSize, transformedSquares, waveform, volume } = cachedInfo;
 
       if (gridSize) {
         this.$store.dispatch("changeGridSize", gridSize);
@@ -173,7 +163,7 @@ export default {
       this.tvFinishedLoaded = true;
     },
     playNote(payload) {
-      if (this.isPlaying || this.directionPickerOpen) return;
+      if (this.isPlaying) return;
       let { x, y } = payload;
 
       //we need to subtract one since the coordinates starts on 1
@@ -185,17 +175,8 @@ export default {
         : this.synth.triggerAttackRelease(note, "8n");
     },
 
-    changeGridSize(gridSize) {
-      this.$store.dispatch("changeGridSize", gridSize);
-      this.createNewArpeggios();
-    },
     openModal() {
       this.$store.dispatch("modalIsOpen", true);
-    },
-
-    changeTheme(styling) {
-      this.styling = styling;
-      this.$store.dispatch("modalIsOpen", false);
     },
 
     createNewArpeggios() {
@@ -223,13 +204,13 @@ export default {
       this.setPlayingDiv(null);
       this.midiStop();
     },
-    async play() {
+    play() {
       if (this.isPlaying) {
         this.stop();
         return;
       }
 
-      let firstArrowRef = await this.getStartingArrow;
+      let firstArrowRef = this.getStartingArrow;
       if (!firstArrowRef) {
         return;
       }
@@ -245,11 +226,6 @@ export default {
         this.stop();
         return;
       }
-      if (this.justChangedDirection && this.lastPlayedDiv) {
-      }
-      let isTransformedSquare = this.findTransformedSquare(
-        this.playingDiv.refName
-      );
       let { x, y, refName, direction, type, connectsTo } = this.playingDiv;
       let squareIsWithinGrid = this.gridRefs[refName];
 
@@ -261,7 +237,6 @@ export default {
 
       if (this.eraseKeyDown && type) {
         this.$store.dispatch("removeTransformedSquare", this.playingDiv);
-        isTransformedSquare = false;
         direction = this.direction;
         type = "";
       }
@@ -280,7 +255,7 @@ export default {
       let nextCoordinates;
 
       if (type === "Portal" && this.lastPlayedDiv.refName !== connectsTo) {
-        nextCoordinates = this.nextCoordinatesBasedOnConnetion(this.playingDiv);
+        nextCoordinates = this.nextCoordinatesBasedOnConnection(this.playingDiv);
       } else {
         nextCoordinates = this.nextCoordinatesBasedOnDirection(this.playingDiv);
       }
@@ -296,8 +271,6 @@ export default {
         : nextCoordinates;
 
       this.$store.dispatch("setPlayingDiv", nextSquareInfo);
-
-      // ta reda på direction, antingen
     },
     changeHighlightClass(refName, action) {
       const target = this.gridRefs[refName];
@@ -310,33 +283,6 @@ export default {
         }
       }
     },
-    changedDirectionsManually() {
-      const nextCoordinatesInfo = {
-        x: this.lastPlayedDiv.x,
-        y: this.lastPlayedDiv.y,
-      };
-      let suddenlyChangedCoordinates =
-        this.nextCoordinatesBasedOnDirection(nextCoordinatesInfo);
-
-      const refName = this.getRefFromCoordinates(
-        suddenlyChangedCoordinates.x,
-        suddenlyChangedCoordinates.y
-      );
-
-      this.setPlayingDiv({
-        ...suddenlyChangedCoordinates,
-        refName,
-      });
-      if (this.writeKeyDown) {
-        this.lastPlayedDiv.direction = this.direction;
-        this.$store.dispatch("addTransformedSquare", this.lastPlayedDiv);
-      }
-      this.justChangedDirection = false;
-    },
-    getRefFromCoordinates(x, y) {
-      return `r${x}-${y}`;
-    },
-
     nextCoordinatesBasedOnDirection(playingDiv) {
       let { x, y } = playingDiv;
       switch (this.direction) {
@@ -353,10 +299,10 @@ export default {
           y -= 1;
           break;
       }
-      let refName = this.getRefFromCoordinates(x, y);
+      let refName = getRefFromCoordinates(x, y);
       return { x, y, refName };
     },
-    nextCoordinatesBasedOnConnetion(transformedSquare) {
+    nextCoordinatesBasedOnConnection(transformedSquare) {
       let { connectsTo } = transformedSquare;
 
       if (!connectsTo) {
@@ -370,15 +316,11 @@ export default {
       if (this.joystickMode && e.keyCode > 36 && e.keyCode < 41) {
         let direction = e.key.replace("Arrow", "").toLowerCase();
         this.direction = direction;
-        this.justChangedDirection = true;
         e.preventDefault();
       }
       if (e.keyCode === 32) {
         e.preventDefault();
         this.play();
-      }
-      if (e.keyCode === 87) {
-        this.writeKeyDown = true;
       }
       if (e.keyCode === 69) {
         this.eraseKeyDown = true;
@@ -388,9 +330,6 @@ export default {
     handleKeyUpCommands(e) {
       if (e.keyCode === 69) {
         this.eraseKeyDown = false;
-      }
-      if (e.keyCode === 87) {
-        this.writeKeyDown = false;
       }
     },
 
@@ -402,13 +341,11 @@ export default {
       "playingDiv",
       "isPlaying",
       "allArpeggios",
-      "angle",
       "modalIsOpen",
       "joystickMode",
       "isMobile",
     ]),
     ...mapGetters([
-      "getPortalConnection",
       "getColorTheme",
       "getStartingArrow",
       "findTransformedSquare",
@@ -420,29 +357,14 @@ export default {
     reverb() {
       return reverb.wet.value;
     },
-    gridSize() {
-      return this.$store.getters.getGridSize;
-    },
     gridRefs() {
       return this.$refs.gridLayout.$refs;
     },
     overlayVisible() {
       return this.modalIsOpen;
     },
-    arpeggio() {
-      return this.$store.getters.getArpeggio;
-    },
     midiOutActive() {
       return this.$store.getters.midiOutActive;
-    },
-    backgroundColors() {
-      if (this.$store.state.isPlaying) {
-        return this.$store.state.backgroundColors;
-      } else {
-        return {
-          background: "white",
-        };
-      }
     },
   },
   metaInfo() {
@@ -452,7 +374,7 @@ export default {
         {
           vmid: "description",
           name: "Hagrid grid sequencer",
-          content: "A grid sequencer you can use in your browswer, enjoy!",
+          content: "A grid sequencer you can use in your browser, enjoy!",
         },
       ],
     };

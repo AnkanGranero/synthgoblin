@@ -12,10 +12,7 @@ export default new Vuex.Store({
   state: {
     isPlaying: false,
     playingDiv: null,
-    backgroundColors: "",
     transformedSquares: [],
-    arrowRefs: [],
-    direction: "",
     gridSize: {
         x: 15,
         y: 15
@@ -109,14 +106,6 @@ export default new Vuex.Store({
       state.transformedSquares = [];
       setInCache(state.transformedSquares, 'transformedSquares');
     },
-    changeDirectionOnArrowRef(state, payload) {
-      let { index, direction } = payload;
-      state.transformedSquares[index].direction = direction;
-      setInCache(state.transformedSquares, 'arrowRefs');
-    },
-/*     setDirection(state, payload) {
-      state.direction = payload;
-    }, */
     setGridSize(state, payload) {
      let newGridSize = {}
      let { x, y } = payload;
@@ -142,9 +131,6 @@ export default new Vuex.Store({
       setAngle(state, payload) {
         state.angle = payload
       },
-/*       setMidiOutput(state, payload) {
-        state.midiOutput = payload
-      }, */
       setModal(state, payload) {
         state.modalIsOpen = payload;
       },
@@ -177,8 +163,6 @@ export default new Vuex.Store({
 
 },
   actions: {
-    togglePause({commit}, refForSquare) {
-    },
     setSelectedWaveform({commit},payload) {
       commit("setSelectedWaveform", payload)
     },
@@ -189,9 +173,6 @@ export default new Vuex.Store({
 
       commit('setAllCachedInfo', cachedInfo);
     },
-/*     addMidiOutActive() {
-
-    }, */
     setColorTheme({commit}, colorTheme) {
 
       commit("setColorTheme", colorTheme)
@@ -219,20 +200,6 @@ export default new Vuex.Store({
     },
 
 
-    addArrowRef({ commit, getters }, payload) {
-      let { x, y, direction, refName } = payload;
-
-      let indexOfDuplicate = getters.findTransformedSquareIndex(refName);
-
-      if (indexOfDuplicate !== -1) {
-        commit("changeDirectionOnArrowRef", {
-          index: indexOfDuplicate,
-          direction
-        });
-        return;
-      }
-      commit("addArrowRef", { x, y, refName, direction, type: "arrow" });
-    },
     removeTransformedSquare({ commit }, payload) {
       if(payload.type === 'Portal') {
         commit('removePortal', payload);
@@ -266,9 +233,6 @@ export default new Vuex.Store({
       let { x, y } = state.gridSize;
       let availableTransformedSquares = state.transformedSquares.filter( square => square.x <= x && square.y <= y );
       commit("updateTransformedSquaresAfterGridChange",availableTransformedSquares );
-    },
-    changeGridMaxValue({commit}, payload) {
-        commit("setGridMaxValue", Number(payload))
     },
     setAllArpeggios({commit, state}) {
       let newArpeggios = createAllArpeggios(state.arpeggio, state.gridSize, state.angle);
@@ -333,16 +297,6 @@ export default new Vuex.Store({
       let transformedSquare = state.transformedSquares.filter(ref => ref.refName == refName);
       return transformedSquare[0];
     },
-/*     getArrowRefDirection: state => refName => {
-      let index = state.arrowRefs.findIndex(ref => ref.refName == refName);
-      if(index !== -1) {
-        let direction = state.arrowRefs[index].direction;
-        return { direction, index}
-      }
-      else {
-        return null
-      }
-    }, */
 
 
     getPortalNumber: state => refName => {
@@ -350,9 +304,6 @@ export default new Vuex.Store({
     let index = arrayOfPortals.findIndex(square => square.refName === refName);
     let portalNumber = Math.round((index+1)/2);
     return portalNumber;
-    },
-    getArrowRefs: state => {
-      return state.arrowRefs;
     },
     getPlayingDiv: state => {
       return state.playingDiv;
