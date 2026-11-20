@@ -36,7 +36,7 @@ export default {
     position: relative;
     justify-content: center;
     margin: 5% 0;
-    margin-bottom: 13%;
+    margin-bottom: 2vw;
   }
   &__darkStar {
     /*  display: none; */
@@ -86,10 +86,11 @@ export default {
     display: none;
     @media only screen and (min-width: 768px) {
       display: unset;
-      height: 19vw;
+      height: 16vw;
       position: absolute;
-      bottom: 0;
-      top: 56%;
+      // anchor to the header's bottom so the stem always reaches into the tv:
+      // 2vw header margin + 4vw overlap into the tv
+      bottom: -6vw;
       right: -11%;
     }
     @media only screen and (min-width: 1024px) {
