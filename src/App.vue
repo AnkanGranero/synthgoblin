@@ -87,6 +87,7 @@ import {
   playThang,
   stopPlaying,
   preparePlayStuff,
+  unlockAudio,
   synth,
   tempoInBpm,
   reverb,
@@ -132,6 +133,9 @@ export default {
     this.createNewArpeggios();
 
     preparePlayStuff();
+    ["touchend", "mousedown", "keydown"].forEach((type) =>
+      window.addEventListener(type, unlockAudio, true)
+    );
     window.addEventListener("keyup", (e) => {
       this.handleKeyUpCommands(e);
     });

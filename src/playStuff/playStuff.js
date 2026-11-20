@@ -41,6 +41,14 @@ const synth = new Tone.Synth({
       synth.connect(reverb);
       synth.connect(filter);
     }
+
+// Browsers (iOS Safari in particular) keep the AudioContext suspended until
+// it is resumed from inside a user gesture, so call this from tap/click/key handlers.
+const unlockAudio = function() {
+  // iOS 17+: play through the media channel so the silent switch doesn't mute us
+  if (navigator.audioSession) navigator.audioSession.type = "playback";
+  if (Tone.context.state !== "running") Tone.start();
+}
 const playThang = function(repeat) {
 
     Tone.Transport.bpm.value = tempoInBpm;
@@ -101,4 +109,4 @@ const setToneValuesFromCache = function () {
 
 setToneValuesFromCache();
 
-export {playThang, changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth, changeMuteState, changeVolume, setToneValuesFromCache, tempoInBpm, reverb, Tone}
+export {playThang, unlockAudio,changeBpm, changeReverb, stopPlaying, preparePlayStuff,changeWave, synth, changeMuteState, changeVolume, setToneValuesFromCache, tempoInBpm, reverb, Tone}
