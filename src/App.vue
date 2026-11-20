@@ -96,6 +96,7 @@ import { mapGetters, mapActions, mapState } from "vuex";
 import { midiPlay, midiStop } from "./midi-service/midiService";
 import { getAllCachedInfo } from "./utils/cacheMethods";
 import { getRefFromCoordinates } from "./utils/squareRefHelpers";
+import { step } from "./sequencer/step.mjs";
 
 export default {
   name: "App",
@@ -230,51 +231,45 @@ export default {
         this.stop();
         return;
       }
-      let { x, y, refName, direction, type, connectsTo } = this.playingDiv;
-      let squareIsWithinGrid = this.gridRefs[refName];
+      const { x, y } = this.playingDiv;
+      const refName = getRefFromCoordinates(x, y);
 
-      if (!squareIsWithinGrid) {
+      if (this.eraseKeyDown) {
+        const square = this.findTransformedSquare(refName);
+        if (square) this.$store.dispatch("removeTransformedSquare", square);
+      }
+
+      const result = step(
+        {
+          x,
+          y,
+          direction: this.direction,
+          previousRefName: this.lastPlayedDiv.refName,
+        },
+        this.transformedSquares,
+        this.gridSize
+      );
+      if (!result) {
         this.stop();
         return;
       }
+
       this.changeHighlightClass(refName, "add");
+      this.direction = result.direction;
 
-      if (this.eraseKeyDown && type) {
-        this.$store.dispatch("removeTransformedSquare", this.playingDiv);
-        direction = this.direction;
-        type = "";
-      }
-
-      if (direction) {
-        this.direction = direction;
-      }
-      let note = this.allArpeggios[x - 1][y - 1];
-
-      if (type !== "Pause") {
+      if (result.sound) {
+        const note = this.allArpeggios[x - 1][y - 1];
         this.midiOutActive
           ? this.midiPlay(note)
           : this.synth.triggerAttackRelease(note, "8n", time);
       }
 
-      let nextCoordinates;
-
-      if (type === "Portal" && this.lastPlayedDiv.refName !== connectsTo) {
-        nextCoordinates = this.nextCoordinatesBasedOnConnection(this.playingDiv);
-      } else {
-        nextCoordinates = this.nextCoordinatesBasedOnDirection(this.playingDiv);
-      }
-      this.lastPlayedDiv = this.playingDiv;
-      if (!nextCoordinates) {
+      this.lastPlayedDiv = { x, y, refName };
+      if (!result.next) {
+        this.stop();
         return;
       }
-      let isNextSquareTransformed = this.findTransformedSquare(
-        nextCoordinates.refName
-      );
-      let nextSquareInfo = isNextSquareTransformed
-        ? isNextSquareTransformed
-        : nextCoordinates;
-
-      this.$store.dispatch("setPlayingDiv", nextSquareInfo);
+      this.setPlayingDiv(result.next);
     },
     changeHighlightClass(refName, action) {
       const target = this.gridRefs[refName];
@@ -286,35 +281,6 @@ export default {
           target[0].classList.remove("highlight");
         }
       }
-    },
-    nextCoordinatesBasedOnDirection(playingDiv) {
-      let { x, y } = playingDiv;
-      switch (this.direction) {
-        case "down":
-          y += 1;
-          break;
-        case "right":
-          x += 1;
-          break;
-        case "left":
-          x -= 1;
-          break;
-        case "up":
-          y -= 1;
-          break;
-      }
-      let refName = getRefFromCoordinates(x, y);
-      return { x, y, refName };
-    },
-    nextCoordinatesBasedOnConnection(transformedSquare) {
-      let { connectsTo } = transformedSquare;
-
-      if (!connectsTo) {
-        this.stop();
-        return;
-      }
-      let { x, y, refName } = this.findTransformedSquare(connectsTo);
-      return { x, y, refName };
     },
     handleKeyDownCommands(e) {
       if (this.joystickMode && e.keyCode > 36 && e.keyCode < 41) {
@@ -345,6 +311,8 @@ export default {
       "playingDiv",
       "isPlaying",
       "allArpeggios",
+      "transformedSquares",
+      "gridSize",
       "modalIsOpen",
       "joystickMode",
       "isMobile",
